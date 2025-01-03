@@ -1,0 +1,37 @@
+.custom-wallet-button {
+    font-family: 'Courier New', monospace;
+    font-size: 16px;
+    padding: 8px 12px;
+    border: 1px solid #555;
+    background-color: #1e1e1e;
+    color: #cccccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.custom-wallet-button:hover {
+    color: #ffffff;
+    border-color: #888;
+    transform: scale(1.05);
+}
+
+.custom-wallet-button.connected {
+    background-color: #33ff33;
+    color: #000000;
+    box-shadow: 0 0 8px rgba(51, 255, 51, 0.5);
+}
+
+.custom-wallet-button.disconnected {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 rgba(51, 255, 51, 0);
+    }
+    50% {
+        box-shadow: 0 0 10px rgba(51, 255, 51, 0.5);
+    }
+}

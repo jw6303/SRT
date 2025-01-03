@@ -1,0 +1,23 @@
+/* Custom styles for the Solana wallet button */
+.custom-wallet-button {
+    background-color: #000; /* Black background for a terminal feel */
+    color: #33FF33; /* Green text */
+    font-family: 'Courier New', monospace; /* Terminal-style font */
+    border: 1px solid #33FF33; /* Green border */
+    border-radius: 4px; /* Rounded edges */
+    padding: 10px 20px; /* Button padding */
+    font-size: 16px; /* Font size */
+    text-transform: uppercase; /* Uppercase text */
+    cursor: pointer; /* Pointer cursor */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition on hover */
+}
+
+.custom-wallet-button:hover {
+    background-color: #33FF33; /* Green background on hover */
+    color: #000; /* Black text on hover */
+}
+
+.custom-wallet-button:active {
+    background-color: #1E1E1E; /* Slightly darker background when pressed */
+    color: #33FF33; /* Green text */
+}

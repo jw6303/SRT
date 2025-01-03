@@ -1,0 +1,21 @@
+/* Keep Original Solana Wallet Button Styling */
+.wallet-adapter-button {
+    background-color: transparent !important;
+    color: #FFFFFF !important; /* Original white font */
+    font-family: inherit !important; /* Use Solana's font */
+    border: none !important;
+    padding: 5px 10px !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    text-align: center !important;
+    transition: none !important;
+}
+
+.wallet-adapter-button:hover {
+    color: #CCCCCC !important; /* Subtle gray hover effect */
+    background-color: transparent !important;
+}
+
+.wallet-adapter-button:active {
+    color: #AAAAAA !important; /* Light gray on active */
+}

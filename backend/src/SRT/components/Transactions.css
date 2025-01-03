@@ -1,0 +1,262 @@
+/* General Terminal Style */
+.terminal-container {
+    padding: 10px;
+    font-family: "Courier New", Courier, monospace;
+    background-color: #1E1E1E;
+    color: #CCCCCC;
+    min-height: 100vh;
+}
+
+/* Pool Title Section */
+.pool-title-container {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.pool-title {
+    font-size: 20px;
+    color: #9b59b6; /* Purple */
+    margin-bottom: 5px;
+}
+
+.pool-tickets-remaining {
+    font-size: 16px;
+    color: #28a745; /* Green */
+}
+
+/* Transaction Feed Container */
+.transactions-section {
+    margin-top: 20px;
+    text-align: center;
+    font-family: "Courier New", Courier, monospace;
+    color: #FFFFFF;
+}
+
+.transactions-section .tabs-container {
+    position: sticky; /* Stick the tabs to the top */
+    top: 0;
+    background-color: #1E1E1E;
+    z-index: 2;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.transactions-table-container {
+    max-height: 400px; /* Fixed height for the transaction table */
+    overflow-y: auto; /* Enable vertical scrolling */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background-color: #1E1E1E;
+    padding: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    scrollbar-width: thin;
+    scrollbar-color: #555 #1E1E1E; /* Styled scrollbar */
+}
+
+/* Scrollbar Styling */
+.transactions-table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.transactions-table-container::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+}
+
+.transactions-table-container::-webkit-scrollbar-track {
+    background-color: #1E1E1E;
+}
+
+/* Transaction Table */
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #CCCCCC;
+}
+
+.transaction-table thead tr {
+    background-color: #2D2D2D;
+    text-transform: uppercase;
+}
+
+.transaction-table th {
+    color: #F4D03F; /* Yellow */
+    font-weight: bold;
+    padding: 10px;
+}
+
+.transaction-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: #CCCCCC;
+}
+
+.transaction-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    transition: background-color 0.3s ease;
+}
+
+.transaction-table td.time {
+    color: #999999;
+}
+
+.transaction-table td.tickets-bought {
+    color: #F4D03F; /* Yellow */
+}
+
+.transaction-table td.classification {
+    color: #FFFFFF; /* White */
+}
+
+.transaction-table td.price {
+    color: #17A2B8; /* Cyan */
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.tab-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    font-family: "Courier New", Courier, monospace;
+    color: #CCCCCC;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.tab-button.active {
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.tab-button.active::after {
+    content: '';
+    display: block;
+    margin: 0 auto;
+    width: 80%;
+    height: 2px;
+    background-color: #F4D03F;
+}
+
+.tab-button:hover {
+    color: #FFFFFF;
+}
+
+
+/* General Transactions Section */
+.transactions-section {
+    margin-top: 20px;
+    text-align: center;
+    font-family: 'Courier New', monospace;
+    color: #FFFFFF; /* White terminal text */
+}
+
+/* Titles */
+.pool-title-container {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.pool-title {
+    font-size: 20px;
+    color: #9b59b6; /* Purple */
+}
+
+.pool-tickets-remaining {
+    font-size: 16px;
+    color: #28a745; /* Green */
+}
+
+/* Tabs */
+.tabs-container {
+    margin-bottom: 15px;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.tab-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    background: none;
+    color: #CCCCCC;
+    border: 1px solid #555;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.tab-button.active {
+    color: #FFFFFF;
+    background: #333;
+    border-color: #9b59b6; /* Purple for active tab */
+}
+
+/* Transactions Table */
+.transactions-table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background-color: #1E1E1E; /* Terminal-style background */
+    padding: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    scrollbar-width: thin;
+    scrollbar-color: #555 #1E1E1E;
+}
+
+.transactions-table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.transactions-table-container::-webkit-scrollbar-thumb {
+    background-color: #555;
+    border-radius: 4px;
+}
+
+.transactions-table-container::-webkit-scrollbar-track {
+    background-color: #1E1E1E;
+}
+
+/* Transaction Table */
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transaction-table th {
+    color: #FFFFFF;
+    text-align: left;
+    font-weight: bold;
+}
+
+.transaction-table td {
+    color: #CCCCCC;
+}
+
+.transaction-table td.time {
+    color: #999999;
+}
+
+.transaction-table td.tickets-bought {
+    color: #F4D03F; /* Yellow */
+}
+
+.transaction-table td.classification {
+    color: #FFFFFF; /* White */
+}
+
+.transaction-table td.price {
+    color: #17A2B8; /* Cyan */
+}
