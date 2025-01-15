@@ -1,5 +1,3 @@
-<!-- src/dashboard/views/overview.ejs -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,7 +26,7 @@
           <td><%= raffle.entryFee %> SOL</td>
           <td><%= raffle.status %></td>
           <td>
-            <a href="/dashboard/raffles/<%= raffle._id %>">View Details</a>
+            <a href="/dashboard/raffles/<%= raffle._id.toString() %>">View Details</a> <!-- Ensure _id is a string -->
           </td>
         </tr>
       <% }) %>
