@@ -20,14 +20,15 @@ exports.createRaffle = async (req, res) => {
       endTime,
       maxParticipants,
       minParticipants,
+      question,
+      questionOptions,
+      correctAnswer,
       imageUrl,
       prizeDetails,
       isOnChain,
-      question,
-      correctAnswer,
-      questionOptions,
     } = req.body;
 
+    // Validate required fields
     if (
       !raffleId ||
       !entryFee ||
@@ -37,11 +38,11 @@ exports.createRaffle = async (req, res) => {
       !maxParticipants ||
       !minParticipants ||
       !question ||
-      !correctAnswer ||
       !questionOptions ||
-      questionOptions.length < 2
+      questionOptions.length < 2 ||
+      !correctAnswer
     ) {
-      return res.status(400).json({ error: "All fields are required." });
+      return res.status(400).json({ error: "All required fields must be provided." });
     }
 
     const newRaffle = {
@@ -52,26 +53,34 @@ exports.createRaffle = async (req, res) => {
       endTime,
       maxParticipants,
       minParticipants,
-      tickets: [], // Added for storing purchased tickets
-      participantsCorrect: [],
-      participantsIncorrect: [],
+      participants: [],
       status: "active",
       createdAt: new Date(),
-      imageUrl: imageUrl || "https://example.com/default-image.jpg",
-      prizeDetails: prizeDetails || "Exciting prize awaits!",
-      isOnChain: isOnChain || false,
+      imageUrl: imageUrl || "https://example.com/default-image.jpg", // Default image URL
+      isOnChain: isOnChain || false, // Default is off-chain
+      prizeDetails: prizeDetails || "Exciting prize awaits!", // Default prize description
       question,
-      correctAnswer,
       questionOptions,
+      correctAnswer,
+      participantsCorrect: [],
+      participantsIncorrect: [],
+      tickets: [],
+      ticketsSold: 0,
     };
 
     const result = await req.db.collection("raffles").insertOne(newRaffle);
-    res.status(201).json({ message: "Raffle created successfully!", id: result.insertedId });
+
+    res.status(201).json({
+      message: "Raffle created successfully!",
+      id: result.insertedId,
+    });
   } catch (err) {
-    console.error("Error creating raffle:", err);
+    console.error("[ERROR] Failed to create raffle:", err);
     res.status(500).json({ error: "Failed to create raffle." });
   }
 };
+
+
 
 // Get Active Raffles
 exports.getActiveRaffles = async (req, res) => {
@@ -92,13 +101,15 @@ exports.getRaffleById = async (req, res) => {
 
   try {
     const raffle = await req.db.collection("raffles").findOne({ _id: new ObjectId(id) });
+
     if (!raffle) {
-      return res.status(404).json({ error: "Raffle not found" });
+      return res.status(404).json({ error: "Raffle not found." });
     }
-    res.status(200).json(raffle);
+
+    res.status(200).json(raffle); // This will include `ticketsSold`
   } catch (err) {
-    console.error("Error fetching raffle details:", err);
-    res.status(500).json({ error: "Failed to fetch raffle details" });
+    console.error(`[ERROR] Failed to fetch raffle with ID ${id}:`, err);
+    res.status(500).json({ error: "Failed to fetch raffle details." });
   }
 };
 
@@ -232,12 +243,12 @@ exports.extendRaffle = async (req, res) => {
 
 // Purchase Ticket
 exports.purchaseTicket = async (req, res) => {
-  console.log("[DEBUG] Reached purchaseTicket endpoint"); // Debugging
+  console.log("[DEBUG] Reached purchaseTicket endpoint");
   const { id } = req.params;
-  const { participantId, name, pubkey } = req.body;
+  const { participantId, pubkey, ticketCount } = req.body;
 
-  if (!participantId || !pubkey) {
-    return res.status(400).json({ error: "Participant ID, name, and public key are required." });
+  if (!participantId || !pubkey || !ticketCount) {
+    return res.status(400).json({ error: "Participant ID, public key, and ticket count are required." });
   }
 
   if (!validateObjectId(id, res)) return;
@@ -249,24 +260,30 @@ exports.purchaseTicket = async (req, res) => {
       return res.status(404).json({ error: "Raffle not found." });
     }
 
-    if (raffle.tickets?.length >= raffle.maxParticipants) {
-      return res.status(400).json({ error: "Maximum participants reached." });
+    const availableTickets = raffle.maxParticipants - (raffle.ticketsSold || 0);
+    if (ticketCount > availableTickets) {
+      return res.status(400).json({ error: `Only ${availableTickets} tickets are available.` });
     }
 
-// If name is not provided, set a default value
-const ticket = {
-  participantId,
-  name: name || "Anonymous", // Default to "Anonymous" if name is not provided
-  pubkey,
-  purchaseTime: new Date(),
-};    await req.db.collection("raffles").updateOne(
+    // Create ticket entries
+    const tickets = Array(ticketCount).fill().map(() => ({
+      participantId,
+      pubkey,
+      purchaseTime: new Date(),
+    }));
+
+    // Update the raffle in the database
+    await req.db.collection("raffles").updateOne(
       { _id: new ObjectId(id) },
-      { $push: { tickets: ticket } }
+      {
+        $push: { tickets: { $each: tickets } },
+        $inc: { ticketsSold: ticketCount },
+      }
     );
 
-    res.status(200).json({ message: "Ticket purchased successfully!" });
+    res.status(200).json({ message: `${ticketCount} ticket(s) purchased successfully!` });
   } catch (err) {
-    console.error("Error purchasing ticket:", err);
-    res.status(500).json({ error: "Failed to purchase ticket." });
+    console.error("Error purchasing ticket(s):", err);
+    res.status(500).json({ error: "Failed to purchase ticket(s)." });
   }
 };

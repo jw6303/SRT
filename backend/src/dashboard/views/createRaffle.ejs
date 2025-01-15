@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create a New Raffle</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <h1>Create a New Raffle</h1>
+  <form action="/dashboard/raffles/create" method="POST">
+    <label for="raffleId">Raffle ID:</label>
+    <input type="text" id="raffleId" name="raffleId" required placeholder="e.g., 001">
+
+    <label for="entryFee">Entry Fee (SOL):</label>
+    <input type="number" id="entryFee" name="entryFee" step="0.01" required placeholder="e.g., 0.03">
+
+    <label for="prizeAmount">Prize Amount (SOL):</label>
+    <input type="number" id="prizeAmount" name="prizeAmount" step="0.01" required placeholder="e.g., 1">
+
+    <label for="maxParticipants">Max Participants:</label>
+    <input type="number" id="maxParticipants" name="maxParticipants" required placeholder="e.g., 50">
+
+    <label for="minParticipants">Min Participants:</label>
+    <input type="number" id="minParticipants" name="minParticipants" required placeholder="e.g., 30">
+
+    <label for="startTime">Start Time:</label>
+    <input type="datetime-local" id="startTime" name="startTime" required>
+
+    <label for="endTime">End Time:</label>
+    <input type="datetime-local" id="endTime" name="endTime" required>
+
+    <label for="isOnChain">On-Chain Status:</label>
+    <div>
+      <input type="radio" id="onChainTrue" name="isOnChain" value="true" required>
+      <label for="onChainTrue">On-Chain</label>
+      <input type="radio" id="onChainFalse" name="isOnChain" value="false" required checked>
+      <label for="onChainFalse">Off-Chain</label>
+    </div>
+
+    <label for="question">Question:</label>
+    <input type="text" id="question" name="question" required placeholder="e.g., What color is the sky?">
+
+    <label>Answer Options:</label>
+    <input type="text" name="questionOptions" placeholder="e.g., blue, pink, green" required>
+
+    <label for="correctAnswer">Correct Answer:</label>
+    <input type="text" id="correctAnswer" name="correctAnswer" required placeholder="e.g., blue">
+
+    <label for="imageUrl">Image URL:</label>
+    <input type="url" id="imageUrl" name="imageUrl" value="https://via.placeholder.com/150">
+
+    <label for="prizeDetails">Prize Details:</label>
+    <textarea id="prizeDetails" name="prizeDetails" placeholder="Exciting prize awaits!"></textarea>
+
+    <button type="submit">Create Raffle</button>
+  </form>
+  <a href="/dashboard">Back to Dashboard</a>
+</body>
+</html>

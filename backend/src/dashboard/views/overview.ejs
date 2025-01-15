@@ -8,7 +8,16 @@
 </head>
 <body>
   <h1>Admin Dashboard</h1>
-  <table>
+
+  <!-- Create Raffle Button -->
+  <div style="margin-bottom: 20px;">
+    <a href="/dashboard/raffles/create" style="text-decoration: none;">
+      <button style="padding: 10px 20px; font-size: 16px;">Create New Raffle</button>
+    </a>
+  </div>
+
+  <!-- Raffles Table -->
+  <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; text-align: left;">
     <thead>
       <tr>
         <th>Raffle ID</th>
@@ -24,9 +33,27 @@
           <td><%= raffle.raffleId %></td>
           <td><%= raffle.prizeAmount %> SOL</td>
           <td><%= raffle.entryFee %> SOL</td>
-          <td><%= raffle.status %></td>
           <td>
-            <a href="/dashboard/raffles/<%= raffle._id.toString() %>">View Details</a> <!-- Ensure _id is a string -->
+            <% if (raffle.status === "active") { %>
+              <span style="color: green;">active</span>
+            <% } else { %>
+              <span style="color: red;"><%= raffle.status %></span>
+            <% } %>
+          </td>
+          <td>
+            <!-- View Details -->
+            <a href="/dashboard/raffles/<%= raffle._id.toString() %>" style="text-decoration: none; color: blue;">View Details</a>
+            |
+            <!-- End Raffle Button -->
+            <% if (raffle.status === "active") { %>
+              <form action="/dashboard/raffles/<%= raffle._id.toString() %>/end" method="POST" style="display: inline;">
+                <button type="submit" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">
+                  End Raffle
+                </button>
+              </form>
+            <% } else { %>
+              <span style="color: gray;">Raffle Ended</span>
+            <% } %>
           </td>
         </tr>
       <% }) %>
