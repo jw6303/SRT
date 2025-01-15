@@ -4,28 +4,33 @@ import { fetchRaffleDetails, purchaseTicket } from "../../api"; // Updated API i
 import "./RaffleDetails.css";
 
 const RaffleDetails = () => {
-  const { raffleId } = useParams(); // Dynamically get raffleId from URL
-  const [raffle, setRaffle] = useState(null); // Store raffle details
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [selectedAnswer, setSelectedAnswer] = useState(""); // Track selected answer
-  const [ticketPurchased, setTicketPurchased] = useState(false); // Track ticket purchase status
+  const { raffleId } = useParams();
+  const [raffle, setRaffle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [log, setLog] = useState([]);
+  const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [ticketPurchased, setTicketPurchased] = useState(false);
 
-  // Fetch raffle details on component mount
   useEffect(() => {
     const loadRaffleDetails = async () => {
       if (!raffleId) {
-        setError("Invalid raffle ID.");
+        setLog((prev) => [...prev, ">> ERROR: Invalid raffle ID."]);
         setLoading(false);
         return;
       }
 
       try {
-        const data = await fetchRaffleDetails(raffleId); // Fetch raffle by ID
+        const data = await fetchRaffleDetails(raffleId);
         setRaffle(data);
+        setLog((prev) => [
+          ...prev,
+          `>> Loaded raffle details for ID: ${data.raffleId}`,
+        ]);
       } catch (err) {
-        console.error("[ERROR] Failed to fetch raffle details:", err);
-        setError("Failed to fetch raffle details.");
+        setLog((prev) => [
+          ...prev,
+          ">> ERROR: Failed to fetch raffle details. Please try again.",
+        ]);
       } finally {
         setLoading(false);
       }
@@ -34,70 +39,98 @@ const RaffleDetails = () => {
     loadRaffleDetails();
   }, [raffleId]);
 
-  // Handle ticket purchase
   const handleBuyTicket = async () => {
     if (!selectedAnswer) {
-      alert("Please select an answer before purchasing a ticket.");
+      setLog((prev) => [
+        ...prev,
+        ">> ERROR: No answer selected. Please select an answer before buying a ticket.",
+      ]);
       return;
     }
 
     try {
       const response = await purchaseTicket(raffleId, {
-        participantId: "dynamic-participant-id", // Replace with actual participant ID
-        name: "Dynamic User", // Replace with actual user name
-        pubkey: "dynamic-public-key", // Replace with actual wallet public key
+        participantId: "dynamic-participant-id",
+        name: "Dynamic User",
+        pubkey: "dynamic-public-key",
       });
-      alert(response.message); // Display success message from backend
-      setTicketPurchased(true); // Update ticket purchased state
+      setLog((prev) => [...prev, `>> SUCCESS: ${response.message}`]);
+      setTicketPurchased(true);
     } catch (err) {
-      console.error("[ERROR] Failed to purchase ticket:", err);
-      alert("Failed to purchase ticket. Please try again.");
+      setLog((prev) => [
+        ...prev,
+        ">> ERROR: Failed to purchase ticket. Please try again.",
+      ]);
     }
   };
 
-  if (loading) return <p>Loading raffle details...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <p className="terminal-log">>> Loading raffle details...</p>;
 
   return (
     <div className="raffle-details">
-      <h1>Raffle Details</h1>
-      <div className="raffle-overview">
-        <p><strong>Raffle ID:</strong> {raffle.raffleId}</p>
-        <p><strong>Prize Amount:</strong> {raffle.prizeAmount} SOL</p>
-        <p><strong>Entry Fee:</strong> {raffle.entryFee} SOL</p>
-        <p><strong>Start Time:</strong> {new Date(raffle.startTime).toLocaleString()}</p>
-        <p><strong>End Time:</strong> {new Date(raffle.endTime).toLocaleString()}</p>
-        <p><strong>Question:</strong> {raffle.question}</p>
-      </div>
-
-      {raffle.questionOptions && raffle.questionOptions.length > 0 && (
-        <div className="raffle-question">
-          <h3>Answer the Question</h3>
-          {raffle.questionOptions.map((option, index) => (
-            <label key={index} className="answer-option">
-              <input
-                type="radio"
-                name="answer"
-                value={option}
-                checked={selectedAnswer === option}
-                onChange={(e) => setSelectedAnswer(e.target.value)}
-              />
-              {option}
-            </label>
-          ))}
+      <h1 className="terminal-header">Raffle Details</h1>
+      <div className="details-container">
+        <div className="raffle-info">
+          <p>> Raffle ID: {raffle.raffleId}</p>
+          <p>> Prize Amount: {raffle.prizeAmount} SOL</p>
+          <p>> Entry Fee: {raffle.entryFee} SOL</p>
+          <p>> Start Time: {new Date(raffle.startTime).toLocaleString()}</p>
+          <p>> End Time: {new Date(raffle.endTime).toLocaleString()}</p>
+          <p>> Status: {raffle.status}</p>
+          <p>> Created At: {new Date(raffle.createdAt).toLocaleString()}</p>
+          <p>> On-Chain Status: {raffle.isOnChain ? "Yes" : "No"}</p>
+          <p>> Prize Details: {raffle.prizeDetails}</p>
+          <p>> Total Participants: {(raffle.participants || []).length}</p>
         </div>
-      )}
-
+        {raffle.imageUrl && (
+          <div className="raffle-image-container">
+            <img
+              src={raffle.imageUrl}
+              alt="Raffle"
+              className="raffle-image"
+            />
+          </div>
+        )}
+      </div>
+      <div className="terminal-log">
+        <p>> Question: {raffle.question}</p>
+        <div className="cli-options">
+          {raffle &&
+            raffle.questionOptions.map((option, index) => (
+              <label key={index} className="cli-option">
+                <input
+                  type="radio"
+                  name="answer"
+                  value={option}
+                  checked={selectedAnswer === option}
+                  onChange={(e) => setSelectedAnswer(e.target.value)}
+                />
+                <span>{option}</span>
+              </label>
+            ))}
+        </div>
+      </div>
       <button
         onClick={handleBuyTicket}
-        disabled={ticketPurchased} // Disable button if ticket is already purchased
+        disabled={ticketPurchased}
         className={`buy-ticket-btn ${ticketPurchased ? "disabled" : ""}`}
       >
-        {ticketPurchased ? "Ticket Purchased" : "Buy Ticket"}
+        {ticketPurchased ? ">> Ticket Purchased" : ">> Buy Ticket"}
       </button>
-
-      <div className="navigation">
-        <Link to="/">Back to Active Raffles</Link>
+      <div className="navigation-links">
+        <Link to="/" className="back-link">
+          >> Back to Active Raffles
+        </Link>
+      </div>
+      <div className="cli-log">
+        {log.map((entry, index) => (
+          <p
+            key={index}
+            className={entry.includes("ERROR") ? "error-log" : "success-log"}
+          >
+            {entry}
+          </p>
+        ))}
       </div>
     </div>
   );
