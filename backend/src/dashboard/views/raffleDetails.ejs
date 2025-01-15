@@ -1,0 +1,20 @@
+<!-- src/dashboard/views/raffleDetails.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raffle Details</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <h1>Raffle Details</h1>
+  <p><strong>Raffle ID:</strong> <%= raffle.raffleId %></p>
+  <p><strong>Prize Amount:</strong> <%= raffle.prizeAmount %> SOL</p>
+  <p><strong>Entry Fee:</strong> <%= raffle.entryFee %> SOL</p>
+  <p><strong>Status:</strong> <%= raffle.status %></p>
+  <p><strong>Participants:</strong> <%= (raffle.tickets || []).length %></p>
+  <a href="/dashboard">Back to Dashboard</a>
+</body>
+</html>

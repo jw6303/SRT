@@ -1,0 +1,53 @@
+const express = require("express");
+const fs = require("fs");
+const path = require("path");
+const blockchainService = require("../services/blockchainService");
+
+const router = express.Router();
+
+// Helper to dynamically load raffle configurations
+const loadRaffleConfigs = (directoryPath) => {
+  const raffles = [];
+  const files = fs.readdirSync(directoryPath);
+
+  files.forEach((file) => {
+    const filePath = path.join(directoryPath, file);
+    if (fs.statSync(filePath).isDirectory()) {
+      const configPath = path.join(filePath, "config.json");
+      if (fs.existsSync(configPath)) {
+        const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+        raffles.push(config);
+      }
+    }
+  });
+
+  return raffles;
+};
+
+// GET /api/pools
+router.get("/", async (req, res) => {
+  try {
+    const enrichedPools = await Promise.all(
+      raffleConfigs.map(async (raffle) => {
+        const onChainData = await blockchainService.fetchRaffleData(raffle.raffleId);
+
+        return {
+          ...raffle,
+          blockchainInfo: {
+            ticketsSold: onChainData.ticketsSold,
+            solRaised: (onChainData.ticketsSold * raffle.entryFee).toFixed(2),
+            winningTicket: onChainData.winningTicket || null,
+            isDrawn: onChainData.isDrawn,
+          },
+        };
+      })
+    );
+
+    res.json(enrichedPools);
+  } catch (err) {
+    console.error("Error loading raffles:", err);
+    res.status(500).json({ error: "Failed to load raffles." });
+  }
+});
+
+module.exports = router;

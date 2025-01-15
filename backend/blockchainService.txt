@@ -1,0 +1,34 @@
+const { Connection, PublicKey, Keypair, SystemProgram, Transaction } = require("@solana/web3.js");
+require("dotenv").config();
+
+const PROGRAM_ID = new PublicKey(process.env.PROGRAM_ID);
+const CLUSTER_URL = process.env.CLUSTER_URL;
+
+// Admin Wallet Keypair
+const adminPrivateKey = Uint8Array.from(JSON.parse(process.env.PRIVATE_KEY));
+const adminKeypair = Keypair.fromSecretKey(adminPrivateKey);
+
+// Solana Connection
+const connection = new Connection(CLUSTER_URL, "confirmed");
+
+// Fetch Raffle Data
+const fetchRaffleData = async (raffleId) => {
+  try {
+    // Placeholder for fetching data from Solana blockchain
+    console.log(`Fetching on-chain data for raffle: ${raffleId}`);
+    return {
+      ticketsSold: Math.floor(Math.random() * 50), // Mock data
+      winningTicket: null,
+      isDrawn: false,
+    };
+  } catch (err) {
+    console.error("Error fetching on-chain raffle data:", err);
+    return null;
+  }
+};
+
+// Other utility functions (getBalance, purchaseTicket, etc.) can remain as they are
+
+module.exports = {
+  fetchRaffleData,
+};

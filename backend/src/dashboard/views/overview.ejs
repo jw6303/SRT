@@ -1,0 +1,38 @@
+<!-- src/dashboard/views/overview.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Raffle ID</th>
+        <th>Prize Amount</th>
+        <th>Entry Fee</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% raffles.forEach(raffle => { %>
+        <tr>
+          <td><%= raffle.raffleId %></td>
+          <td><%= raffle.prizeAmount %> SOL</td>
+          <td><%= raffle.entryFee %> SOL</td>
+          <td><%= raffle.status %></td>
+          <td>
+            <a href="/dashboard/raffles/<%= raffle._id %>">View Details</a>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>
