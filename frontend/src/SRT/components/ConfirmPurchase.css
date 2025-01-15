@@ -1,0 +1,80 @@
+.confirm-purchase {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #1e1e2f;
+    color: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .confirm-purchase h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #00e676;
+  }
+  
+  .raffle-info {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #29293f;
+    border-radius: 8px;
+  }
+  
+  .raffle-info p {
+    margin: 5px 0;
+    font-size: 16px;
+    color: #bdbdbd;
+  }
+  
+  .raffle-info strong {
+    color: #ffffff;
+  }
+  
+  .answer-options {
+    margin-bottom: 20px;
+  }
+  
+  .answer-options label {
+    display: block;
+    margin: 10px 0;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .answer-options input {
+    margin-right: 10px;
+  }
+  
+  button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    color: #ffffff;
+    background: #00e676;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  button:hover {
+    background: #00c853;
+  }
+  
+  .back-link {
+    display: block;
+    margin-top: 20px;
+    text-align: center;
+    color: #00e676;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+  }
+  
+  .back-link:hover {
+    color: #00c853;
+  }
+  

@@ -1,29 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { Connection } from '@solana/web3.js';
-import Slider from 'react-slick';
-import poolsConfig from '../config/poolsConfig';
-import PoolCard from './components/PoolCard';
-import Modal from './components/Modal';
-import ConnectWalletButton from './components/ConnectWalletButton';
-import Transactions from './components/Transactions';
-import ChatBubble from './components/ChatBubble'; // Reuse ChatBubble
-import BottomNavBar from './components/BottomNavBar'; // Navigation Bar
-import './components/Terminal.css';
-import './components/Transactions.css';
-import './components/WalletButtonOverride.css';
-import './components/ChatBubble.css';
-import './components/BottomNavBar.css';
+import React, { useState, useEffect } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { Connection } from "@solana/web3.js";
+import Slider from "react-slick";
+import Modal from "./components/Modal";
+import RaffleList from "./components/RaffleList"; // Import the RaffleList component
+import ConnectWalletButton from "./components/ConnectWalletButton";
+import Transactions from "./components/Transactions";
+import ChatBubble from "./components/ChatBubble";
+import BottomNavBar from "./components/BottomNavBar";
+import "./components/Terminal.css";
+import "./components/Transactions.css";
+import "./components/WalletButtonOverride.css";
+import "./components/ChatBubble.css";
+import "./components/BottomNavBar.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const Raffle = () => {
   const [selectedPool, setSelectedPool] = useState(null);
   const [balance, setBalance] = useState(null);
-  const [activeTab, setActiveTab] = useState('Screener');
-  const [isChatOpen, setIsChatOpen] = useState(false); // New state to manage Chat visibility
+  const [activeTab, setActiveTab] = useState("Screener");
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const { connected, publicKey } = useWallet();
-  const connection = new Connection('https://api.devnet.solana.com');
+  const connection = new Connection("https://api.devnet.solana.com");
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -63,14 +62,8 @@ const Raffle = () => {
     slidesToShow: 3,
     slidesToScroll: 1,
     responsive: [
-      {
-        breakpoint: 1024,
-        settings: { slidesToShow: 2 },
-      },
-      {
-        breakpoint: 600,
-        settings: { slidesToShow: 1 },
-      },
+      { breakpoint: 1024, settings: { slidesToShow: 2 } },
+      { breakpoint: 600, settings: { slidesToShow: 1 } },
     ],
   };
 
@@ -87,10 +80,11 @@ const Raffle = () => {
         {connected ? (
           <div className="wallet-info">
             <p className="syntax-green">
-              Connected as: {publicKey?.toString().slice(0, 4)}...{publicKey?.toString().slice(-4)}
+              Connected as: {publicKey?.toString().slice(0, 4)}...
+              {publicKey?.toString().slice(-4)}
             </p>
             <p className="syntax-cyan">
-              Balance: {balance !== null ? `${balance} SOL` : 'Loading...'}
+              Balance: {balance !== null ? `${balance} SOL` : "Loading..."}
             </p>
           </div>
         ) : (
@@ -101,34 +95,20 @@ const Raffle = () => {
       {/* Divider */}
       <div className="divider" />
 
-      {/* Main Content */}
-      <div>
-        {/* Pools Section */}
-        <div className="pools-section">
-          <h2 className="section-title">
-            Active Raffles
-            <span className="active-beacon"></span> {/* Active Beacon */}
-          </h2>
-          <Slider {...settings}>
-            {poolsConfig.map((pool, index) => (
-              <PoolCard key={index} pool={pool} onEnter={() => openModal(pool)} />
-            ))}
-          </Slider>
-        </div>
+      {/* Raffle List */}
+      <RaffleList /> {/* Render the imported RaffleList component here */}
 
-        {/* Divider */}
-        <div className="divider" />
+      {/* Divider */}
+      <div className="divider" />
 
-        {activeTab === "Chat" && <ChatBubble onClose={() => setActiveTab("Screener")} />}
-
-
-        {/* Transactions Section */}
-        <Transactions activeTab={activeTab} setActiveTab={setActiveTab} />
-      </div>
+      {/* Conditional Tab Content */}
+      {activeTab === "Chat" && (
+        <ChatBubble onClose={() => setActiveTab("Screener")} />
+      )}
 
       {/* ChatBubble (Overlay) */}
       {isChatOpen && (
-        <ChatBubble onClose={() => setIsChatOpen(false)} /> // Pass callback to close chat
+        <ChatBubble onClose={() => setIsChatOpen(false)} />
       )}
 
       {/* Modal */}
@@ -139,7 +119,7 @@ const Raffle = () => {
         activeTab={activeTab}
         setActiveTab={(tab) => {
           if (tab === "Chat") {
-            setIsChatOpen(!isChatOpen); // Toggle chat visibility
+            setIsChatOpen(!isChatOpen);
           } else {
             setActiveTab(tab);
           }

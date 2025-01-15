@@ -1,81 +1,55 @@
-/* Parent container for the bottom navigation bar */
+/* Bottom Navigation Bar */
 .bottom-nav-bar {
-    position: fixed;
+    position: sticky; /* Stick to the bottom */
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 60px;
-    background-color: #1E1E1E; /* Terminal-style dark background */
-    border-top: 1px solid #444; /* Subtle border for separation */
+    height: 35px; /* Thinner design */
+    background-color: #000000af; /* Black background */
+    border-top: 1px solid #33333300; /* Subtle border */
     display: flex;
-    justify-content: space-around;
     align-items: center;
+    justify-content: space-evenly; /* Even spacing for tabs */
+    font-family: "Courier New", monospace;
+    font-size: 10px; /* Small font size */
+    color: #ccc; /* Soft gray for default text */
+    padding: 0;
     z-index: 1000;
-    font-family: 'Courier New', monospace; /* Terminal-style font */
 }
 
-/* Navigation item styling */
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    background: none;
-    border: none;
-    font-size: 12px;
-    color: #CCCCCC; /* Subtle light gray for inactive state */
+/* Individual Tab */
+.tab {
+    margin: 0 5px; /* Spacing between tabs */
     cursor: pointer;
-    transition: color 0.3s ease, transform 0.2s ease;
+    font-size: 9px; /* Smaller font */
+    color: #7FDBFF; /* Cyan for default text */
+    border: none;
+    background: none;
+    text-decoration: none;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 
-.nav-item .nav-icon {
-    font-size: 20px;
-    color: inherit; /* Match the parent color */
-}
-
-.nav-item .nav-label {
-    font-size: 10px;
-    margin-top: 2px;
-}
-
-/* Active state for navigation items */
-.nav-item.active {
-    color: #33FF33; /* Terminal green for active state */
+/* Active Tab */
+.active-tab {
+    color: #FFDC00; /* Yellow for active tab */
     font-weight: bold;
-    text-shadow: 0 0 5px rgba(51, 255, 51, 0.8); /* Glow effect */
+    text-shadow: 0 0 5px rgba(255, 220, 0, 0.8); /* Soft glow */
+    border-bottom: 1px solid #FFDC00; /* Subtle underline for active tab */
 }
 
-.nav-item.active .nav-icon {
-    color: #33FF33; /* Green for active icon */
+/* Hover Effect */
+.tab:hover {
+    color: #FFFFFF; /* Bright white on hover */
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8); /* Soft white glow */
 }
 
-/* Hover effect */
-.nav-item:hover {
-    color: #FFFFFF; /* Bright white for hover */
-    transform: scale(1.05); /* Slight scale-up on hover */
-}
-
-/* Focused or pressed state */
-.nav-item:active {
-    color: #28A745; /* Darker green for pressed state */
-}
-
-/* Responsive adjustments */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
     .bottom-nav-bar {
-        height: 50px;
+        height: 30px;
     }
 
-    .nav-item {
-        font-size: 10px;
-    }
-
-    .nav-item .nav-icon {
-        font-size: 18px;
-    }
-
-    .nav-item .nav-label {
-        font-size: 8px;
+    .tab {
+        font-size: 8px; /* Smaller font on smaller screens */
     }
 }

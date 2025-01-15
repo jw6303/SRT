@@ -1,27 +1,43 @@
-/* Centered Layout */
+/* General Styles */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
+    box-sizing: border-box;
+    font-size: 9px; /* Small font size */
+    background-color: #000; /* Sleek black background */
+    color: #ccc; /* Soft gray for text */
+    font-family: "Courier New", monospace; /* Monospace for a terminal-like feel */
+}
+
+/* Raffle Container */
 .raffle-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     padding: 20px;
-    background-color: #1E1E1E;
-    color: #CCCCCC;
-    font-family: "Courier New", monospace;
     min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.raffle-header h1 {
-    text-align: center;
-    color: #FFFFFF;
-    margin-bottom: 20px;
-}
-
-/* Center the carousel */
+/* Pools Section */
 .pools-section {
-    width: 80%; /* Adjust width for desktop */
+    width: 100%;
     max-width: 1200px;
-    margin: auto;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* Wallet Section */
+.wallet-section {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    font-size: 8px; /* Smaller font for wallet section */
 }
 
 /* Transactions Section */
@@ -29,163 +45,247 @@
     width: 100%;
     max-width: 1200px;
     margin: 20px auto;
+    padding: 10px;
 }
 
 /* Transaction Table */
 .transaction-table {
     width: 100%;
+    overflow-x: auto; /* Horizontal scroll for smaller screens */
     border-collapse: collapse;
+    font-size: 8px; /* Compact table font */
 }
 
-
-/* Terminal.css */
-.wallet-section.centered {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 20px 0;
-}
-
-.transaction-table.centered td, .transaction-table.centered th {
+.transaction-table th, 
+.transaction-table td {
+    padding: 8px;
     text-align: center;
-    padding: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
 }
 
-
-@media (max-width: 768px) {
-    .pageContainer {
-        padding: 10px;
-    }
-    .carouselContainer, .transactionsSection {
-        width: 100%;
-    }
-    .transactionTableCell {
-        fontSize: 14px;
-    }
-}
-
-
-/* Flashing Beacon */
-.flashing-beacon {
-    width: 12px;
-    height: 12px;
-    margin-left: 10px;
-    border-radius: 50%;
-    background-color: #28a745; /* Green color for active state */
-    box-shadow: 0 0 8px #28a745;
-    animation: flash 1.5s infinite;
-}
-
-@keyframes flash {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
-}
-
-/* Align Title and Beacon */
-.active-raffles-title {
+/* Carousel Adjustments */
+.slick-slide {
     display: flex;
-    align-items: center;
-    gap: 20px;
+    justify-content: center;
+}
+
+.slick-list {
+    padding: 0 5px; /* Space on edges */
+}
+
+/* Universal Button Style */
+button {
+    padding: 8px 12px;
+    font-size: 8px;
+    color: #fff;
+    background-color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    background-color: #555;
+    transform: scale(1.05);
+}
+
+/* Adjustments for Small Screens */
+@media (max-width: 768px) {
+    .pools-section {
+        padding: 5px;
+    }
+
+    .transaction-table th, 
+    .transaction-table td {
+        font-size: 7px; /* Smaller table font */
+        padding: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wallet-section {
+        padding: 5px;
+    }
+
+    .pools-section {
+        padding: 5px;
+    }
+
+    .transaction-table th, 
+    .transaction-table td {
+        font-size: 6px; /* Compact font for very small screens */
+        padding: 4px;
+    }
+
+    button {
+        font-size: 6px;
+        padding: 6px 8px;
+    }
+}
+
+.wallet-connect-text {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.text-connect-button {
+    background: none;
+    border: none;
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+  }
+  
+  .text-connect-button:hover {
+    color: #ffffff;
+    text-decoration: underline;
+  }
+  
+  .wallet-info {
+    text-align: center;
+    margin-top: 10px;
+    color: #00ff00;
+  }
+  
+  .wallet-disconnected {
+    text-align: center;
+    margin-top: 10px;
+    color: #ff0000;
+  }
+  
+
+/* Terminal Container */
+.raffle-terminal {
+    font-family: "Courier New", monospace; /* Terminal font */
+    color: #e9dce8; /* Terminal green text */
+    background-color: #000; /* Terminal black background */
+    padding: 20px;
+    border: 1px solid #333;
+    max-width: 800px;
+    margin: 40px auto; /* Center horizontally */
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2); /* Terminal glow */
+}
+
+/* Terminal Header */
+.terminal-header {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #7FDBFF; /* Cyan header */
+    text-decoration: underline;
+}
+
+/* Terminal Output Section */
+.terminal-output {
+    text-align: left;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Raffle Entry */
+.raffle-entry {
     margin-bottom: 15px;
 }
 
-
-
-.chat-toggle-container {
-    position: relative;
+/* Keys and Values */
+.key {
+    color: #dfddd5; /* Yellow for keys */
 }
 
-.chat-toggle {
-    background-color: #2D2D2D;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    font-size: 24px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    position: relative;
+/* Link Styling */
+.details-link {
+    color: #7FDBFF; /* Cyan link */
+    text-decoration: none;
+    font-weight: bold;
 }
 
-.chat-toggle:hover {
-    background-color: #444;
-    transform: scale(1.1); /* Subtle zoom effect */
+.details-link:hover {
+    color: #FFFFFF; /* Bright white on hover */
+    text-decoration: underline;
 }
 
-.chat-tooltip {
-    visibility: hidden;
-    opacity: 0;
-    position: absolute;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: #fff;
-    font-size: 12px;
-    padding: 5px 10px;
-    border-radius: 4px;
-    white-space: nowrap;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-    transition: opacity 0.3s ease;
+/* Loading and Error States */
+.terminal-loading {
+    color: #FFDC00; /* Yellow for loading */
+    font-size: 1.2rem;
+    text-align: center;
 }
 
-.chat-toggle:hover .chat-tooltip {
-    visibility: visible;
-    opacity: 1;
+.terminal-error {
+    color: red;
+    font-size: 1.2rem;
+    text-align: center;
 }
 
-.chat-toggle {
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
+/* Separator Between Entries */
+.separator {
+    margin: 10px 0;
+    border-top: 1px dashed rgba(255, 255, 255, 0.2);
 }
 
 
 
 
-html, body {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden; /* Disable horizontal scrolling */
-    width: 100%; /* Ensure body fits within viewport */
-    height: 100%; /* Optional for proper scaling */
-}
 
 
+/* Modal Background */
+.wallet-adapter-modal-wrapper {
+    background-color: rgba(0, 0, 0, 0.8) !important; /* Darker overlay */
+  }
+  
+  /* Modal Container */
+  .wallet-adapter-modal {
+    background-color: #121212 !important; /* Change modal background */
+    border-radius: 12px !important;       /* Add rounded corners */
+    color: #ffffff !important;           /* Change text color */
+    font-family: 'Arial', sans-serif !important; /* Custom font */
+  }
+  
+  /* Close Button */
+  .wallet-adapter-modal-button-close {
+    color: #ffffff !important; /* Change close button color */
+    font-size: 18px !important;
+    opacity: 0.7;
+  }
+  .wallet-adapter-modal-button-close:hover {
+    opacity: 1; /* Brighten on hover */
+  }
+  
+  /* Wallet List Items */
+  .wallet-adapter-modal-list li {
+    background-color: #1e1e1e !important; /* Wallet button background */
+    border: 1px solid #333 !important;    /* Add border */
+    border-radius: 8px !important;        /* Rounded corners */
+    padding: 10px 20px !important;
+    margin: 8px 0 !important;
+    transition: background-color 0.3s ease;
+  }
+  .wallet-adapter-modal-list li:hover {
+    background-color: #292929 !important; /* Slight hover effect */
+  }
+  
+  /* Wallet Name and Status */
+  .wallet-adapter-modal-list li .wallet-adapter-modal-list-item {
+    color: #ffffff !important; /* Wallet name color */
+    font-weight: bold !important;
+    font-size: 12px !important;
 
-/* General Scrollbar Styling */
-::-webkit-scrollbar {
-    width: 8px; /* Slim scrollbar width */
-}
+  }
+  .wallet-adapter-modal-list li .wallet-adapter-modal-list-item[aria-label="Detected"] {
+    color: #4caf50 !important; /* Change "Detected" text color */
+  }
+  
 
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
-    border-radius: 50px; /* Pill-like rounded scrollbar */
-    transition: background-color 0.3s ease, height 0.3s ease; /* Smooth animations */
-}/* General Scrollbar Styling */
-::-webkit-scrollbar {
-    width: 8px; /* Slim scrollbar width */
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgb(31, 25, 31); /* Semi-transparent white */
-    border-radius: 50px; /* Pill-like rounded scrollbar */
-    transition: background-color 0.3s ease, height 0.3s ease; /* Smooth animations */
-}
+  .raffle-image {
+    max-width: 100%;
+    height: auto;
+    margin: 20px 0;
+    border: 1px solid #444;
+    border-radius: 8px;
+  }
+  

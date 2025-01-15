@@ -1,0 +1,387 @@
+use anchor_lang::prelude::*;
+use anchor_lang::system_program::{self, Transfer};
+use sha2::{Digest, Sha256};
+
+// Declare your program ID
+declare_id!("82L7Sf43Kq8g6yktLBquMZ8H2K8x5GHmaZLopTAE6thM");
+
+#[program]
+pub mod raffle_program {
+    use super::*;
+
+    /// Create a new raffle that accepts only SOL for tickets.
+    /// - You can configure whether it's a crypto prize or an off-chain prize.
+    /// - If crypto prize, store how many lamports the winner gets (prize_amount).
+    /// - If off-chain, set `prize_amount = 0` and `prize_type = PrizeType::OffChain`.
+    pub fn initialize_raffle(
+        ctx: Context<InitializeRaffle>,
+        name: String,
+        ticket_price: u64,
+        max_tickets: u64,
+        min_profitability_threshold: u64,
+        raffle_duration: i64,
+        correct_answer: String,
+        admin_wallet: Pubkey,
+        prize_amount: u64,     // The lamports the winner should get if on-chain
+        prize_type: u8,        // 0 => OnChain(Crypto), 1 => OffChain(Physical)
+    ) -> Result<()> {
+        require!(name.len() <= 32, RaffleError::NameTooLong);
+        require!(correct_answer.len() <= 32, RaffleError::AnswerTooLong);
+
+        let raffle = &mut ctx.accounts.raffle;
+
+        // Convert name to fixed-size array
+        let mut name_bytes = [0u8; 32];
+        name_bytes[..name.len()].copy_from_slice(name.as_bytes());
+        raffle.name = name_bytes;
+
+        // Convert correct_answer to fixed-size array
+        let mut answer_bytes = [0u8; 32];
+        answer_bytes[..correct_answer.len()].copy_from_slice(correct_answer.as_bytes());
+        raffle.correct_answer = answer_bytes;
+
+        // Basic fields
+        raffle.ticket_price = ticket_price as u32;
+        raffle.max_tickets = max_tickets as u16;
+        raffle.min_profitability_threshold = min_profitability_threshold;
+        raffle.end_time = Clock::get()?.unix_timestamp + raffle_duration;
+        raffle.flags = 0;
+        raffle.tickets_sold = 0;
+        raffle.winner = Pubkey::default();
+
+        // Escrow and admin
+        raffle.escrow_pda = ctx.accounts.escrow_pda.key();
+        raffle.admin_wallet = admin_wallet;
+
+        // Prize logic
+        raffle.prize_amount = prize_amount;
+        raffle.prize_type = prize_type;
+
+        Ok(())
+    }
+
+    /// Buy a ticket, transferring SOL to the escrow_pda.
+    pub fn buy_ticket(ctx: Context<BuyTicket>, answer: String) -> Result<()> {
+        let raffle = &mut ctx.accounts.raffle;
+        let now = Clock::get()?.unix_timestamp;
+
+        // 1) Check raffle is still open
+        require!(now < raffle.end_time, RaffleError::RaffleHasEnded);
+        require!(raffle.tickets_sold < raffle.max_tickets, RaffleError::RaffleIsFull);
+
+        // 2) Check correctness
+        let is_correct = answer.as_bytes() == raffle.correct_answer;
+
+        // 3) Transfer the ticket price to the escrow
+        {
+            let cpi_accounts = Transfer {
+                from: ctx.accounts.user.to_account_info(),
+                to: ctx.accounts.escrow_pda.to_account_info(),
+            };
+            let cpi_ctx = CpiContext::new(ctx.accounts.system_program.to_account_info(), cpi_accounts);
+            system_program::transfer(cpi_ctx, raffle.ticket_price as u64)?;
+        }
+
+        // 4) Increment count
+        raffle.tickets_sold += 1;
+
+        // 5) Create entry
+        let entry = &mut ctx.accounts.entry;
+        entry.user = ctx.accounts.user.key();
+        entry.flags = if is_correct { CORRECT_ANSWER_FLAG } else { 0 };
+
+        Ok(())
+    }
+
+    /// Perform the draw. If threshold is met:
+    ///  - If prize_type == OnChain => automatically pay the `prize_amount` to winner, remainder to admin.
+    ///  - If prize_type == OffChain => just set winner on-chain, do no payments.
+    pub fn perform_draw(ctx: Context<PerformDraw>) -> Result<()> {
+        let raffle = &mut ctx.accounts.raffle;
+        let now = Clock::get()?.unix_timestamp;
+
+        // 1) Must be ended, not drawn
+        require!(now >= raffle.end_time, RaffleError::RaffleStillOngoing);
+        require!((raffle.flags & IS_DRAWN_FLAG) == 0, RaffleError::WinnerAlreadyDrawn);
+
+        // 2) Count correct entries
+        let total_correct_entries = ctx.remaining_accounts.len();
+        require!(total_correct_entries > 0, RaffleError::NoValidEntries);
+
+        // 3) Basic pseudo-randomness from slot
+        let seed_bytes = Clock::get()?.slot.to_le_bytes();
+        let mut hasher = Sha256::new();
+        hasher.update(seed_bytes);
+        let random_seed = hasher.finalize();
+
+        let random_slice: [u8; 8] = random_seed[..8].try_into()
+            .map_err(|_| RaffleError::InvalidRandomness)?;
+        let random_value = u64::from_le_bytes(random_slice);
+
+        // 4) Pick winner
+        let winner_index = (random_value % (total_correct_entries as u64)) as usize;
+        let winner_account_info = &ctx.remaining_accounts[winner_index];
+        raffle.winner = *winner_account_info.key;
+        raffle.flags |= IS_DRAWN_FLAG;
+
+        // 5) Check threshold
+        let total_raised = (raffle.tickets_sold as u64) * (raffle.ticket_price as u64);
+        if total_raised < raffle.min_profitability_threshold {
+            // Not enough => let the admin call `refund_participants`
+            return Ok(());
+        }
+
+        // 6) If threshold is met, pay out if it's an on-chain (crypto) prize.
+        if raffle.prize_type == PrizeType::OnChain as u8 {
+            // Ensure the escrow actually has enough for the prize.
+            require!(
+                total_raised >= raffle.prize_amount,
+                RaffleError::InsufficientFundsForPrize
+            );
+
+            // 6a) Transfer the prize to the winner
+            let cpi_accounts_prize = Transfer {
+                from: ctx.accounts.escrow_pda.to_account_info(),
+                to: winner_account_info.clone(),
+            };
+            let cpi_ctx_prize = CpiContext::new(ctx.accounts.system_program.to_account_info(), cpi_accounts_prize);
+            system_program::transfer(cpi_ctx_prize, raffle.prize_amount)?;
+
+            // 6b) Transfer leftover (profit) to admin
+            let leftover = total_raised - raffle.prize_amount;
+            if leftover > 0 {
+                let cpi_accounts_admin = Transfer {
+                    from: ctx.accounts.escrow_pda.to_account_info(),
+                    to: ctx.accounts.admin_wallet.to_account_info(),
+                };
+                let cpi_ctx_admin = CpiContext::new(ctx.accounts.system_program.to_account_info(), cpi_accounts_admin);
+                system_program::transfer(cpi_ctx_admin, leftover)?;
+            }
+        } else {
+            // Off-chain: no funds distributed, you do IRL fulfillment
+            // The raffle state now has `winner` set
+        }
+
+        Ok(())
+    }
+
+    /// Extend the raffle if threshold not met and no draw yet, or not extended yet, etc.
+    pub fn extend_raffle(ctx: Context<ExtendRaffle>, extension_duration: i64) -> Result<()> {
+        let raffle = &mut ctx.accounts.raffle;
+        let now = Clock::get()?.unix_timestamp;
+
+        require!(now >= raffle.end_time, RaffleError::RaffleStillOngoing);
+        require!((raffle.flags & IS_DRAWN_FLAG) == 0, RaffleError::CannotExtendRaffle);
+        require!((raffle.flags & IS_EXTENDED_FLAG) == 0, RaffleError::CannotExtendRaffle);
+
+        let total_raised = (raffle.tickets_sold as u64) * (raffle.ticket_price as u64);
+        require!(total_raised < raffle.min_profitability_threshold, RaffleError::ThresholdMet);
+
+        raffle.end_time += extension_duration;
+        raffle.flags |= IS_EXTENDED_FLAG;
+
+        Ok(())
+    }
+
+    /// Refund if threshold not met after extension.
+    /// A real approach: you'd iterate over each `Entry` and do separate transactions or CPIs
+    /// that send each user back their ticket_price. This snippet is just a stub.
+    pub fn refund_participants(ctx: Context<RefundParticipants>) -> Result<()> {
+        let raffle = &mut ctx.accounts.raffle;
+        let now = Clock::get()?.unix_timestamp;
+
+        require!(now >= raffle.end_time, RaffleError::RaffleStillOngoing);
+
+        let total_raised = (raffle.tickets_sold as u64) * (raffle.ticket_price as u64);
+        require!(total_raised < raffle.min_profitability_threshold, RaffleError::ThresholdMet);
+
+        // Mark as drawn to finalize
+        raffle.flags |= IS_DRAWN_FLAG;
+
+        // Refund logic not fully shown here.
+        // Typically you'd call 'transfer' from escrow to each participant.
+
+        Ok(())
+    }
+}
+
+// -------------------------------------------------
+// CONSTANTS / ENUMS
+// -------------------------------------------------
+
+const CORRECT_ANSWER_FLAG: u8 = 0b00000001;
+const IS_DRAWN_FLAG: u8 = 0b00000001;
+const IS_EXTENDED_FLAG: u8 = 0b00000010;
+
+/// For raffle.prize_type
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub enum PrizeType {
+    OnChain = 0,  // Automatic lamports payout
+    OffChain = 1, // Physical or gift card, etc. done IRL
+}
+
+// -------------------------------------------------
+// ACCOUNTS
+// -------------------------------------------------
+
+#[derive(Accounts)]
+#[instruction(name: String, correct_answer: String)]
+pub struct InitializeRaffle<'info> {
+    #[account(
+        init,
+        payer = admin,
+        space = 8 + 256, // Adjust as needed
+        seeds = [b"raffle", admin.key().as_ref(), name.as_bytes(), correct_answer.as_bytes()],
+        bump
+    )]
+    pub raffle: Account<'info, Raffle>,
+
+    #[account(
+        init,
+        payer = admin,
+        space = 8, // minimal for a system account
+        seeds = [b"escrow", admin.key().as_ref(), name.as_bytes(), correct_answer.as_bytes()],
+        bump
+    )]
+    pub escrow_pda: SystemAccount<'info>,
+
+    #[account(mut)]
+    pub admin: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct BuyTicket<'info> {
+    #[account(
+        mut,
+        has_one = escrow_pda @ RaffleError::InvalidEscrow
+    )]
+    pub raffle: Account<'info, Raffle>,
+
+    #[account(mut)]
+    pub escrow_pda: SystemAccount<'info>,
+
+    #[account(
+        init,
+        payer = user,
+        space = 8 + 41,
+        seeds = [b"entry", user.key().as_ref(), raffle.key().as_ref()],
+        bump
+    )]
+    pub entry: Account<'info, Entry>,
+
+    #[account(mut)]
+    pub user: Signer<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct PerformDraw<'info> {
+    #[account(
+        mut,
+        has_one = escrow_pda @ RaffleError::InvalidEscrow,
+        constraint = raffle.admin_wallet == admin_wallet.key() @ RaffleError::NotAuthorized
+    )]
+    pub raffle: Account<'info, Raffle>,
+
+    #[account(mut)]
+    pub escrow_pda: SystemAccount<'info>,
+
+    /// The admin wallet for leftover profits
+    #[account(mut)]
+    pub admin_wallet: SystemAccount<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct ExtendRaffle<'info> {
+    #[account(mut)]
+    pub raffle: Account<'info, Raffle>,
+    #[account(mut)]
+    pub user: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct RefundParticipants<'info> {
+    #[account(mut)]
+    pub raffle: Account<'info, Raffle>,
+}
+
+// -------------------------------------------------
+// DATA STRUCTURES
+// -------------------------------------------------
+
+#[account]
+pub struct Raffle {
+    pub name: [u8; 32],
+    pub ticket_price: u32,
+    pub max_tickets: u16,
+    pub tickets_sold: u16,
+    pub min_profitability_threshold: u64,
+    pub end_time: i64,
+    pub flags: u8,
+    pub correct_answer: [u8; 32],
+    pub winner: Pubkey,
+
+    // Escrow & Admin info
+    pub escrow_pda: Pubkey,
+    pub admin_wallet: Pubkey,
+
+    // Prize details
+    pub prize_amount: u64, // If OnChain, how many lamports to pay
+    pub prize_type: u8,    // 0 => OnChain, 1 => OffChain
+}
+
+#[account]
+pub struct Entry {
+    pub user: Pubkey,
+    pub flags: u8,
+}
+
+// -------------------------------------------------
+// ERRORS
+// -------------------------------------------------
+
+#[error_code]
+pub enum RaffleError {
+    #[msg("Not authorized.")]
+    NotAuthorized,
+
+    #[msg("Invalid escrow account.")]
+    InvalidEscrow,
+
+    #[msg("The raffle has already ended.")]
+    RaffleHasEnded,
+
+    #[msg("The raffle is full.")]
+    RaffleIsFull,
+
+    #[msg("The raffle is still ongoing.")]
+    RaffleStillOngoing,
+
+    #[msg("The winner has already been drawn.")]
+    WinnerAlreadyDrawn,
+
+    #[msg("There are no valid entries for the raffle.")]
+    NoValidEntries,
+
+    #[msg("Invalid randomness generated.")]
+    InvalidRandomness,
+
+    #[msg("Cannot extend the raffle.")]
+    CannotExtendRaffle,
+
+    #[msg("The profitability threshold has been met.")]
+    ThresholdMet,
+
+    #[msg("Insufficient funds in escrow for the prize.")]
+    InsufficientFundsForPrize,
+
+    #[msg("Name is too long.")]
+    NameTooLong,
+
+    #[msg("Answer is too long.")]
+    AnswerTooLong,
+}
