@@ -8,24 +8,23 @@ const RaffleList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadRaffles = async () => {
-    try {
-      const activeRaffles = await fetchActiveRaffles();
-      setRaffles(activeRaffles || []);
-    } catch (err) {
-      setError("Failed to fetch raffles. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
+
+  
 
   useEffect(() => {
+    const loadRaffles = async () => {
+      try {
+        const activeRaffles = await fetchActiveRaffles();
+        setRaffles(activeRaffles || []);
+      } catch (err) {
+        setError("Failed to fetch raffles. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadRaffles();
   }, []);
-
-  const handlePurchaseUpdate = () => {
-    loadRaffles(); // Refresh raffles after a ticket purchase
-  };
 
   if (loading) return <p className="terminal-loading">> Loading active raffles...</p>;
   if (error) return <p className="terminal-error">> {error}</p>;
@@ -40,7 +39,12 @@ const RaffleList = () => {
               <p>> <span className="key">Raffle ID:</span> {raffle.raffleId}</p>
               <p>> <span className="key">Entry Fee:</span> {raffle.entryFee} SOL</p>
               <p>> <span className="key">Prize Amount:</span> {raffle.prizeAmount} SOL</p>
-              <p>> <span className="key">Participants:</span> {raffle.tickets?.length || 0}</p>
+              <p>> <span className="key">Participants:</span> {raffle.participantsCorrect.length + raffle.participantsIncorrect.length}</p>
+              {raffle.imageUrl && (
+                <p>> <span className="key">Image:</span>
+                  <img src={raffle.imageUrl} alt={`Raffle ${raffle.raffleId}`} className="raffle-image" />
+                </p>
+              )}
               <Link to={`/raffles/${raffle._id}`} className="details-link">
                 > View Details
               </Link>

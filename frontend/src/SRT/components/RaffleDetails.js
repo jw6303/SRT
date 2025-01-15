@@ -1,137 +1,162 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { fetchRaffleDetails, purchaseTicket } from "../../api"; // Updated API import
+import { fetchRaffleDetails, purchaseTicket } from "../../api";
 import "./RaffleDetails.css";
 
 const RaffleDetails = () => {
   const { raffleId } = useParams();
   const [raffle, setRaffle] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [log, setLog] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [typedLog, setTypedLog] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState("");
-  const [ticketPurchased, setTicketPurchased] = useState(false);
+  const [ticketCount, setTicketCount] = useState(1);
+  const [maxTickets, setMaxTickets] = useState(1);
+  const [progress, setProgress] = useState(false);
+  const logContainerRef = useRef(null);
 
+  // Simulated CLI effect for logs
+  useEffect(() => {
+    let logIndex = 0;
+
+    const typeLog = () => {
+      if (logIndex < logs.length) {
+        const currentLog = logs[logIndex];
+        setTypedLog((prev) => prev + currentLog + "\n");
+        logIndex++;
+        setTimeout(typeLog, 50); // Typing speed
+      }
+    };
+
+    typeLog();
+  }, [logs]);
+
+  // Fetch raffle details with "data dump" simulation
   useEffect(() => {
     const loadRaffleDetails = async () => {
-      if (!raffleId) {
-        setLog((prev) => [...prev, ">> ERROR: Invalid raffle ID."]);
-        setLoading(false);
-        return;
-      }
-
+      setLogs((prev) => [...prev, ">> Fetching raffle details..."]);
       try {
         const data = await fetchRaffleDetails(raffleId);
         setRaffle(data);
-        setLog((prev) => [
-          ...prev,
-          `>> Loaded raffle details for ID: ${data.raffleId}`,
-        ]);
-      } catch (err) {
-        setLog((prev) => [
-          ...prev,
-          ">> ERROR: Failed to fetch raffle details. Please try again.",
-        ]);
-      } finally {
-        setLoading(false);
+
+        const availableTickets = data.maxParticipants - data.ticketsSold;
+        setMaxTickets(Math.min(availableTickets, 10));
+
+        const raffleInfoDump = `
+        >>> Raffle Details Loaded
+        Raffle ID: ${data.raffleId}
+        Prize Amount: ${data.prizeAmount} SOL
+        Entry Fee: ${data.entryFee} SOL
+        Tickets Sold: ${data.ticketsSold} / ${data.maxParticipants}
+        Status: ${data.status}
+        Prize Details: ${data.prizeDetails}
+        >>> Data Complete.
+        `;
+        setTypedLog((prev) => prev + raffleInfoDump);
+      } catch (error) {
+        setLogs((prev) => [...prev, ">> [ERROR] Failed to fetch raffle details."]);
       }
     };
 
     loadRaffleDetails();
   }, [raffleId]);
 
+  // Handle ticket purchase
   const handleBuyTicket = async () => {
-    if (!selectedAnswer) {
-      setLog((prev) => [
-        ...prev,
-        ">> ERROR: No answer selected. Please select an answer before buying a ticket.",
-      ]);
-      return;
-    }
+    if (progress) return;
+    setProgress(true);
+    setLogs((prev) => [...prev, ">> Processing ticket purchase..."]);
 
     try {
-      const response = await purchaseTicket(raffleId, {
+      await purchaseTicket(raffleId, {
         participantId: "dynamic-participant-id",
-        name: "Dynamic User",
-        pubkey: "dynamic-public-key",
+        ticketCount,
       });
-      setLog((prev) => [...prev, `>> SUCCESS: ${response.message}`]);
-      setTicketPurchased(true);
-    } catch (err) {
-      setLog((prev) => [
-        ...prev,
-        ">> ERROR: Failed to purchase ticket. Please try again.",
-      ]);
+      setLogs((prev) => [...prev, `>> [SUCCESS] Purchased ${ticketCount} ticket(s)!`]);
+    } catch (error) {
+      setLogs((prev) => [...prev, ">> [ERROR] Ticket purchase failed."]);
+    } finally {
+      setProgress(false);
     }
   };
 
-  if (loading) return <p className="terminal-log">>> Loading raffle details...</p>;
+  // Auto-scroll log container
+  useEffect(() => {
+    if (logContainerRef.current) {
+      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    }
+  }, [typedLog]);
 
   return (
-    <div className="raffle-details">
-      <h1 className="terminal-header">Raffle Details</h1>
-      <div className="details-container">
+    <div className="raffle-details-container">
+      <div className="raffle-columns">
+        {/* Left: Raffle Info */}
         <div className="raffle-info">
-          <p>> Raffle ID: {raffle.raffleId}</p>
-          <p>> Prize Amount: {raffle.prizeAmount} SOL</p>
-          <p>> Entry Fee: {raffle.entryFee} SOL</p>
-          <p>> Start Time: {new Date(raffle.startTime).toLocaleString()}</p>
-          <p>> End Time: {new Date(raffle.endTime).toLocaleString()}</p>
-          <p>> Status: {raffle.status}</p>
-          <p>> Created At: {new Date(raffle.createdAt).toLocaleString()}</p>
-          <p>> On-Chain Status: {raffle.isOnChain ? "Yes" : "No"}</p>
-          <p>> Prize Details: {raffle.prizeDetails}</p>
-          <p>> Total Participants: {(raffle.participants || []).length}</p>
+          <pre>
+            <span className="cli-keyword">Raffle Details</span>
+            {raffle ? (
+              <>
+                {"\n"}ID: {raffle.raffleId}
+                {"\n"}Prize: {raffle.prizeAmount} SOL
+                {"\n"}Entry Fee: {raffle.entryFee} SOL
+                {"\n"}Tickets: {raffle.ticketsSold} / {raffle.maxParticipants}
+                {"\n"}Status: {raffle.status}
+              </>
+            ) : (
+              "Loading..."
+            )}
+          </pre>
+          {raffle?.imageUrl && (
+            <img src={raffle.imageUrl} alt="Raffle" className="raffle-image" />
+          )}
         </div>
-        {raffle.imageUrl && (
-          <div className="raffle-image-container">
-            <img
-              src={raffle.imageUrl}
-              alt="Raffle"
-              className="raffle-image"
-            />
-          </div>
-        )}
+
+        {/* Right: Logs */}
+        <div className="raffle-logs" ref={logContainerRef}>
+          <pre>{typedLog}</pre>
+        </div>
       </div>
-      <div className="terminal-log">
-        <p>> Question: {raffle.question}</p>
-        <div className="cli-options">
-          {raffle &&
-            raffle.questionOptions.map((option, index) => (
-              <label key={index} className="cli-option">
+
+      {/* Bottom: Question and Ticket Purchase */}
+      <div className="raffle-question-purchase">
+        <div>
+          <pre>
+            <span className="cli-keyword">Question</span>
+            {"\n"}{raffle?.question || "Loading..."}
+          </pre>
+          <div className="answer-options">
+            {raffle?.questionOptions?.map((option, index) => (
+              <label key={index} className="answer-option">
                 <input
                   type="radio"
                   name="answer"
                   value={option}
-                  checked={selectedAnswer === option}
-                  onChange={(e) => setSelectedAnswer(e.target.value)}
+                  onChange={() => setSelectedAnswer(option)}
                 />
-                <span>{option}</span>
+                {option}
               </label>
             ))}
+          </div>
+        </div>
+
+        <div>
+          <pre>
+            <span className="cli-keyword">Select Tickets</span>
+          </pre>
+          <select
+            value={ticketCount}
+            onChange={(e) => setTicketCount(e.target.value)}
+          >
+            {[...Array(maxTickets)].map((_, i) => (
+              <option key={i}>{i + 1}</option>
+            ))}
+          </select>
+          <button onClick={handleBuyTicket} disabled={progress}>
+            {progress ? "Processing..." : "Buy Tickets"}
+          </button>
         </div>
       </div>
-      <button
-        onClick={handleBuyTicket}
-        disabled={ticketPurchased}
-        className={`buy-ticket-btn ${ticketPurchased ? "disabled" : ""}`}
-      >
-        {ticketPurchased ? ">> Ticket Purchased" : ">> Buy Ticket"}
-      </button>
-      <div className="navigation-links">
-        <Link to="/" className="back-link">
-          >> Back to Active Raffles
-        </Link>
-      </div>
-      <div className="cli-log">
-        {log.map((entry, index) => (
-          <p
-            key={index}
-            className={entry.includes("ERROR") ? "error-log" : "success-log"}
-          >
-            {entry}
-          </p>
-        ))}
-      </div>
+
+      <Link to="/" className="back-link">Back to Raffles</Link>
     </div>
   );
 };
