@@ -33,3 +33,5 @@
 2025-01-16T16:52:36.698Z [INFO] Server is running on http://localhost:5000
 2025-01-16T16:52:36.698Z [INFO] API available at http://localhost:5000/api/raffles
 2025-01-16T16:52:36.698Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-16T16:59:18.504Z [INFO] Connecting to MongoDB...
+2025-01-16T16:59:18.538Z [INFO] Successfully connected to MongoDB!
