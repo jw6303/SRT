@@ -1,0 +1,197 @@
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { Canvas } from "@react-three/fiber"; // Three.js integration
+import { fetchRaffleDetails, purchaseTicket } from "../../api";
+import PrizeSign from "../3D/prizeSign"; // 3D PrizeSign Component
+import "./RaffleDetails.css";
+
+const RaffleDetails = () => {
+  const { raffleId } = useParams();
+  const [raffle, setRaffle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [ticketCount, setTicketCount] = useState(1);
+  const [maxTickets, setMaxTickets] = useState(1);
+  const [progress, setProgress] = useState(false);
+  const [logs, setLogs] = useState([]);
+  const [lastPurchaseTime, setLastPurchaseTime] = useState(null);
+  const [countdown, setCountdown] = useState(0);
+
+  useEffect(() => {
+    const loadRaffleDetails = async () => {
+      setLogs((prevLogs) => [...prevLogs, ">> Loading raffle details..."]);
+      if (!raffleId) {
+        setError("Invalid raffle ID.");
+        setLogs((prevLogs) => [
+          ...prevLogs,
+          ">> [ERROR] Invalid raffle ID provided!",
+        ]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await fetchRaffleDetails(raffleId);
+        setRaffle(data);
+
+        const availableTickets = data.maxParticipants - (data.ticketsSold || 0);
+        const dynamicMaxTickets = Math.min(
+          availableTickets,
+          Math.min(data.maxParticipants * 0.1, 10)
+        );
+        setMaxTickets(dynamicMaxTickets);
+
+        setLogs((prevLogs) => [...prevLogs, ">> [SUCCESS] Raffle details loaded."]);
+      } catch (err) {
+        setError("Failed to fetch raffle details.");
+        setLogs((prevLogs) => [...prevLogs, ">> [ERROR] Could not load raffle details."]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRaffleDetails();
+  }, [raffleId]);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
+
+  const handleBuyTicket = async () => {
+    if (countdown > 0) {
+      setLogs((prevLogs) => [
+        ...prevLogs,
+        `>> [WARNING] Rate limit reached, try again in ${countdown} seconds.`,
+      ]);
+      return;
+    }
+
+    if (!selectedAnswer) {
+      setLogs((prevLogs) => [...prevLogs, ">> [ERROR] No answer selected!"]);
+      return;
+    }
+
+    setProgress(true);
+    setLogs((prevLogs) => [...prevLogs, ">> Processing ticket purchase..."]);
+
+    try {
+      const response = await purchaseTicket(raffleId, {
+        participantId: "dynamic-participant-id",
+        pubkey: "dynamic-public-key",
+        ticketCount,
+      });
+
+      setLogs((prevLogs) => [
+        ...prevLogs,
+        `>> [SUCCESS] Purchased ${ticketCount} ticket(s).`,
+      ]);
+      setLastPurchaseTime(Date.now());
+      setCountdown(120); // Start the cooldown timer (2 minutes)
+    } catch (err) {
+      setLogs((prevLogs) => [...prevLogs, ">> [ERROR] Ticket purchase failed."]);
+    } finally {
+      setProgress(false);
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="terminal-log">
+        <p>> Loading raffle details...</p>
+        <p>> Please wait...</p>
+      </div>
+    );
+
+  return (
+    <div className="raffle-details">
+      <h1 className="terminal-header">Raffle Details</h1>
+      <div className="raffle-overview">
+        <div className="raffle-info">
+          <p>> <span className="raffle-key">Raffle ID:</span> {raffle.raffleId}</p>
+          <p>> <span className="raffle-key">Prize Amount:</span> {raffle.prizeAmount} SOL</p>
+          <p>> <span className="raffle-key">Entry Fee:</span> {raffle.entryFee} SOL</p>
+          <p>> <span className="raffle-key">Tickets Sold:</span> {raffle.ticketsSold || 0} / {raffle.maxParticipants}</p>
+          <p>> <span className="raffle-key">Status:</span> {raffle.ticketsSold >= raffle.maxParticipants ? "Finished" : "Active"}</p>
+          <p>> <span className="raffle-key">Created At:</span> {new Date(raffle.createdAt.$date).toLocaleString()}</p>
+          <p>> <span className="raffle-key">Prize Details:</span> {raffle.prizeDetails}</p>
+        </div>
+        <div className="raffle-image">
+          <img src={raffle.imageUrl} alt={`Raffle ${raffle.raffleId}`} />
+        </div>
+      </div>
+
+      <div className="raffle-question">
+        <p>> <span className="question">Question:</span> {raffle.question}</p>
+        <div className="answer-options">
+          {raffle.questionOptions.map((option, index) => (
+            <label key={index} className="answer-option">
+              <input
+                type="radio"
+                name="answer"
+                value={option}
+                checked={selectedAnswer === option}
+                onChange={(e) => setSelectedAnswer(e.target.value)}
+              />
+              {option}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="ticket-selection">
+        <p>> Select Tickets:</p>
+        <select
+          value={ticketCount}
+          onChange={(e) => setTicketCount(parseInt(e.target.value))}
+          disabled={progress}
+        >
+          {Array.from({ length: maxTickets }, (_, i) => (
+            <option key={i} value={i + 1}>
+              {i + 1}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <button
+        onClick={handleBuyTicket}
+        disabled={progress || countdown > 0}
+        className={`buy-ticket-btn ${progress || countdown > 0 ? "disabled" : ""}`}
+      >
+        {progress
+          ? "Processing..."
+          : countdown > 0
+          ? `Locked (${countdown}s)`
+          : "Buy Tickets"}
+      </button>
+
+      <div className="navigation">
+        <Link to="/" className="back-link">Back to Active Raffles</Link>
+      </div>
+
+      {/* Render the 3D prize sign */}
+      <div className="three-scene">
+        <Canvas>
+          <ambientLight />
+          <PrizeSign prizeAmount={raffle.prizeAmount} />
+        </Canvas>
+      </div>
+
+      <div className="terminal-log">
+        {logs.map((log, index) => (
+          <p key={index} className={log.includes("[ERROR]") ? "log-error" : log.includes("[SUCCESS]") ? "log-success" : log.includes("[WARNING]") ? "log-warning" : "log-info"}>
+            {log}
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default RaffleDetails;

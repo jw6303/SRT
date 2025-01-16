@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { MongoClient } = require("mongodb");
+const logger = require("./src/utils/logger"); // Import Winston logger
 require("dotenv").config();
 
 const app = express();
@@ -20,47 +21,54 @@ app.use(express.static("./src/dashboard/public"));
 
 // MongoDB Connection
 const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/admin";
-let db; // Store the MongoDB connection here
+const client = new MongoClient(uri);
+let db;
 
 async function connectToDatabase() {
-  const client = new MongoClient(uri, { useUnifiedTopology: true });
   try {
-    console.log("[DEBUG] Attempting to connect to MongoDB...");
+    logger.info("Connecting to MongoDB...");
     await client.connect();
-    console.log("[DEBUG] Successfully connected to MongoDB!");
-    db = client.db(); // Use the default database
+    logger.info("Successfully connected to MongoDB!");
+    db = client.db(); // Use default database
   } catch (err) {
-    console.error("[ERROR] Failed to connect to MongoDB:", err);
-    process.exit(1); // Exit if the database connection fails
+    logger.error(`Failed to connect to MongoDB: ${err.message}`);
+    process.exit(1);
   }
 }
-
-// Middleware to Attach Database to Requests
-app.use((req, res, next) => {
-  if (!db) {
-    console.error("[ERROR] Database connection not established.");
-    return res.status(500).json({ error: "Database not connected." });
-  }
-  req.db = db; // Attach the database connection to the request object
-  next();
-});
 
 // Base Route
 app.get("/", (req, res) => {
   res.json({ message: "Backend is running and connected to MongoDB!" });
+  logger.info("Base route accessed.");
 });
 
 // Import and Use API Routes
 const raffleRoutes = require("./src/routes/raffle.routes");
-app.use("/api/raffles", raffleRoutes);
+app.use("/api/raffles", (req, res, next) => {
+  if (!db) {
+    logger.error("Database not connected!");
+    return res.status(500).json({ error: "Database connection not established." });
+  }
+  logger.debug("Middleware triggered for /api/raffles route.");
+  req.db = db; // Attach MongoDB connection to the request object
+  next();
+}, raffleRoutes);
 
 // Import and Use Dashboard Routes
 const dashboardRoutes = require("./src/dashboard/dashboard.routes");
-app.use("/dashboard", dashboardRoutes);
+app.use("/dashboard", (req, res, next) => {
+  if (!db) {
+    logger.error("Database not connected!");
+    return res.status(500).send("Database connection not established.");
+  }
+  logger.debug("Middleware triggered for /dashboard route.");
+  req.db = db; // Attach MongoDB connection to the request object
+  next();
+}, dashboardRoutes);
 
 // Fallback Route
 app.use((req, res) => {
-  console.error(`[DEBUG] 404 Error: Route not found: ${req.method} ${req.url}`);
+  logger.warn(`404 Error: Route not found: ${req.method} ${req.url}`);
   res.status(404).json({ error: "Route not found" });
 });
 
@@ -68,11 +76,11 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {
-  await connectToDatabase(); // Initialize the database connection
+  await connectToDatabase();
   app.listen(PORT, () => {
-    console.log(`[DEBUG] Server is running on http://localhost:${PORT}`);
-    console.log(`[DEBUG] API available at http://localhost:${PORT}/api/raffles`);
-    console.log(`[DEBUG] Admin Dashboard available at http://localhost:${PORT}/dashboard`);
+    logger.info(`Server is running on http://localhost:${PORT}`);
+    logger.info(`API available at http://localhost:${PORT}/api/raffles`);
+    logger.info(`Admin Dashboard available at http://localhost:${PORT}/dashboard`);
   });
 }
 
