@@ -40,13 +40,9 @@ const RaffleList = () => {
               <p>> <span className="key">Entry Fee:</span> {raffle.entryFee} SOL</p>
               <p>> <span className="key">Prize Amount:</span> {raffle.prizeAmount} SOL</p>
               <p>> <span className="key">Participants:</span> {raffle.participantsCorrect.length + raffle.participantsIncorrect.length}</p>
-              {raffle.imageUrl && (
-                <p>> <span className="key">Image:</span>
-                  <img src={raffle.imageUrl} alt={`Raffle ${raffle.raffleId}`} className="raffle-image" />
-                </p>
-              )}
+              
               <Link to={`/raffles/${raffle._id}`} className="details-link">
-                > View Details
+                View Details
               </Link>
             </div>
           ))

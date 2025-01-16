@@ -1,0 +1,36 @@
+/* General Styles for Log Messages */
+.log-message {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 5px 0;
+    white-space: pre-wrap;
+  }
+  
+  /* Style for Success Messages */
+  .log-message.success {
+    color: lime; /* Bright green */
+    font-weight: bold;
+  }
+  
+  /* Style for Error Messages */
+  .log-message.error {
+    color: red;
+    font-weight: bold;
+  }
+  
+  /* Style for Warning Messages */
+  .log-message.warning {
+    color: yellow;
+  }
+  
+  /* Style for Info Messages */
+  .log-message.info {
+    color: cyan;
+  }
+  
+  /* Style for Default Messages */
+  .log-message.default {
+    color: white;
+  }
+  
