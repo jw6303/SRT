@@ -35,3 +35,20 @@
 2025-01-16T16:52:36.698Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
 2025-01-16T16:59:18.504Z [INFO] Connecting to MongoDB...
 2025-01-16T16:59:18.538Z [INFO] Successfully connected to MongoDB!
+2025-01-16T17:00:07.991Z [INFO] Connecting to MongoDB...
+2025-01-16T17:00:08.026Z [INFO] Successfully connected to MongoDB!
+2025-01-16T17:00:08.029Z [INFO] Server is running on http://localhost:5000
+2025-01-16T17:00:08.029Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-16T17:00:08.030Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-16T17:00:54.012Z [INFO] Connecting to MongoDB...
+2025-01-16T17:00:54.044Z [INFO] Successfully connected to MongoDB!
+2025-01-16T17:00:54.046Z [INFO] Server is running on http://localhost:5000
+2025-01-16T17:00:54.046Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-16T17:00:54.046Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-16T17:02:09.867Z [INFO] Base route accessed.
+2025-01-16T17:40:28.097Z [INFO] Connecting to MongoDB...
+2025-01-16T17:40:28.131Z [INFO] Successfully connected to MongoDB!
+2025-01-16T17:40:28.133Z [INFO] Server is running on http://localhost:5000
+2025-01-16T17:40:28.133Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-16T17:40:28.134Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-16T17:40:34.199Z [INFO] Base route accessed.
