@@ -13,3 +13,23 @@
 2025-01-16T16:37:50.460Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
 2025-01-16T16:37:56.188Z [INFO] Base route accessed.
 2025-01-16T16:38:05.264Z [WARN] 404 Error: Route not found: GET /css/styles.css
+2025-01-16T16:42:48.617Z [WARN] 404 Error: Route not found: GET /css/styles.css
+2025-01-16T16:44:46.016Z [WARN] 404 Error: Route not found: GET /css/styles.css
+2025-01-16T16:47:14.458Z [INFO] Connecting to MongoDB...
+2025-01-16T16:47:14.490Z [INFO] Successfully connected to MongoDB!
+2025-01-16T16:47:14.492Z [INFO] Server is running on http://localhost:5000
+2025-01-16T16:47:14.492Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-16T16:47:14.492Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-16T16:47:17.168Z [INFO] Base route accessed.
+2025-01-16T16:47:25.289Z [WARN] 404 Error: Route not found: GET /css/styles.css
+2025-01-16T16:49:54.732Z [INFO] Connecting to MongoDB...
+2025-01-16T16:49:54.763Z [INFO] Successfully connected to MongoDB!
+2025-01-16T16:49:54.766Z [INFO] Server is running on http://localhost:5000
+2025-01-16T16:49:54.766Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-16T16:49:54.766Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-16T16:49:59.802Z [WARN] 404 Error: Route not found: GET /dashboard/css/styles.css
+2025-01-16T16:52:36.665Z [INFO] Connecting to MongoDB...
+2025-01-16T16:52:36.696Z [INFO] Successfully connected to MongoDB!
+2025-01-16T16:52:36.698Z [INFO] Server is running on http://localhost:5000
+2025-01-16T16:52:36.698Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-16T16:52:36.698Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
