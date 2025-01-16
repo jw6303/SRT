@@ -20,20 +20,30 @@ app.use(express.static("./src/dashboard/public"));
 
 // MongoDB Connection
 const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/admin";
-const client = new MongoClient(uri);
-let db;
+let db; // Store the MongoDB connection here
 
 async function connectToDatabase() {
+  const client = new MongoClient(uri, { useUnifiedTopology: true });
   try {
     console.log("[DEBUG] Attempting to connect to MongoDB...");
     await client.connect();
     console.log("[DEBUG] Successfully connected to MongoDB!");
-    db = client.db(); // Use default database
+    db = client.db(); // Use the default database
   } catch (err) {
     console.error("[ERROR] Failed to connect to MongoDB:", err);
-    process.exit(1);
+    process.exit(1); // Exit if the database connection fails
   }
 }
+
+// Middleware to Attach Database to Requests
+app.use((req, res, next) => {
+  if (!db) {
+    console.error("[ERROR] Database connection not established.");
+    return res.status(500).json({ error: "Database not connected." });
+  }
+  req.db = db; // Attach the database connection to the request object
+  next();
+});
 
 // Base Route
 app.get("/", (req, res) => {
@@ -42,27 +52,11 @@ app.get("/", (req, res) => {
 
 // Import and Use API Routes
 const raffleRoutes = require("./src/routes/raffle.routes");
-app.use("/api/raffles", (req, res, next) => {
-  if (!db) {
-    console.error("[ERROR] Database not connected!");
-    return res.status(500).json({ error: "Database connection not established." });
-  }
-  console.log("[DEBUG] Middleware triggered for /api/raffles route.");
-  req.db = db; // Attach MongoDB connection to the request object
-  next();
-}, raffleRoutes);
+app.use("/api/raffles", raffleRoutes);
 
 // Import and Use Dashboard Routes
 const dashboardRoutes = require("./src/dashboard/dashboard.routes");
-app.use("/dashboard", (req, res, next) => {
-  if (!db) {
-    console.error("[ERROR] Database not connected!");
-    return res.status(500).send("Database connection not established.");
-  }
-  console.log("[DEBUG] Middleware triggered for /dashboard route.");
-  req.db = db; // Attach MongoDB connection to the request object
-  next();
-}, dashboardRoutes);
+app.use("/dashboard", dashboardRoutes);
 
 // Fallback Route
 app.use((req, res) => {
@@ -74,7 +68,7 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 
 async function startServer() {
-  await connectToDatabase();
+  await connectToDatabase(); // Initialize the database connection
   app.listen(PORT, () => {
     console.log(`[DEBUG] Server is running on http://localhost:${PORT}`);
     console.log(`[DEBUG] API available at http://localhost:${PORT}/api/raffles`);

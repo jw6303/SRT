@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 
 // MongoDB Connection URI
-const uri = 'mongodb://burntwithsalt:Passwordforthis2035!@127.0.0.1:27017/admin';
+const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/admin";
 
 // Create a new MongoClient
 const client = new MongoClient(uri);
