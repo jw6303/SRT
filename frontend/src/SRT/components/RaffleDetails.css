@@ -1,4 +1,4 @@
-/* Raffle Details Container */
+/* General Raffle Details Container */
 .raffle-details-container {
   display: flex;
   flex-direction: column;
@@ -7,163 +7,125 @@
   margin: auto;
   padding: 20px;
   background-color: #000; /* Terminal black */
-  color: #e6e8e9; /* Light gray/cyan */
-  font-family: "Courier New", Courier, monospace;
+  color: #e6e8e9; /* Light gray */
+  font-family: "Courier New", Courier, monospace; /* CLI-like font */
 }
 
-/* Double Column Layout: Raffle Info and Logs */
+/* Raffle Columns */
 .raffle-columns {
   display: grid;
-  grid-template-columns: 1fr 1.5fr; /* Raffle info smaller, log panel larger */
+  grid-template-columns: 1fr 1.5fr; /* Info column smaller than logs */
   gap: 20px;
   width: 100%;
 }
 
-/* Raffle Info Panel */
+/* Raffle Info Section */
 .raffle-info {
   background-color: #111; /* Subtle black background */
-  border: 1px solid #333; /* Dark border */
-  border-radius: 8px;
   padding: 15px;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  border-radius: 5px;
+  border: 1px solid #333; /* Darker border for separation */
 }
 
 .raffle-info pre {
   margin: 0;
-  font-size: 1.2rem; /* Adjust font size for readability */
-  line-height: 1.6; /* Line height for spacing */
-  text-align: left;
-  color: #7fdbff; /* Default terminal cyan */
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #7fdbff; /* Cyan for text */
 }
 
 .raffle-info .bold {
   font-weight: bold;
-  color: #ffb005; /* Bright yellow for key details */
-}
-
-.raffle-info .subtle {
-  color: #999; /* Subtle gray for less important text */
+  color: #ffb005; /* Bright yellow for emphasis */
 }
 
 .raffle-info img {
-  display: block;
-  margin: 10px auto;
+  margin-top: 10px;
   max-width: 100%;
-  border-radius: 8px;
+  border-radius: 5px;
 }
 
-/* Log Panel */
+/* Log Section */
 .raffle-logs {
-  background-color: #111;
-  border: 1px solid #333;
-  border-radius: 8px;
+  background-color: #111; /* Match the terminal black */
   padding: 15px;
-  height: 300px; /* Fixed height for consistent appearance */
-  overflow-y: auto;
+  border-radius: 5px;
+  border: 1px solid #333;
+  max-height: 300px; /* Fixed height for consistent layout */
+  overflow-y: auto; /* Scrollable logs */
   overflow-x: hidden;
-  white-space: pre-wrap; /* Wrap long log messages */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(58, 62, 62, 0.595) #111;
+  font-size: 1rem; /* Default font size */
+  color: #e6e8e9; /* Light gray */
+  white-space: pre-wrap; /* Properly wrap long messages */
+  line-height: 1.5; /* Increase readability */
+  scrollbar-width: thin; /* Thin scrollbar */
+  scrollbar-color: #7fdbff #111; /* Cyan thumb on black track */
 }
 
-/* Scrollbar Design */
+/* Log Entry Styling */
+.log-message.cli {
+  margin: 5px 0;
+  padding: 5px;
+  border-left: 2px solid #7fdbff; /* Cyan left border for CLI feel */
+  padding-left: 10px;
+  font-size: 0.9rem; /* Slightly smaller for CLI effect */
+  line-height: 1.6; /* Spaced out for readability */
+  color: #f8f8f2; /* Default log text */
+}
+
+.log-message.cli.highlight {
+  color: #50fa7b; /* Bright green for highlights */
+}
+
+.log-message.cli.error {
+  color: #ff5555; /* Red for errors */
+}
+
+.log-message.cli.info {
+  color: #8be9fd; /* Light blue for informational messages */
+}
+
+.log-message.cli.success {
+  color: #50fa7b; /* Bright green for successes */
+}
+
+/* Scrollbar Styling */
 .raffle-logs::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 .raffle-logs::-webkit-scrollbar-thumb {
-  background: #7fdbff; /* Cyan */
+  background: #7fdbff; /* Cyan scrollbar thumb */
   border-radius: 5px;
-  border: 2px solid #000; /* Match background */
-}
-
-.raffle-logs::-webkit-scrollbar-thumb:hover {
-  background: #00ff99; /* Bright green on hover */
 }
 
 .raffle-logs::-webkit-scrollbar-track {
-  background: #111;
+  background: #111; /* Match the log background */
 }
 
-/* Smooth Auto-scroll Behavior */
-.raffle-logs {
-  scroll-behavior: smooth;
+/* Progress Bars */
+.progress-bar {
+  font-size: 1.2rem;
+  margin: 10px 0;
+  color: #e6e8e9; /* Light gray text */
 }
 
-/* CLI Syntax Highlighting */
-.cli-keyword {
-  color: #00ff99; /* Bright green */
+.progress-bar .progress {
+  color: #50fa7b; /* Bright green for progress bar */
+}
+
+.countdown-timer {
+  font-size: 1.2rem;
   font-weight: bold;
-}
-
-/* Question and Purchase Section */
-.raffle-question-purchase {
-  display: grid;
-  grid-template-columns: 2fr 1fr; /* Allocate more space for the question */
-  gap: 20px;
-  width: 100%;
-}
-
-/* Answer Options */
-.answer-options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.answer-option input[type="radio"] {
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  border: 2px solid #444;
-  background-color: #000;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.answer-option input[type="radio"]:checked {
-  background-color: #00ff99;
-  border-color: #00ff99; /* Bright green */
-}
-
-.answer-option {
-  display: flex;
-  align-items: center;
-  color: #7fdbff; /* Cyan text */
-}
-
-/* Ticket Purchase Section */
-.ticket-selection {
   margin-top: 10px;
+  color: #ffb86c; /* Orange for countdown timer */
 }
 
-.ticket-selection select {
-  appearance: none;
-  background-color: #7fdbff; /* Cyan */
-  color: #000;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.ticket-selection button {
-  margin-top: 10px;
-  background-color: #7fdbff; /* Cyan */
-  color: #000;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.ticket-selection button:disabled {
-  background-color: #555;
-  color: #888;
-  cursor: not-allowed;
+/* Indented Log Messages */
+.log-message.cli.indented {
+  margin-left: 20px; /* Extra indent for nested-like logs */
+  font-size: 0.85rem; /* Slightly smaller size */
+  line-height: 1.4;
 }
 
 /* Responsive Design */
@@ -172,59 +134,11 @@
     grid-template-columns: 1fr; /* Stack columns vertically on smaller screens */
   }
 
-  .raffle-question-purchase {
-    grid-template-columns: 1fr; /* Stack question and ticket section vertically */
-  }
-}
-
-@media (max-width: 480px) {
-  .raffle-details-container {
-    padding: 10px;
-  }
-
   .raffle-logs {
-    height: 200px; /* Reduce height for smaller screens */
+    max-height: 200px; /* Adjust height for smaller screens */
   }
 
-  .ticket-selection select,
-  .ticket-selection button {
-    font-size: 0.9rem;
+  .raffle-info {
+    font-size: 0.9rem; /* Adjust text size for smaller screens */
   }
-}
-
-
-
-.canvas-container {
-  width: 100%;
-  height: 400px; /* Adjust height as needed */
-  background-color: #000; /* Match the terminal theme */
-  border: 2px solid cyan;
-  border-radius: 8px;
-  margin: 20px 0;
-  position: relative;
-}
-
-
-.typed-text {
-  height: 100px; /* Adjust as needed */
-  overflow: hidden; /* Prevent overflow */
-  white-space: pre-wrap; /* Keep the text wrapping nicely */
-}
-
-
-.raffle-logs {
-  max-height: 300px; /* Adjust to your desired height */
-  overflow-y: auto; /* Enable vertical scrolling */
-  background-color: #1e1e1e; /* Dark background for CLI-like appearance */
-  padding: 10px;
-  border-radius: 5px;
-  font-family: monospace; /* Monospaced font for better alignment */
-  color: #ffffff; /* Default text color */
-  white-space: pre-wrap; /* Allow text to wrap properly */
-  line-height: 1.4; /* Increase line spacing for readability */
-}
-
-.log-message {
-  margin: 0; /* Remove margin to ensure consistent spacing */
-  padding: 5px 0; /* Add padding between log entries */
 }

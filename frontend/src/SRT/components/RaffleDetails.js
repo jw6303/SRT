@@ -7,12 +7,65 @@ import "./RaffleDetails.css";
 const RaffleDetails = () => {
   const { raffleId } = useParams();
   const [raffle, setRaffle] = useState(null);
-  const [logs, setLogs] = useState([]); // Store logs
-  const [selectedAnswer, setSelectedAnswer] = useState(""); // Selected answer
-  const [ticketCount, setTicketCount] = useState(1); // Ticket count
-  const [maxTickets, setMaxTickets] = useState(1); // Max tickets allowed
-  const [progress, setProgress] = useState(false); // Progress state
-  const logContainerRef = useRef(null); // For scrolling logs
+  const [logs, setLogs] = useState([]);
+  const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [ticketCount, setTicketCount] = useState(1);
+  const [maxTickets, setMaxTickets] = useState(1);
+  const [progress, setProgress] = useState(false);
+  const [countdown, setCountdown] = useState(""); // For countdown timer
+  const logContainerRef = useRef(null);
+
+  // Calculate ticket progress
+  const ticketProgress = raffle
+    ? Math.min(
+        Math.round((raffle.ticketsSold / raffle.maxParticipants) * 100),
+        100
+      )
+    : 0;
+
+    // Calculate threshold progress
+const thresholdProgress = raffle
+? Math.min(
+    Math.round((raffle.ticketsSold / raffle.minParticipants) * 100),
+    100
+  )
+: 0;
+
+
+  // Calculate time remaining progress
+  const timeRemainingProgress = raffle
+    ? (() => {
+        const now = new Date();
+        const startTime = new Date(raffle.startTime);
+        const endTime = new Date(raffle.endTime);
+        const totalTime = endTime - startTime;
+        const elapsedTime = now - startTime;
+        return Math.max(0, Math.min(100, Math.round((elapsedTime / totalTime) * 100)));
+      })()
+    : 0;
+
+  // Countdown Timer
+  useEffect(() => {
+    if (raffle?.endTime) {
+      const timer = setInterval(() => {
+        const now = new Date();
+        const endTime = new Date(raffle.endTime);
+        const timeLeft = endTime - now;
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          setCountdown("Raffle Ended");
+        } else {
+          const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+          const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+          setCountdown(`${hours}h ${minutes}m ${seconds}s`);
+        }
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [raffle?.endTime]);
 
   // Fetch raffle details
   useEffect(() => {
@@ -37,6 +90,11 @@ const RaffleDetails = () => {
           {
             type: "success",
             message: "Raffle details loaded successfully.",
+            logTime: new Date().toISOString(),
+          },
+          {
+            type: "highlight",
+            message: `Prize Details: ${data.prizeDetails}`,
             logTime: new Date().toISOString(),
           },
         ]);
@@ -145,8 +203,7 @@ const RaffleDetails = () => {
             {"\n"}Tickets: <span className="bold">{raffle?.ticketsSold || 0}</span>{" "}
             / <span className="subtle">{raffle?.maxParticipants || 0}</span>
             {"\n"}Status: <span className="bold">{raffle?.status || "Loading..."}</span>
-            {"\n"}On Chain:{" "}
-            <span className="bold">{raffle?.isOnChain ? "Yes" : "No"}</span>
+            {"\n"}On Chain: <span className="bold">{raffle?.isOnChain ? "Yes" : "No"}</span>
             {"\n"}Start Time:{" "}
             <span className="bold">
               {raffle?.startTime
@@ -160,11 +217,13 @@ const RaffleDetails = () => {
                 : "Loading..."}
             </span>
           </pre>
+          <div className="prize-details-section">
+            <h3 className="prize-header">Prize Details</h3>
+            <p className="prize-details">{raffle?.prizeDetails || "Loading prize details..."}</p>
+          </div>
           {raffle?.imageUrl && (
             <img src={raffle.imageUrl} alt="Raffle" className="raffle-image" />
           )}
-          {/* Render prize details without typing effect */}
-          <pre className="typed-text">{raffle?.prizeDetails || "Loading prize details..."}</pre>
         </div>
 
         {/* Right Column: Logs */}
@@ -179,6 +238,21 @@ const RaffleDetails = () => {
               [{new Date(log.logTime).toLocaleTimeString()}] {log.message}
             </div>
           ))}
+        </div>
+      </div>
+
+{/* Progress Bars */}
+<div className="raffle-progress-bars">
+        <div className="progress-bar">
+          Tickets Sold: [<span className="progress">{'#'.repeat(ticketProgress / 10)}</span>
+          {'-'.repeat(10 - ticketProgress / 10)}] {ticketProgress}%
+        </div>
+        <div className="progress-bar">
+          Threshold Progress: [<span className="progress">{'#'.repeat(thresholdProgress / 10)}</span>
+          {'-'.repeat(10 - thresholdProgress / 10)}] {thresholdProgress}%
+        </div>
+        <div className="countdown-timer">
+        Winner Announced In: {countdown}
         </div>
       </div>
 
