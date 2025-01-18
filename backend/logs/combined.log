@@ -52,3 +52,45 @@
 2025-01-16T17:40:28.133Z [INFO] API available at http://localhost:5000/api/raffles
 2025-01-16T17:40:28.134Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
 2025-01-16T17:40:34.199Z [INFO] Base route accessed.
+2025-01-17T05:23:17.733Z [INFO] Base route accessed.
+2025-01-17T06:34:12.330Z [WARN] 404 Error: Route not found: GET /favicon.ico
+2025-01-17T07:52:38.050Z [INFO] Server is running on http://localhost:5000
+2025-01-17T07:52:38.051Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-17T07:52:38.051Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-17T07:52:41.068Z [INFO] Base route accessed.
+2025-01-17T10:25:15.561Z [INFO] Connecting to MongoDB...
+2025-01-17T10:25:46.440Z [ERROR] Failed to connect to MongoDB: connect ECONNREFUSED 127.0.0.1:27017
+2025-01-17T10:34:29.386Z [INFO] Connecting to MongoDB...
+2025-01-17T10:35:00.236Z [ERROR] Failed to connect to MongoDB: connect ECONNREFUSED 127.0.0.1:27017
+2025-01-17T11:33:28.067Z [INFO] Connecting to MongoDB...
+2025-01-17T11:33:58.724Z [ERROR] Failed to connect to MongoDB: connect ECONNREFUSED 127.0.0.1:27017
+2025-01-17T11:35:04.164Z [INFO] Server is running on http://localhost:5000
+2025-01-17T11:35:04.166Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-17T11:35:04.166Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-17T11:35:07.432Z [INFO] Base route accessed.
+2025-01-17T11:35:15.581Z [INFO] Dashboard accessed.
+2025-01-17T11:35:36.762Z [INFO] Fetching all raffles
+2025-01-17T11:35:36.766Z [INFO] Fetching all raffles
+2025-01-17T11:52:42.865Z [INFO] Server is running on http://localhost:5000
+2025-01-17T11:52:42.867Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-17T11:52:42.867Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-17T11:52:51.370Z [INFO] Fetching all raffles
+2025-01-17T11:52:55.957Z [INFO] Fetching all raffles
+2025-01-17T11:54:23.791Z [INFO] Server is running on http://localhost:5000
+2025-01-17T11:54:23.792Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-17T11:54:23.793Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-17T11:55:49.666Z [INFO] Connecting to MongoDB...
+2025-01-17T11:56:03.255Z [INFO] Successfully connected to MongoDB!
+2025-01-17T11:56:03.257Z [INFO] Server is running on http://localhost:5000
+2025-01-17T11:56:03.258Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-17T11:56:03.258Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-17T11:56:07.296Z [INFO] Base route accessed.
+2025-01-17T11:56:12.995Z [WARN] 404 Error: Route not found: GET /dasgboard
+2025-01-17T14:11:11.149Z [INFO] Connecting to MongoDB...
+2025-01-17T14:11:23.836Z [INFO] Successfully connected to MongoDB!
+2025-01-18T05:03:09.615Z [INFO] Connecting to MongoDB...
+2025-01-18T05:03:22.331Z [INFO] Successfully connected to MongoDB!
+2025-01-18T05:03:22.333Z [INFO] Server is running on http://localhost:5000
+2025-01-18T05:03:22.333Z [INFO] API available at http://localhost:5000/api/raffles
+2025-01-18T05:03:22.333Z [INFO] Admin Dashboard available at http://localhost:5000/dashboard
+2025-01-18T05:03:32.916Z [INFO] Base route accessed.

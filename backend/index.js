@@ -2,25 +2,27 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { MongoClient } = require("mongodb");
+const { createServer } = require("http"); // Create HTTP server for WebSocket support
+const { Server } = require("socket.io"); // Import Socket.IO for WebSocket functionality
 const logger = require("./src/utils/logger"); // Import Winston logger
 require("dotenv").config();
 
 const app = express();
+const httpServer = createServer(app); // Wrap Express app with HTTP server
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*", // Allow requests from any origin
+    methods: ["GET", "POST"],
+  },
+});
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
-// Set EJS as the view engine
-app.set("view engine", "ejs");
-app.set("views", "./src/dashboard/views");
-
-// Serve static files (e.g., CSS for dashboard)
-app.use(express.static("./src/dashboard/public"));
-
 // MongoDB Connection
-const uri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/admin";
+const uri = process.env.MONGO_URI || "mongodb+srv://bws:Passwordforthis2035!@solanaraffleterminal.xdyet.mongodb.net/<database-name>?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
 let db;
 
@@ -29,17 +31,39 @@ async function connectToDatabase() {
     logger.info("Connecting to MongoDB...");
     await client.connect();
     logger.info("Successfully connected to MongoDB!");
-    db = client.db(); // Use default database
+    db = client.db("<database-name>"); // Replace <database-name> with your database name
   } catch (err) {
     logger.error(`Failed to connect to MongoDB: ${err.message}`);
     process.exit(1);
   }
 }
 
+// Attach WebSocket to Express Requests
+app.use((req, res, next) => {
+  req.io = io; // Attach WebSocket instance to `req` for use in controllers
+  next();
+});
+
 // Base Route
 app.get("/", (req, res) => {
   res.json({ message: "Backend is running and connected to MongoDB!" });
   logger.info("Base route accessed.");
+});
+
+// WebSocket Connection Event
+io.on("connection", (socket) => {
+  logger.info(`New WebSocket connection: ${socket.id}`);
+
+  // Example: Join specific raffle room
+  socket.on("joinRaffle", (raffleId) => {
+    socket.join(`raffle-${raffleId}`);
+    logger.info(`Socket ${socket.id} joined room: raffle-${raffleId}`);
+  });
+
+  // Example: Handle disconnections
+  socket.on("disconnect", () => {
+    logger.info(`Socket ${socket.id} disconnected.`);
+  });
 });
 
 // Import and Use API Routes
@@ -49,22 +73,9 @@ app.use("/api/raffles", (req, res, next) => {
     logger.error("Database not connected!");
     return res.status(500).json({ error: "Database connection not established." });
   }
-  logger.debug("Middleware triggered for /api/raffles route.");
   req.db = db; // Attach MongoDB connection to the request object
   next();
 }, raffleRoutes);
-
-// Import and Use Dashboard Routes
-const dashboardRoutes = require("./src/dashboard/dashboard.routes");
-app.use("/dashboard", (req, res, next) => {
-  if (!db) {
-    logger.error("Database not connected!");
-    return res.status(500).send("Database connection not established.");
-  }
-  logger.debug("Middleware triggered for /dashboard route.");
-  req.db = db; // Attach MongoDB connection to the request object
-  next();
-}, dashboardRoutes);
 
 // Fallback Route
 app.use((req, res) => {
@@ -77,10 +88,9 @@ const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   await connectToDatabase();
-  app.listen(PORT, () => {
+  httpServer.listen(PORT, () => { // Use httpServer to enable WebSocket support
     logger.info(`Server is running on http://localhost:${PORT}`);
     logger.info(`API available at http://localhost:${PORT}/api/raffles`);
-    logger.info(`Admin Dashboard available at http://localhost:${PORT}/dashboard`);
   });
 }
 
