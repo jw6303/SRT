@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { fetchRaffleDetails, purchaseTicket } from "../../api";
 import { getLogStyle } from "../utils/logStyling";
 import "./RaffleDetails.css";
+import { initializeWebSocket } from "../utils/websocket";
 
 const RaffleDetails = () => {
   const { raffleId } = useParams();
@@ -12,7 +13,7 @@ const RaffleDetails = () => {
   const [ticketCount, setTicketCount] = useState(1);
   const [maxTickets, setMaxTickets] = useState(1);
   const [progress, setProgress] = useState(false);
-  const [countdown, setCountdown] = useState(""); // For countdown timer
+  const [countdown, setCountdown] = useState(""); // Countdown timer
   const logContainerRef = useRef(null);
 
   // Calculate ticket progress
@@ -23,14 +24,13 @@ const RaffleDetails = () => {
       )
     : 0;
 
-    // Calculate threshold progress
-const thresholdProgress = raffle
-? Math.min(
-    Math.round((raffle.ticketsSold / raffle.minParticipants) * 100),
-    100
-  )
-: 0;
-
+  // Calculate threshold progress
+  const thresholdProgress = raffle
+    ? Math.min(
+        Math.round((raffle.ticketsSold / raffle.minParticipants) * 100),
+        100
+      )
+    : 0;
 
   // Calculate time remaining progress
   const timeRemainingProgress = raffle
@@ -112,6 +112,31 @@ const thresholdProgress = raffle
 
     loadRaffleDetails();
   }, [raffleId]);
+
+  // Initialize WebSocket
+  useEffect(() => {
+    const ws = initializeWebSocket();
+
+    const handleNotification = (data) => {
+      console.log("WebSocket notification:", data);
+      // Update UI or add logs based on WebSocket notifications
+      setLogs((prev) => [
+        ...prev,
+        {
+          type: "info",
+          message: `WebSocket Notification: ${data.message}`,
+          logTime: new Date().toISOString(),
+        },
+      ]);
+    };
+
+    ws.on("notification", handleNotification);
+
+    return () => {
+      ws.off("notification", handleNotification);
+      ws.close();
+    };
+  }, []);
 
   // Handle ticket purchase
   const handleBuyTicket = async () => {

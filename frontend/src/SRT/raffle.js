@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Connection } from "@solana/web3.js";
-import Slider from "react-slick";
 import Modal from "./components/Modal";
-import RaffleList from "./components/RaffleList"; // Import the RaffleList component
+import RaffleList from "./components/RaffleList";
 import ConnectWalletButton from "./components/ConnectWalletButton";
-import Transactions from "./components/Transactions";
 import ChatBubble from "./components/ChatBubble";
 import BottomNavBar from "./components/BottomNavBar";
 import "./components/Terminal.css";
-import "./components/Transactions.css";
 import "./components/WalletButtonOverride.css";
 import "./components/ChatBubble.css";
 import "./components/BottomNavBar.css";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 
 const Raffle = () => {
   const [selectedPool, setSelectedPool] = useState(null);
@@ -48,23 +43,13 @@ const Raffle = () => {
       alert("Please connect your wallet to participate.");
       return;
     }
+    console.log("Opening modal for pool:", pool);
     setSelectedPool(pool);
   };
 
   const closeModal = () => {
+    console.log("Closing modal");
     setSelectedPool(null);
-  };
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 2 } },
-      { breakpoint: 600, settings: { slidesToShow: 1 } },
-    ],
   };
 
   return (
@@ -96,7 +81,7 @@ const Raffle = () => {
       <div className="divider" />
 
       {/* Raffle List */}
-      <RaffleList /> {/* Render the imported RaffleList component here */}
+      <RaffleList openModal={openModal} />
 
       {/* Divider */}
       <div className="divider" />

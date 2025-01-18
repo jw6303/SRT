@@ -3,3 +3,5 @@ export const addLog = (logs, setLogs, type, message) => {
     setLogs([...logs, { type, message, timestamp }]);
   };
   
+
+  https://solana-raffle-terminal-backend.onrender.com
