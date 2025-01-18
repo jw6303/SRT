@@ -106,71 +106,49 @@ exports.createRaffle = async (req, res) => {
 
 // Get Active Raffles
 const sanitize = require("mongo-sanitize"); // To prevent NoSQL injection
-const redis = require("redis"); // Redis client for caching
-
-// Create a Redis client
-const redisClient = redis.createClient();
 
 exports.getActiveRaffles = async (req, res) => {
   try {
-    // Redis caching key
-    const cacheKey = "active_raffles";
-    
-    // Check Redis cache first
-    redisClient.get(cacheKey, async (err, cachedData) => {
-      if (err) {
-        console.error("[ERROR] Redis error:", err);
-        return res.status(500).json({ error: "Failed to fetch raffles from cache." });
-      }
+    // Query parameters for filtering and sorting
+    const {
+      prizeType,
+      maxParticipants,
+      fulfillment,
+      sortField = "time.start",
+      sortOrder = "asc",
+      limit = 10,
+      page = 1,
+    } = req.query;
 
-      if (cachedData) {
-        return res.status(200).json(JSON.parse(cachedData));
-      }
+    // Construct query and sanitize inputs
+    const query = { "status.current": "active" }; // Only fetch active raffles
+    if (prizeType) query["prizeDetails.type"] = sanitize(prizeType);
+    if (maxParticipants) query["participants.max"] = { $lte: parseInt(sanitize(maxParticipants)) };
+    if (fulfillment) query["status.fulfillment"] = sanitize(fulfillment);
 
-      // Query parameters for filtering and sorting
-      const {
-        prizeType,
-        maxParticipants,
-        fulfillment,
-        sortField = "time.start",
-        sortOrder = "asc",
-        limit = 10,
-        page = 1,
-      } = req.query;
+    // Sorting and pagination
+    const sortOrderValue = sortOrder === "desc" ? -1 : 1;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const options = {
+      sort: { [sortField]: sortOrderValue }, // Dynamic sorting
+      limit: parseInt(limit),
+      skip,
+    };
 
-      // Construct query and sanitize inputs
-      const query = { "status.current": "active" }; // Only fetch active raffles
-      if (prizeType) query["prizeDetails.type"] = sanitize(prizeType);
-      if (maxParticipants) query["participants.max"] = { $lte: parseInt(sanitize(maxParticipants)) };
-      if (fulfillment) query["status.fulfillment"] = sanitize(fulfillment);
+    // Fetch raffles and total count
+    const raffles = await req.db.collection("raffles").find(query, options).toArray();
+    const totalCount = await req.db.collection("raffles").countDocuments(query);
 
-      // Sorting and pagination
-      const sortOrderValue = sortOrder === "desc" ? -1 : 1;
-      const skip = (parseInt(page) - 1) * parseInt(limit);
-      const options = {
-        sort: { [sortField]: sortOrderValue }, // Dynamic sorting
+    // Return the response
+    res.status(200).json({
+      message: "Active raffles fetched successfully.",
+      data: raffles,
+      meta: {
+        page: parseInt(page),
         limit: parseInt(limit),
-        skip,
-      };
-
-      // Fetch raffles and total count
-      const raffles = await req.db.collection("raffles").find(query, options).toArray();
-      const totalCount = await req.db.collection("raffles").countDocuments(query);
-
-      // Cache the result for future requests (1 hour expiration)
-      redisClient.setex(cacheKey, 3600, JSON.stringify({ raffles, totalCount }));
-
-      // Return the response
-      res.status(200).json({
-        message: "Active raffles fetched successfully.",
-        data: raffles,
-        meta: {
-          page: parseInt(page),
-          limit: parseInt(limit),
-          total: raffles.length,
-          totalCount, // Total raffles matching the query
-        },
-      });
+        total: raffles.length,
+        totalCount, // Total raffles matching the query
+      },
     });
   } catch (err) {
     console.error("[ERROR] Failed to fetch active raffles:", err);
@@ -179,52 +157,51 @@ exports.getActiveRaffles = async (req, res) => {
 };
 
 
-
-// Get Raffle by ID
-exports.getRaffleById = async (req, res) => {
-  const { id } = req.params;
-
-  // Validate and sanitize ObjectId
-  const sanitizedId = sanitize(id); // Use a library like mongo-sanitize
-  if (!validateObjectId(sanitizedId, res)) return;
-
+exports.getActiveRaffles = async (req, res) => {
   try {
-    // Fetch the raffle by ID
-    const raffle = await req.db.collection("raffles").findOne({ _id: new ObjectId(sanitizedId) });
+    const {
+      prizeType,
+      maxParticipants,
+      fulfillment,
+      sortField = "time.start",
+      sortOrder = "asc",
+      limit = 10,
+      page = 1,
+    } = req.query;
 
-    // Check if the raffle exists
-    if (!raffle) {
-      return res.status(404).json({ error: "Raffle not found." });
-    }
+    // Construct query
+    const query = { "status.current": "active" };
+    if (prizeType) query["prizeDetails.type"] = prizeType;
+    if (maxParticipants) query["participants.max"] = { $lte: parseInt(maxParticipants) };
+    if (fulfillment) query["status.fulfillment"] = fulfillment;
 
-    // Add derived or summary data
-    const participantSummary = {
-      totalParticipants: raffle.participants.tickets.length,
-      totalCorrect: raffle.participants.correct.length,
-      totalIncorrect: raffle.participants.incorrect.length,
-    };
+    // Sort and pagination
+    const sortOrderValue = sortOrder === "desc" ? -1 : 1;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const options = { sort: { [sortField]: sortOrderValue } };
 
-    // Add winner and refund details if applicable
-    const winnerDetails = raffle.status.current === "completed" ? raffle.winner : null;
-    const refundDetails = raffle.status.current === "refunded" ? raffle.refundList : null;
+    // Fetch raffles
+    console.log("[DEBUG] Query:", query);
+    const raffles = await req.db.collection("raffles").find(query, options).skip(skip).limit(parseInt(limit)).toArray();
+    console.log("[DEBUG] Fetched raffles:", raffles);
 
-    // Response structure
+    // Fetch total count
+    const totalCount = await req.db.collection("raffles").countDocuments(query);
+
+    // Response
     res.status(200).json({
-      message: `Raffle details fetched successfully for ID: ${sanitizedId}`,
-      data: raffle,
+      message: "Active raffles fetched successfully.",
+      data: raffles,
       meta: {
-        participantSummary,
-        ticketsSold: raffle.participants.ticketsSold,
-        isOnChain: raffle.status.isOnChain,
-        currentStatus: raffle.status.current,
-        analytics: raffle.analytics || {}, // Ensure analytics are included
-        winnerDetails, // Include winner details if the raffle is completed
-        refundDetails, // Include refund details if the raffle is refunded
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: raffles.length,
+        totalCount,
       },
     });
   } catch (err) {
-    console.error(`[ERROR] Failed to fetch raffle with ID ${sanitizedId}:`, err);
-    res.status(500).json({ error: "Failed to fetch raffle details." });
+    console.error("[ERROR] Failed to fetch active raffles:", err);
+    res.status(500).json({ error: "Failed to fetch active raffles." });
   }
 };
 
@@ -240,7 +217,6 @@ exports.registerParticipant = async (req, res) => {
   const { participantId, name, pubkey, answer, amountPaid } = req.body;
 
   // Validate and sanitize ObjectId
-  const sanitizedId = sanitize(id); // Use a library like mongo-sanitize
   if (!validateObjectId(sanitizedId, res)) return;
 
   // Validate required fields
@@ -310,7 +286,6 @@ exports.getRaffleParticipants = async (req, res) => {
   const { filter = "all", page = 1, limit = 10 } = req.query;
 
   // Validate and sanitize ObjectId
-  const sanitizedId = sanitize(id); // Use a library like mongo-sanitize
   if (!validateObjectId(sanitizedId, res)) return;
 
   try {
@@ -629,33 +604,8 @@ exports.getRaffleAnalytics = async (req, res) => {
 
 
 
-io.on("connection", (socket) => {
-  console.log(`[INFO] Client connected: ${socket.id}`);
-
-  socket.on("join-raffle", (raffleId) => {
-    socket.join(`raffle-${raffleId}`);
-    console.log(`[INFO] Client joined room: raffle-${raffleId}`);
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`[INFO] Client disconnected: ${socket.id}`);
-  });
-});
 
 
-const raffleNamespace = io.of("/raffle");
-
-raffleNamespace.on("connection", (socket) => {
-  console.log(`[INFO] Raffle namespace client connected: ${socket.id}`);
-
-  socket.on("join-raffle", (raffleId) => {
-    socket.join(`raffle-${raffleId}`);
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`[INFO] Client disconnected from raffle namespace: ${socket.id}`);
-  });
-});
 
 
 
@@ -801,5 +751,26 @@ exports.notifyRefunds = async (req, res) => {
   } catch (err) {
     console.error("[ERROR] Failed to send refund notifications:", err);
     res.status(500).json({ error: "Failed to send refund notifications." });
+  }
+};
+
+
+
+exports.getRaffleById = async (req, res) => {
+  const { id } = req.params;
+
+  if (!validateObjectId(id, res)) return; // Validate and sanitize ObjectId
+
+  try {
+    const raffle = await req.db.collection("raffles").findOne({ _id: new ObjectId(id) });
+
+    if (!raffle) {
+      return res.status(404).json({ error: "Raffle not found." });
+    }
+
+    res.status(200).json({ message: "Raffle fetched successfully.", data: raffle });
+  } catch (err) {
+    console.error(`[ERROR] Failed to fetch raffle with ID ${id}:`, err);
+    res.status(500).json({ error: "Failed to fetch raffle." });
   }
 };
