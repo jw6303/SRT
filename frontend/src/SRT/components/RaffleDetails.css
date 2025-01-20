@@ -13,306 +13,267 @@
   border-radius: 8px;
 }
 
-/* Raffle Columns */
-.raffle-columns {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr; /* Info column smaller than logs */
-  gap: 20px;
-  width: 100%;
+/* Wallet Section */
+.wallet-section {
+  background-color: #1a1a1a;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  box-shadow: 0 0 10px rgba(128, 128, 255, 0.2); /* Subtle blue glow */
+}
+
+.wallet-info {
+  margin-top: 1rem;
+  color: #b0c4de; /* Soft gray-blue */
+}
+
+.wallet-info p {
+  margin: 0.5rem 0;
+  font-weight: bold;
+}
+
+.wallet-error {
+  color: #ff7f7f; /* Soft red for errors */
+  font-style: italic;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background-color: #333;
+  margin: 10px 0;
 }
 
 /* Raffle Info Section */
-.raffle-info {
-  background-color: #111; /* Subtle black background */
-  padding: 15px;
-  border-radius: 5px;
-  border: 1px solid #333; /* Darker border for separation */
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1); /* Subtle glow */
+.raffle-info-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: #1a1a1a; /* Slightly lighter black */
+  border-radius: 8px;
+  border: 1px solid #333;
+  box-shadow: 0 0 10px rgba(128, 128, 255, 0.2); /* Subtle blue glow */
+  gap: 1rem;
 }
 
-.raffle-info pre {
+.raffle-info-text {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.raffle-info-text h2 {
+  color: #87cefa; /* Soft sky blue */
+  border-bottom: 1px solid #87cefa;
+  padding-bottom: 0.5rem;
+}
+
+.raffle-info-text pre {
   margin: 0;
-  font-size: 1rem;
+  color: #ddd;
+  font-size: 0.9rem;
   line-height: 1.5;
-  color: #7fdbff; /* Cyan for text */
 }
 
-.raffle-info .bold {
+.raffle-info-image {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+.raffle-info-image img {
+  max-width: 250px;
+  border-radius: 8px;
+  border: 2px solid #87cefa; /* Soft blue border */
+  box-shadow: 0 0 15px rgba(135, 206, 250, 0.5); /* Subtle blue glow */
+}
+
+/* Question Section */
+.raffle-question {
+  background-color: #111;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+}
+
+.question-text {
+  margin-bottom: 1rem;
+}
+
+.answer-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.answer-option {
+  color: #ddd;
+}
+
+.selected-answer {
+  margin-top: 1rem;
+  color: #87cefa; /* Soft sky blue */
   font-weight: bold;
-  color: #ffb005; /* Bright yellow for emphasis */
 }
 
-.raffle-info img {
-  margin-top: 10px;
-  max-width: 50%;
-  border-radius: 5px;
-  border: 1px solid #444; /* Subtle border for images */
+/* Ticket Purchase Section */
+.raffle-purchase {
+  background-color: #111;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #333;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.raffle-purchase label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #ddd;
+}
+
+.raffle-purchase button {
+  background-color: #87cefa; /* Soft sky blue */
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  color: #000;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(135, 206, 250, 0.3); /* Subtle glow */
+}
+
+.raffle-purchase button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
 }
 
 /* Log Section */
 .raffle-logs {
-  background-color: #111; /* Match the terminal black */
-  padding: 15px;
-  border-radius: 5px;
+  background-color: #111;
+  padding: 1rem;
+  border-radius: 8px;
   border: 1px solid #333;
-  max-height: 300px; /* Fixed height for consistent layout */
-  overflow-y: auto; /* Scrollable logs */
-  overflow-x: hidden;
-  font-size: 0.9rem; /* Compact font size */
-  color: #e6e8e9; /* Light gray */
-  white-space: pre-wrap; /* Properly wrap long messages */
-  line-height: 1.5; /* Increase readability */
-  scrollbar-width: thin; /* Thin scrollbar */
-  scrollbar-color: #7fdbff #111; /* Cyan thumb on black track */
-  box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.1); /* Inner glow effect */
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  color: #e6e8e9;
+  box-shadow: inset 0 0 10px rgba(128, 128, 255, 0.2); /* Inner glow effect */
 }
 
-/* Log Entry Styling */
-.log-message.cli {
-  margin: 5px 0;
-  padding: 5px;
-  border-left: 2px solid #7fdbff; /* Cyan left border for CLI feel */
-  padding-left: 10px;
-  font-size: 0.85rem; /* Slightly smaller for CLI effect */
-  line-height: 1.4; /* Spaced out for readability */
-  color: #f8f8f2; /* Default log text */
-}
-
-.log-message.cli.highlight {
-  color: #50fa7b; /* Bright green for highlights */
-}
-
-.log-message.cli.error {
-  color: #ff5555; /* Red for errors */
-}
-
-.log-message.cli.info {
-  color: #8be9fd; /* Light blue for informational messages */
-}
-
-.log-message.cli.success {
-  color: #50fa7b; /* Bright green for successes */
-}
-
-/* Scrollbar Styling */
 .raffle-logs::-webkit-scrollbar {
   width: 8px;
 }
 
 .raffle-logs::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #7fdbff, #50fa7b); /* Gradient thumb */
+  background: linear-gradient(180deg, #87cefa, #50fa7b); /* Gradient thumb */
   border-radius: 5px;
 }
 
 .raffle-logs::-webkit-scrollbar-track {
-  background: #111; /* Match the log background */
+  background: #111;
 }
-
-/* Progress Bars */
-.progress-bar {
-  font-size: 1.2rem;
-  margin: 10px 0;
-  color: #e6e8e9; /* Light gray text */
-}
-
-.progress-bar .progress {
-  color: #50fa7b; /* Bright green for progress bar */
-  background: linear-gradient(90deg, #50fa7b, #7fdbff); /* Smooth gradient */
-}
-
-.countdown-timer {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-top: 10px;
-  color: #ffb86c; /* Orange for countdown timer */
-  animation: blink 1s infinite; /* Blinking effect */
-}
-
-/* Blinking Timer */
-@keyframes blink {
-  50% {
-    opacity: 0.5;
-  }
-}
-
-/* Indented Log Messages */
-.log-message.cli.indented {
-  margin-left: 20px; /* Extra indent for nested-like logs */
-  font-size: 0.85rem; /* Slightly smaller size */
-  line-height: 1.4;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .raffle-columns {
-    grid-template-columns: 1fr; /* Stack columns vertically on smaller screens */
-  }
-
-  .raffle-logs {
-    max-height: 200px; /* Adjust height for smaller screens */
-  }
-
-  .raffle-info {
-    font-size: 0.9rem; /* Adjust text size for smaller screens */
-  }
-}
-
-.loading-placeholder {
-  width: 100%;
-  height: 300px; /* Match the height of the loaded content */
-  background-color: #111; /* Match the terminal background */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #7FDBFF;
-  font-family: "Courier New", monospace;
-}
-
-.skeleton-loader {
-  background: linear-gradient(90deg, #333, #444, #333);
-  animation: skeleton-loading 1.2s infinite;
-}
-
-@keyframes skeleton-loading {
-  0% {
-    background-position: -200px 0;
-  }
-  100% {
-    background-position: calc(200px + 100%) 0;
-  }
-}
-
-
-
-
-
 
 /* Transactions Section */
 .raffle-transactions {
   margin-top: 20px;
-  background-color: #000; /* Match the background */
-  padding: 15px;
-  border: 1px solid #222; /* Subtle border */
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.2); /* Soft glow */
+  background-color: #111;
+  padding: 1rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(128, 128, 255, 0.2); /* Soft glow */
 }
 
-/* Table Styling */
 .txn-table {
   width: 100%;
   border-collapse: collapse;
-  color: #e9dce8; /* Soft terminal green text */
-  font-family: "Courier New", monospace; /* Match terminal font */
+  color: #e9dce8;
+  font-family: "Courier New", monospace;
+  font-size: 0.9rem;
 }
 
 .txn-table th,
 .txn-table td {
   text-align: left;
   padding: 10px;
-  font-size: 1rem;
 }
 
 .txn-table th {
-  background-color: #111; /* Slightly lighter header background */
-  color: #7FDBFF; /* Cyan text for headers */
-  border-bottom: 2px solid #333; /* Subtle bottom border */
+  background-color: #1a1a1a;
+  color: #87cefa;
+  border-bottom: 1px solid #333;
 }
 
 .txn-table td {
-  background-color: #000; /* Match background */
-  border-bottom: 1px solid #222; /* Subtle row separators */
+  background-color: #000;
+  border-bottom: 1px solid #222;
 }
 
-/* Highlight Alternate Rows */
 .txn-table tr:nth-child(even) td {
-  background-color: #111; /* Alternate row background */
+  background-color: #111;
 }
 
-/* Animation for New Rows */
-.txn-table tr.new-transaction {
-  animation: flash-row 2s ease-out;
-}
-
-@keyframes flash-row {
-  0% {
-    background-color: #004400; /* Green flash */
-  }
-  100% {
-    background-color: #000; /* Return to black */
-  }
-}
-
-/* Flashing Numbers for Green (positive) and Red (negative) */
-.txn-table td.green {
-  color: #00ff00; /* Bright green */
-  animation: flash-green 1s ease-out;
-}
-
-.txn-table td.red {
-  color: #ff0000; /* Bright red */
-  animation: flash-red 1s ease-out;
-}
-
-@keyframes flash-green {
-  0% {
-    background-color: #003300; /* Dark green background */
-  }
-  100% {
-    background-color: transparent;
-  }
-}
-
-@keyframes flash-red {
-  0% {
-    background-color: #330000; /* Dark red background */
-  }
-  100% {
-    background-color: transparent;
-  }
-}
-
-/* Hover Effect */
 .txn-table tr:hover {
-  background-color: #222; /* Slight highlight */
+  background-color: #222;
 }
 
-/* Error and No Transaction States */
-.terminal-loading,
-.txn-error,
-.no-transactions {
-  color: #ffcc00; /* Bright yellow for emphasis */
+/* Back Link */
+.back-link-container {
   text-align: center;
-  font-style: italic;
 }
 
-/* Links for Transaction IDs */
-.txn-table a {
-  color: #7FDBFF; /* Cyan links */
+.back-link {
+  color: #87cefa;
   text-decoration: none;
 }
 
-.txn-table a:hover {
+.back-link:hover {
   text-decoration: underline;
 }
 
-/* Title Styling */
-.raffle-transactions h3 {
-  text-align: center;
-  color: #7FDBFF; /* Cyan title text */
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-}
 
-
-.new-transaction {
-  animation: highlight 2s ease-out;
-}
-
-@keyframes highlight {
-  0% {
-    background-color: rgba(0, 255, 0, 0.3);
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+  .raffle-details-container {
+    padding: 10px;
   }
-  100% {
-    background-color: transparent;
+
+  .raffle-info-container {
+    flex-direction: row; /* Keep text and image in parallel */
+    gap: 0.5rem;
+    padding: 0.8rem;
+  }
+
+  .raffle-info-text {
+    margin-right: 0.5rem;
+  }
+
+  .raffle-info-text h2 {
+    font-size: 1.2rem;
+  }
+
+  .raffle-info-text pre {
+    font-size: 0.85rem;
+  }
+
+  .raffle-info-image img {
+    max-width: 150px; /* Scale down image proportionally */
+  }
+
+  .wallet-section {
+    padding: 0.8rem;
+    font-size: 0.9rem; /* Adjust wallet text */
+  }
+
+  .raffle-logs {
+    max-height: 200px; /* Adjust logs height for smaller screens */
+  }
+
+  .raffle-question {
+    padding: 0.8rem;
+  }
+
+  .raffle-purchase {
+    padding: 0.8rem;
   }
 }
