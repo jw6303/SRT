@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const raffleController = require("../controllers/raffle.controller"); // Adjust path if needed
 const {
   getActiveRaffles,
   getRaffleById,
@@ -38,5 +39,8 @@ router.post("/:id/purchase-ticket", purchaseTicket);
 
 // Fetch analytics for all raffles
 router.get("/analytics", getRaffleAnalytics);
+
+// Other routes
+router.get("/:raffleId/transactions", raffleController.getRaffleTransactions);
 
 module.exports = router;

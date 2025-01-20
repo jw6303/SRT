@@ -213,13 +213,14 @@ exports.getActiveRaffles = async (req, res) => {
 
 
 
-// Register Participant
 exports.registerParticipant = async (req, res) => {
-  const { id } = req.params;
-  const { participantId, name, pubkey, answer, amountPaid } = req.body;
+  const { id } = req.params; // Raffle ID from route parameters
+  const { participantId, name, pubkey, answer, amountPaid } = req.body; // Participant details from request body
 
   // Validate and sanitize ObjectId
-  if (!validateObjectId(sanitizedId, res)) return;
+  if (!ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid raffle ID provided." });
+  }
 
   // Validate required fields
   if (!participantId || !name || !pubkey || !answer || !amountPaid) {
@@ -228,13 +229,13 @@ exports.registerParticipant = async (req, res) => {
 
   try {
     // Fetch the raffle
-    const raffle = await req.db.collection("raffles").findOne({ _id: new ObjectId(sanitizedId) });
+    const raffle = await req.db.collection("raffles").findOne({ _id: new ObjectId(id) });
 
     if (!raffle) {
       return res.status(404).json({ error: "Raffle not found." });
     }
 
-    // Check if the participant already exists
+    // Check if the participant is already registered
     const participantExists = raffle.participants.tickets.some(
       (ticket) => ticket.participantId === participantId
     );
@@ -245,31 +246,47 @@ exports.registerParticipant = async (req, res) => {
     // Determine if the answer is correct
     const isCorrect = answer === raffle.question.correctAnswer;
 
-    // Update the raffle
-    const updateData = {
-      $push: {
-        [`participants.${isCorrect ? "correct" : "incorrect"}`]: {
-          participantId,
-          pubkey,
-          name,
-          answer,
-          amountPaid,
-          registrationTime: new Date(),
-        },
-        "participants.tickets": {
-          participantId,
-          pubkey,
-          purchaseTime: new Date(),
-          amountPaid,
-        },
-      },
-      $inc: { "participants.ticketsSold": 1 },
+    // Prepare the new participant data
+    const newParticipant = {
+      participantId,
+      pubkey,
+      name,
+      answer,
+      amountPaid,
+      registrationTime: new Date(),
     };
 
-    await req.db.collection("raffles").updateOne(
-      { _id: new ObjectId(sanitizedId) },
-      updateData
+    // Prepare the new ticket data
+    const newTicket = {
+      participantId,
+      pubkey,
+      purchaseTime: new Date(),
+      amountPaid,
+    };
+
+    // Update the raffle in the database
+    const updateResult = await req.db.collection("raffles").updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $push: {
+          [`participants.${isCorrect ? "correct" : "incorrect"}`]: newParticipant,
+          "participants.tickets": newTicket,
+        },
+        $inc: { "participants.ticketsSold": 1 },
+      }
     );
+
+    if (updateResult.modifiedCount === 0) {
+      throw new Error("Failed to update the raffle with participant data.");
+    }
+
+    // Emit WebSocket update to all clients subscribed to the raffle
+    broadcastToRaffle(id, {
+      type: "participantUpdate",
+      participant: newParticipant,
+      ticket: newTicket,
+      ticketsSold: raffle.participants.ticketsSold + 1, // Updated tickets sold count
+    });
 
     // Respond with success
     res.status(200).json({
@@ -277,10 +294,11 @@ exports.registerParticipant = async (req, res) => {
       isCorrect,
     });
   } catch (err) {
-    console.error(`[ERROR] Failed to register participant for raffle ID ${sanitizedId}:`, err);
+    console.error(`[ERROR] Failed to register participant for raffle ID ${id}:`, err);
     res.status(500).json({ error: "Failed to register participant." });
   }
 };
+
 
 // Get Raffle Participants
 exports.getRaffleParticipants = async (req, res) => {
@@ -845,5 +863,69 @@ exports.getRaffleById = async (req, res) => {
   } catch (err) {
     console.error(`[ERROR] Failed to fetch raffle with ID ${id}:`, err);
     res.status(500).json({ error: "Failed to fetch raffle." });
+  }
+};
+
+
+
+
+/**
+ * Fetch live transactions for a specific raffle
+ * @route GET /api/raffles/:raffleId/transactions
+ */
+exports.getRaffleTransactions = async (req, res) => {
+  const { raffleId } = req.params;
+
+  // Validate raffleId
+  if (!ObjectId.isValid(raffleId)) {
+    return res.status(400).json({ error: "Invalid raffle ID provided." });
+  }
+
+  try {
+    // Fetch the raffle by ID
+    const raffle = await req.db.collection("raffles").findOne({ _id: new ObjectId(raffleId) });
+
+    if (!raffle) {
+      return res.status(404).json({ error: "Raffle not found." });
+    }
+
+    // Aggregate transactions from different parts of the schema
+    const transactions = [
+      ...(raffle.participants?.tickets || []).map((ticket) => ({
+        type: "purchase",
+        participantId: ticket.participantId,
+        pubkey: ticket.pubkey,
+        amountPaid: ticket.amountPaid,
+        timestamp: ticket.purchaseTime,
+      })),
+      ...(raffle.onChainDetails?.refundList || []).map((refund) => ({
+        type: "refund",
+        participantId: refund.participantId,
+        pubkey: refund.pubkey,
+        amountPaid: refund.amountPaid,
+        timestamp: refund.timestamp || null,
+      })),
+      ...(raffle.offChainDetails?.refundList || []).map((refund) => ({
+        type: "refund",
+        participantId: refund.participantId,
+        pubkey: refund.pubkey,
+        amountPaid: refund.amountPaid,
+        timestamp: refund.timestamp || null,
+      })),
+    ];
+
+    // Sort transactions by timestamp (most recent first)
+    transactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    // Limit results for performance (optional)
+    const limitedTransactions = transactions.slice(0, 100);
+
+    return res.status(200).json({
+      message: "Transactions fetched successfully.",
+      data: limitedTransactions,
+    });
+  } catch (error) {
+    console.error(`[ERROR] Failed to fetch transactions for raffle ${raffleId}:`, error);
+    return res.status(500).json({ error: "Failed to fetch transactions." });
   }
 };

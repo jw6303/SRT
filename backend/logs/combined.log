@@ -161,3 +161,6 @@
 2025-01-20T06:17:50.020Z [INFO] Connecting to MongoDB...
 2025-01-20T06:17:50.642Z [INFO] Successfully connected to MongoDB!
 2025-01-20T06:17:50.644Z [INFO] Server is running on http://localhost:5000
+2025-01-20T08:47:06.731Z [INFO] Connecting to MongoDB...
+2025-01-20T08:47:07.335Z [INFO] Successfully connected to MongoDB!
+2025-01-20T08:47:07.337Z [INFO] Server is running on http://localhost:5000
