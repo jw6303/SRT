@@ -1,22 +1,27 @@
-// src/context/WalletContext.js
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from "react";
 import {
   ConnectionProvider,
   WalletProvider,
-} from '@solana/wallet-adapter-react';
-import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
-import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
-import { clusterApiUrl } from '@solana/web3.js';
+} from "@solana/wallet-adapter-react";
+import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+import { clusterApiUrl } from "@solana/web3.js";
 
 // Import CSS for wallet adapter
-import '@solana/wallet-adapter-react-ui/styles.css';
+import "@solana/wallet-adapter-react-ui/styles.css";
 
 const WalletContextProvider = ({ children }) => {
-  // Select the network (e.g., 'devnet', 'testnet', or 'mainnet-beta')
-  const network = clusterApiUrl('devnet');
-
-  // Configure the wallets you want to support
+  const network = clusterApiUrl("devnet");
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
+
+  useEffect(() => {
+    // Explicitly check for Phantom Wallet
+    if (typeof window !== "undefined" && window.solana?.isPhantom) {
+      console.log("Phantom Wallet detected!");
+    } else {
+      console.warn("Phantom Wallet not detected.");
+    }
+  }, []);
 
   return (
     <ConnectionProvider endpoint={network}>
