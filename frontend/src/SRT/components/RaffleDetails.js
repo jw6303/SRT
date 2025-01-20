@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { fetchRaffleDetails, purchaseTicket } from "../../api";
+import { fetchRaffleDetails, purchaseTicket, fetchRaffleTransactions } from "../../api";
 import { getLogStyle } from "../utils/logStyling";
 import "./RaffleDetails.css";
 
@@ -14,6 +14,30 @@ const RaffleDetails = () => {
   const [progress, setProgress] = useState(false); // Show progress during purchase
   const [countdown, setCountdown] = useState(""); // Countdown timer
   const logContainerRef = useRef(null); // For auto-scrolling logs
+  const [transactions, setTransactions] = useState([]);
+  const [txnError, setTxnError] = useState(null);
+  const [txnLoading, setTxnLoading] = useState(true);  
+
+
+
+// Fetch Transactions
+useEffect(() => {
+  const loadTransactions = async () => {
+    try {
+      const data = await fetchRaffleTransactions(raffleId);
+      setTransactions(data); // Ensure this API returns an array
+    } catch (err) {
+      setTxnError("Failed to load transactions.");
+    } finally {
+      setTxnLoading(false);
+    }
+  };
+
+  loadTransactions();
+}, [raffleId]);
+  
+
+
 
   // Fetch raffle details
   useEffect(() => {
@@ -120,25 +144,39 @@ const RaffleDetails = () => {
 
   return (
     <div className="raffle-details-container">
+      {/* Raffle Info Section */}
       <div className="raffle-info">
         <h2>Raffle Details</h2>
         {raffle ? (
-          <pre>
-            > <span className="key">Raffle Name:</span> {raffle.raffleName || "N/A"}
-            {"\n"}> <span className="key">Raffle ID:</span> {raffle.raffleId || "N/A"}
-            {"\n"}> <span className="key">Entry Fee:</span> {raffle.entryFee || "N/A"} SOL
-            {"\n"}> <span className="key">Prize Type:</span> {raffle.prizeDetails?.type || "N/A"}
-            {"\n"}> <span className="key">Prize:</span> {raffle.prizeDetails?.title || "N/A"}
-            {"\n"}> <span className="key">Participants:</span> {raffle.participants?.ticketsSold || 0} / {raffle.participants?.max || "N/A"}
-            {"\n"}> <span className="key">Start Time:</span> {raffle.time?.start ? new Date(raffle.time.start).toLocaleString() : "N/A"}
-            {"\n"}> <span className="key">End Time:</span> {raffle.time?.end ? new Date(raffle.time.end).toLocaleString() : "N/A"}
-            {"\n"}> <span className="key">Countdown:</span> {countdown || "N/A"}
-          </pre>
+          <>
+            <pre>
+              > <span className="key">Raffle Name:</span> {raffle.raffleName || "N/A"}
+              {"\n"}> <span className="key">Raffle ID:</span> {raffle.raffleId || "N/A"}
+              {"\n"}> <span className="key">Entry Fee:</span> {raffle.entryFee || "N/A"} SOL
+              {"\n"}> <span className="key">Prize Type:</span> {raffle.prizeDetails?.type || "N/A"}
+              {"\n"}> <span className="key">Prize:</span> {raffle.prizeDetails?.title || "N/A"}
+              {"\n"}> <span className="key">Participants:</span> {raffle.participants?.ticketsSold || 0} / {raffle.participants?.max || "N/A"}
+              {"\n"}> <span className="key">Start Time:</span> {raffle.time?.start ? new Date(raffle.time.start).toLocaleString() : "N/A"}
+              {"\n"}> <span className="key">End Time:</span> {raffle.time?.end ? new Date(raffle.time.end).toLocaleString() : "N/A"}
+              {"\n"}> <span className="key">Countdown:</span> {countdown || "N/A"}
+            </pre>
+            {raffle.prizeDetails?.imageUrl && (
+              <div className="raffle-image">
+                <img
+                  src={raffle.prizeDetails.imageUrl}
+                  alt={`Prize for ${raffle.raffleName}`}
+                  className="raffle-prize-image"
+                  loading="lazy"
+                />
+              </div>
+            )}
+          </>
         ) : (
           <p>Loading raffle details...</p>
         )}
       </div>
-
+  
+      {/* Question Section */}
       <div className="raffle-question">
         <h3>Question</h3>
         {raffle?.question?.text ? (
@@ -168,7 +206,8 @@ const RaffleDetails = () => {
           <p className="no-question">No question available for this raffle.</p>
         )}
       </div>
-
+  
+      {/* Ticket Purchase Section */}
       <div className="raffle-purchase">
         <label>
           Tickets:
@@ -184,19 +223,91 @@ const RaffleDetails = () => {
           {progress ? "Processing..." : "Buy Tickets"}
         </button>
       </div>
-
+  
+      {/* Activity Logs */}
       <div className="raffle-logs" ref={logContainerRef}>
         <h3>Activity Logs</h3>
-        {logs.map((log, index) => (
-          <div key={index} style={getLogStyle(log.type)}>
-            [{new Date(log.logTime).toLocaleTimeString()}] {log.message}
-          </div>
-        ))}
+        {logs.length > 0 ? (
+          logs.map((log, index) => (
+            <div key={index} style={getLogStyle(log.type)}>
+              [{new Date(log.logTime).toLocaleTimeString()}] {log.message}
+            </div>
+          ))
+        ) : (
+          <p>No logs available.</p>
+        )}
       </div>
-
-      <Link to="/">Back to Raffles</Link>
+  
+<div className="raffle-transactions">
+  <h3>Transactions</h3>
+  {txnLoading ? (
+    <p className="terminal-loading">> Loading transactions...</p>
+  ) : txnError ? (
+    <p className="txn-error">> {txnError}</p>
+  ) : transactions.length > 0 ? (
+    <table className="txn-table">
+      <thead>
+        <tr>
+          <th>Participant</th>
+          <th>Type</th>
+          <th>Tickets</th>
+          <th>Amount (SOL)</th>
+          <th>Wallet</th>
+          <th>Transaction ID</th>
+          <th>Time</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {transactions.map((txn, index) => (
+          <tr key={index}>
+            <td>{txn.participantId || "N/A"}</td>
+            <td>{txn.type || "N/A"}</td>
+            <td>{txn.tickets || "-"}</td>
+            <td>{txn.amountPaid ? txn.amountPaid.toFixed(2) : "N/A"}</td>
+            <td>
+              {txn.pubkey
+                ? `${txn.pubkey.slice(0, 4)}...${txn.pubkey.slice(-4)}`
+                : "N/A"}
+            </td>
+            <td>
+              {txn.transactionId ? (
+                <a
+                  href={`https://explorer.solana.com/tx/${txn.transactionId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {txn.transactionId.slice(0, 6)}...
+                </a>
+              ) : (
+                "N/A"
+              )}
+            </td>
+            <td>
+              {txn.timestamp
+                ? new Date(txn.timestamp).toLocaleString()
+                : "N/A"}
+            </td>
+            <td>{txn.status || "Pending"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ) : (
+    <p className="no-transactions">> No transactions found.</p>
+  )}
+</div>
+  
+      {/* Back Link */}
+      <div className="back-link-container">
+        <Link to="/" className="back-link">
+          Back to Raffles
+        </Link>
+      </div>
     </div>
   );
-};
-
-export default RaffleDetails;
+  
+  };
+  
+  export default RaffleDetails;
+  

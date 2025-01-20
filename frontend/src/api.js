@@ -73,13 +73,14 @@ export const fetchRaffleDetails = async (id) => {
     }
 
     const data = await response.json();
-    console.log(`Fetched details for raffle ID ${id}:`, data);
     return data;
   } catch (error) {
-    console.error(`Error fetching details for raffle ID ${id}:`, error.message);
+    console.error(`Error fetching details for raffle ID ${id}:`, error);
     throw error;
   }
 };
+
+
 
 
 /**
@@ -406,3 +407,32 @@ export const fetchWinnerDetails = async (id) => {
 };
 
 
+/**
+ * Fetch live transactions for a specific raffle
+ * @param {string} raffleId - The ID of the raffle
+ * @returns {Promise<Object[]>} - Array of transactions related to the raffle
+ */
+export const fetchRaffleTransactions = async (raffleId) => {
+  if (!raffleId) {
+    throw new Error("Raffle ID is required to fetch transactions.");
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/${raffleId}/transactions`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Failed to fetch transactions: ${errorMessage}`);
+    }
+
+    const data = await response.json();
+    console.log(`Fetched transactions for raffle ID ${raffleId}:`, data); // Debugging
+    return data.data || []; // Return transaction array
+  } catch (error) {
+    console.error(`Error fetching transactions for raffle ${raffleId}:`, error);
+    throw error; // Re-throw the error for the caller to handle
+  }
+};

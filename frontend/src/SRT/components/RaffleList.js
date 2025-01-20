@@ -13,6 +13,7 @@ const RaffleList = () => {
   const [page, setPage] = useState(1); // Current page
   const [limit] = useState(5); // Items per page
   const [totalRaffles, setTotalRaffles] = useState(0); // Total raffles count
+  const [countdowns, setCountdowns] = useState({}); // Store countdowns for raffles
 
   // Fetch raffles on component load or when dependencies change
   useEffect(() => {
@@ -57,6 +58,32 @@ const RaffleList = () => {
     setDisplayedRaffles(paginatedRaffles);
   }, [raffles, sortBy, sortOrder, page, limit]);
 
+  // Update countdowns for each raffle
+  useEffect(() => {
+    const updateCountdowns = () => {
+      const newCountdowns = {};
+      displayedRaffles.forEach((raffle) => {
+        const endTime = new Date(raffle.time?.end).getTime();
+        const now = new Date().getTime();
+        const timeLeft = endTime - now;
+
+        if (timeLeft <= 0) {
+          newCountdowns[raffle._id] = "Raffle Ended";
+        } else {
+          const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+          const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+          newCountdowns[raffle._id] = `${hours}h ${minutes}m ${seconds}s`;
+        }
+      });
+      setCountdowns(newCountdowns);
+    };
+
+    const interval = setInterval(updateCountdowns, 1000);
+
+    return () => clearInterval(interval);
+  }, [displayedRaffles]);
+
   // Loading or error states
   if (loading) return <p className="terminal-loading">> Loading active raffles...</p>;
   if (error) return <p className="terminal-error">> {error}</p>;
@@ -99,16 +126,7 @@ const RaffleList = () => {
                 {raffle.participants?.ticketsSold || 0} / {raffle.participants?.max || "N/A"}
               </p>
               <p>> <span className="key">End Time:</span> {new Date(raffle.time?.end).toLocaleString()}</p>
-              {raffle.prizeDetails?.imageUrl && (
-                <p>> <span className="key">Image:</span>
-                  <img
-                    src={raffle.prizeDetails.imageUrl}
-                    alt={`Raffle ${raffle.raffleId}`}
-                    className="raffle-image"
-                  />
-                </p>
-              )}
-              <p>> <span className="key">Question:</span> {raffle.question?.text || "N/A"}</p>
+              <p>> <span className="key">Countdown:</span> {countdowns[raffle._id] || "Loading..."}</p>
               <Link to={`/raffles/${raffle._id}`} className="details-link">
                 > View Details
               </Link>

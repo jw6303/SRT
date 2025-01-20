@@ -9,6 +9,8 @@
   background-color: #000; /* Terminal black */
   color: #e6e8e9; /* Light gray */
   font-family: "Courier New", Courier, monospace; /* CLI-like font */
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); /* Subtle terminal glow */
+  border-radius: 8px;
 }
 
 /* Raffle Columns */
@@ -25,6 +27,7 @@
   padding: 15px;
   border-radius: 5px;
   border: 1px solid #333; /* Darker border for separation */
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1); /* Subtle glow */
 }
 
 .raffle-info pre {
@@ -41,8 +44,9 @@
 
 .raffle-info img {
   margin-top: 10px;
-  max-width: 100%;
+  max-width: 50%;
   border-radius: 5px;
+  border: 1px solid #444; /* Subtle border for images */
 }
 
 /* Log Section */
@@ -54,12 +58,13 @@
   max-height: 300px; /* Fixed height for consistent layout */
   overflow-y: auto; /* Scrollable logs */
   overflow-x: hidden;
-  font-size: 1rem; /* Default font size */
+  font-size: 0.9rem; /* Compact font size */
   color: #e6e8e9; /* Light gray */
   white-space: pre-wrap; /* Properly wrap long messages */
   line-height: 1.5; /* Increase readability */
   scrollbar-width: thin; /* Thin scrollbar */
   scrollbar-color: #7fdbff #111; /* Cyan thumb on black track */
+  box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.1); /* Inner glow effect */
 }
 
 /* Log Entry Styling */
@@ -68,8 +73,8 @@
   padding: 5px;
   border-left: 2px solid #7fdbff; /* Cyan left border for CLI feel */
   padding-left: 10px;
-  font-size: 0.9rem; /* Slightly smaller for CLI effect */
-  line-height: 1.6; /* Spaced out for readability */
+  font-size: 0.85rem; /* Slightly smaller for CLI effect */
+  line-height: 1.4; /* Spaced out for readability */
   color: #f8f8f2; /* Default log text */
 }
 
@@ -95,7 +100,7 @@
 }
 
 .raffle-logs::-webkit-scrollbar-thumb {
-  background: #7fdbff; /* Cyan scrollbar thumb */
+  background: linear-gradient(180deg, #7fdbff, #50fa7b); /* Gradient thumb */
   border-radius: 5px;
 }
 
@@ -112,6 +117,7 @@
 
 .progress-bar .progress {
   color: #50fa7b; /* Bright green for progress bar */
+  background: linear-gradient(90deg, #50fa7b, #7fdbff); /* Smooth gradient */
 }
 
 .countdown-timer {
@@ -119,6 +125,14 @@
   font-weight: bold;
   margin-top: 10px;
   color: #ffb86c; /* Orange for countdown timer */
+  animation: blink 1s infinite; /* Blinking effect */
+}
+
+/* Blinking Timer */
+@keyframes blink {
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Indented Log Messages */
@@ -140,5 +154,165 @@
 
   .raffle-info {
     font-size: 0.9rem; /* Adjust text size for smaller screens */
+  }
+}
+
+.loading-placeholder {
+  width: 100%;
+  height: 300px; /* Match the height of the loaded content */
+  background-color: #111; /* Match the terminal background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7FDBFF;
+  font-family: "Courier New", monospace;
+}
+
+.skeleton-loader {
+  background: linear-gradient(90deg, #333, #444, #333);
+  animation: skeleton-loading 1.2s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+
+
+
+
+
+/* Transactions Section */
+.raffle-transactions {
+  margin-top: 20px;
+  background-color: #000; /* Match the background */
+  padding: 15px;
+  border: 1px solid #222; /* Subtle border */
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.2); /* Soft glow */
+}
+
+/* Table Styling */
+.txn-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #e9dce8; /* Soft terminal green text */
+  font-family: "Courier New", monospace; /* Match terminal font */
+}
+
+.txn-table th,
+.txn-table td {
+  text-align: left;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.txn-table th {
+  background-color: #111; /* Slightly lighter header background */
+  color: #7FDBFF; /* Cyan text for headers */
+  border-bottom: 2px solid #333; /* Subtle bottom border */
+}
+
+.txn-table td {
+  background-color: #000; /* Match background */
+  border-bottom: 1px solid #222; /* Subtle row separators */
+}
+
+/* Highlight Alternate Rows */
+.txn-table tr:nth-child(even) td {
+  background-color: #111; /* Alternate row background */
+}
+
+/* Animation for New Rows */
+.txn-table tr.new-transaction {
+  animation: flash-row 2s ease-out;
+}
+
+@keyframes flash-row {
+  0% {
+    background-color: #004400; /* Green flash */
+  }
+  100% {
+    background-color: #000; /* Return to black */
+  }
+}
+
+/* Flashing Numbers for Green (positive) and Red (negative) */
+.txn-table td.green {
+  color: #00ff00; /* Bright green */
+  animation: flash-green 1s ease-out;
+}
+
+.txn-table td.red {
+  color: #ff0000; /* Bright red */
+  animation: flash-red 1s ease-out;
+}
+
+@keyframes flash-green {
+  0% {
+    background-color: #003300; /* Dark green background */
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes flash-red {
+  0% {
+    background-color: #330000; /* Dark red background */
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Hover Effect */
+.txn-table tr:hover {
+  background-color: #222; /* Slight highlight */
+}
+
+/* Error and No Transaction States */
+.terminal-loading,
+.txn-error,
+.no-transactions {
+  color: #ffcc00; /* Bright yellow for emphasis */
+  text-align: center;
+  font-style: italic;
+}
+
+/* Links for Transaction IDs */
+.txn-table a {
+  color: #7FDBFF; /* Cyan links */
+  text-decoration: none;
+}
+
+.txn-table a:hover {
+  text-decoration: underline;
+}
+
+/* Title Styling */
+.raffle-transactions h3 {
+  text-align: center;
+  color: #7FDBFF; /* Cyan title text */
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+
+.new-transaction {
+  animation: highlight 2s ease-out;
+}
+
+@keyframes highlight {
+  0% {
+    background-color: rgba(0, 255, 0, 0.3);
+  }
+  100% {
+    background-color: transparent;
   }
 }
