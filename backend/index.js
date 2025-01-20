@@ -3,18 +3,12 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { MongoClient } = require("mongodb");
 const { createServer } = require("http");
-const { Server } = require("socket.io");
 const logger = require("./src/utils/logger");
+const initializeWebSocket = require("./src/utils/websocket"); // Import WebSocket setup
 require("dotenv").config();
 
 const app = express();
 const httpServer = createServer(app); // Create HTTP server
-const io = new Server(httpServer, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
 
 // Middleware
 app.use(cors());
@@ -39,24 +33,7 @@ async function connectToDatabase() {
 }
 
 // Attach WebSocket to requests
-app.use((req, res, next) => {
-  req.io = io; // Attach io instance to req
-  next();
-});
-
-// WebSocket connection events
-io.on("connection", (socket) => {
-  logger.info(`New client connected: ${socket.id}`);
-  
-  socket.on("join-raffle", (raffleId) => {
-    socket.join(`raffle-${raffleId}`);
-    logger.info(`Socket ${socket.id} joined room: raffle-${raffleId}`);
-  });
-
-  socket.on("disconnect", () => {
-    logger.info(`Client disconnected: ${socket.id}`);
-  });
-});
+initializeWebSocket(httpServer); // Initialize WebSocket with HTTP server
 
 // Root Route
 app.get("/", (req, res) => {
@@ -65,14 +42,18 @@ app.get("/", (req, res) => {
 
 // Import and use routes
 const raffleRoutes = require("./src/routes/raffle.routes");
-app.use("/api/raffles", (req, res, next) => {
-  if (!db) {
-    logger.error("Database not connected!");
-    return res.status(500).json({ error: "Database connection not established." });
-  }
-  req.db = db;
-  next();
-}, raffleRoutes);
+app.use(
+  "/api/raffles",
+  (req, res, next) => {
+    if (!db) {
+      logger.error("Database not connected!");
+      return res.status(500).json({ error: "Database connection not established." });
+    }
+    req.db = db;
+    next();
+  },
+  raffleRoutes
+);
 
 // Fallback route
 app.use((req, res) => {

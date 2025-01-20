@@ -1,4 +1,6 @@
 const { ObjectId } = require("mongodb");
+// Import the WebSocket broadcasting function
+const { broadcastToRaffle } = require("../utils/websocket");
 
 // Helper: Validate ObjectId
 function validateObjectId(id, res) {
@@ -397,17 +399,16 @@ exports.concludeRaffle = async (req, res) => {
     }
 
     // Emit real-time update via WebSocket
-    if (req.io) {
-      req.io.to(`raffle-${id}`).emit("raffle-concluded", {
-        raffleId: id,
-        winner: {
-          participantId: winner.participantId,
-          pubkey: winner.pubkey,
-          amountWon: raffle.prizeDetails.type === "SOL" ? raffle.prizeDetails.amount : "Physical prize",
-        },
-        fulfillmentStatus,
-      });
-    }
+    broadcastToRaffle(id, {
+      type: "raffleConcluded",
+      raffleId: id,
+      winner: {
+        participantId: winner.participantId,
+        pubkey: winner.pubkey,
+        amountWon: raffle.prizeDetails.type === "SOL" ? raffle.prizeDetails.amount : "Physical prize",
+      },
+      fulfillmentStatus,
+    });
 
     // Send a success response
     res.status(200).json({
@@ -428,6 +429,7 @@ exports.concludeRaffle = async (req, res) => {
 
 
 // Extend a Raffle
+
 exports.extendRaffle = async (req, res) => {
   const { id } = req.params;
   const { additionalTime } = req.body;
@@ -458,20 +460,24 @@ exports.extendRaffle = async (req, res) => {
     const currentEndTime = new Date(raffle.time.end).getTime();
     const newEndTime = new Date(currentEndTime + additionalTime * 60 * 1000);
 
-    // Update the raffle's end time
-    await req.db.collection("raffles").updateOne(
+    // Update the raffle's end time in the database
+    const updateResult = await req.db.collection("raffles").updateOne(
       { _id: new ObjectId(id) },
       { $set: { "time.end": newEndTime } }
     );
 
-    // Emit real-time update via WebSocket
-    if (req.io) {
-      req.io.to(`raffle-${id}`).emit("raffle-update", {
-        raffleId: id,
-        newEndTime,
-      });
+    if (updateResult.modifiedCount === 0) {
+      throw new Error("Failed to update the raffle end time.");
     }
 
+    // Emit real-time update via WebSocket
+    broadcastToRaffle(id, {
+      type: "raffleUpdate",
+      raffleId: id,
+      updatedEndTime: newEndTime,
+    });
+
+    // Send a success response
     res.status(200).json({
       message: "Raffle extended successfully!",
       updatedEndTime: newEndTime,
@@ -487,6 +493,7 @@ exports.extendRaffle = async (req, res) => {
 
 
 // Purchase Ticket
+
 exports.purchaseTicket = async (req, res) => {
   console.log("[DEBUG] Reached purchaseTicket endpoint");
 
@@ -507,7 +514,6 @@ exports.purchaseTicket = async (req, res) => {
     // Fetch the raffle details
     const raffle = await req.db.collection("raffles").findOne({ _id: new ObjectId(id) });
 
-    // Check if the raffle exists
     if (!raffle) {
       return res.status(404).json({ error: "Raffle not found." });
     }
@@ -552,13 +558,13 @@ exports.purchaseTicket = async (req, res) => {
     }
 
     // Emit real-time update via WebSocket
-    if (req.io) {
-      req.io.to(`raffle-${id}`).emit("raffle-update", {
-        raffleId: id,
-        ticketsSold: raffle.participants.ticketsSold + ticketCount,
-        availableTickets: availableTickets - ticketCount,
-      });
-    }
+    const updatedTicketsSold = raffle.participants.ticketsSold + ticketCount;
+    broadcastToRaffle(id, {
+      type: "raffleUpdate",
+      raffleId: id,
+      ticketsSold: updatedTicketsSold,
+      availableTickets: availableTickets - ticketCount,
+    });
 
     // Send a success response
     res.status(200).json({
@@ -567,7 +573,7 @@ exports.purchaseTicket = async (req, res) => {
         raffleId: id,
         participantId,
         ticketsPurchased: ticketCount,
-        ticketsSold: raffle.participants.ticketsSold + ticketCount,
+        ticketsSold: updatedTicketsSold,
         availableTickets: availableTickets - ticketCount,
       },
     });
@@ -576,7 +582,6 @@ exports.purchaseTicket = async (req, res) => {
     res.status(500).json({ error: "Failed to purchase ticket(s)." });
   }
 };
-
 
 
 
@@ -610,9 +615,10 @@ exports.getRaffleAnalytics = async (req, res) => {
 
 
 exports.notifyParticipants = (req, res) => {
-  const { id } = req.params;
-  const { message } = req.body;
+  const { id } = req.params; // Raffle ID
+  const { message } = req.body; // Notification message
 
+  // Validate input
   if (!message) {
     return res.status(400).json({ error: "Message is required." });
   }
@@ -621,10 +627,14 @@ exports.notifyParticipants = (req, res) => {
 
   try {
     // Emit notification to all participants
-    if (req.io) {
-      req.io.to(`raffle-${id}`).emit("notification", { message });
-    }
+    broadcastToRaffle(id, {
+      type: "notification",
+      raffleId: id,
+      message,
+      timestamp: new Date(),
+    });
 
+    // Send success response
     res.status(200).json({ message: "Notification sent successfully!" });
   } catch (err) {
     console.error("[ERROR] Failed to send notification:", err);
@@ -634,9 +644,10 @@ exports.notifyParticipants = (req, res) => {
 
 
 
+
 exports.notifyAllParticipants = async (req, res) => {
-  const { id } = req.params;
-  const { message } = req.body;
+  const { id } = req.params; // Raffle ID
+  const { message } = req.body; // Notification message
 
   // Validate input
   if (!message) {
@@ -646,15 +657,15 @@ exports.notifyAllParticipants = async (req, res) => {
   if (!validateObjectId(id, res)) return;
 
   try {
-    // Emit notification to all participants in the raffle room
-    if (req.io) {
-      req.io.to(`raffle-${id}`).emit("notification", {
-        raffleId: id,
-        message,
-        timestamp: new Date(),
-      });
-    }
+    // Emit notification to all participants using broadcastToRaffle
+    broadcastToRaffle(id, {
+      type: "notification",
+      raffleId: id,
+      message,
+      timestamp: new Date(),
+    });
 
+    // Send success response
     res.status(200).json({ message: "Notification sent to all participants successfully!" });
   } catch (err) {
     console.error("[ERROR] Failed to send notification to all participants:", err);
@@ -663,9 +674,10 @@ exports.notifyAllParticipants = async (req, res) => {
 };
 
 
+
 exports.notifyParticipant = async (req, res) => {
   const { id } = req.params; // Raffle ID
-  const { participantId, message } = req.body;
+  const { participantId, message } = req.body; // Participant ID and message
 
   // Validate input
   if (!message || !participantId) {
@@ -675,22 +687,24 @@ exports.notifyParticipant = async (req, res) => {
   if (!validateObjectId(id, res)) return;
 
   try {
-    // Emit private notification to the specific participant
-    if (req.io) {
-      req.io.to(`raffle-${id}`).emit("participant-notification", {
-        participantId,
-        raffleId: id,
-        message,
-        timestamp: new Date(),
-      });
-    }
+    // Emit private notification to the specific participant using broadcastToRaffle
+    broadcastToRaffle(id, {
+      type: "participantNotification",
+      raffleId: id,
+      participantId,
+      message,
+      timestamp: new Date(),
+    });
 
+    // Send success response
     res.status(200).json({ message: "Notification sent to the participant successfully!" });
   } catch (err) {
     console.error("[ERROR] Failed to send notification to participant:", err);
     res.status(500).json({ error: "Failed to send notification to the participant." });
   }
 };
+
+
 
 
 exports.notifyWinner = async (req, res) => {
@@ -759,16 +773,75 @@ exports.notifyRefunds = async (req, res) => {
 exports.getRaffleById = async (req, res) => {
   const { id } = req.params;
 
-  if (!validateObjectId(id, res)) return; // Validate and sanitize ObjectId
+  // Validate and sanitize ObjectId
+  if (!validateObjectId(id, res)) return;
 
   try {
+    // Log the incoming request
+    console.log(`[INFO] Fetching raffle with ID: ${id}`);
+
+    // Fetch raffle details
     const raffle = await req.db.collection("raffles").findOne({ _id: new ObjectId(id) });
 
     if (!raffle) {
-      return res.status(404).json({ error: "Raffle not found." });
+      console.log(`[WARN] Raffle with ID ${id} not found.`);
+      return res.status(404).json({ error: `Raffle with ID ${id} not found.` });
     }
 
-    res.status(200).json({ message: "Raffle fetched successfully.", data: raffle });
+    // Validate necessary fields and provide fallback values if missing
+    const formattedRaffle = {
+      _id: raffle._id,
+      raffleId: raffle.raffleId || "N/A",
+      raffleName: raffle.raffleName || "N/A",
+      entryFee: raffle.entryFee || 0,
+      prizeDetails: {
+        type: raffle.prizeDetails?.type || "N/A",
+        title: raffle.prizeDetails?.title || "N/A",
+        amount: raffle.prizeDetails?.amount || "N/A",
+        details: raffle.prizeDetails?.details || "N/A",
+        imageUrl: raffle.prizeDetails?.imageUrl || "",
+        requiresShipping: raffle.prizeDetails?.requiresShipping || false,
+        shippingFields: raffle.prizeDetails?.shippingFields || {},
+      },
+      participants: {
+        max: raffle.participants?.max || 0,
+        min: raffle.participants?.min || 0,
+        ticketsSold: raffle.participants?.ticketsSold || 0,
+        tickets: raffle.participants?.tickets || [],
+        correct: raffle.participants?.correct || [],
+        incorrect: raffle.participants?.incorrect || [],
+      },
+      time: {
+        start: raffle.time?.start || null,
+        end: raffle.time?.end || null,
+        created: raffle.time?.created || null,
+      },
+      question: {
+        text: raffle.question?.text || "No question available.",
+        options: raffle.question?.options || [],
+        correctAnswer: raffle.question?.correctAnswer || null,
+      },
+      status: {
+        current: raffle.status?.current || "unknown",
+        fulfillment: raffle.status?.fulfillment || "pending",
+        isOnChain: raffle.status?.isOnChain || false,
+      },
+      onChainDetails: raffle.onChainDetails || {},
+      offChainDetails: raffle.offChainDetails || {},
+      analytics: {
+        totalTickets: raffle.analytics?.totalTickets || 0,
+        totalEntries: raffle.analytics?.totalEntries || 0,
+        totalRefunds: raffle.analytics?.totalRefunds || 0,
+        successfulRaffles: raffle.analytics?.successfulRaffles || 0,
+        failedRaffles: raffle.analytics?.failedRaffles || 0,
+      },
+      createdAt: raffle.createdAt || null,
+    };
+
+    console.log(`[INFO] Raffle fetched successfully:`, formattedRaffle);
+
+    // Respond with the formatted raffle details
+    res.status(200).json({ message: "Raffle fetched successfully.", data: formattedRaffle });
   } catch (err) {
     console.error(`[ERROR] Failed to fetch raffle with ID ${id}:`, err);
     res.status(500).json({ error: "Failed to fetch raffle." });
