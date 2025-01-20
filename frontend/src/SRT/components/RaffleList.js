@@ -4,17 +4,17 @@ import { fetchActiveRaffles } from "../../api";
 import "./RaffleList.css";
 
 const RaffleList = () => {
-  const [raffles, setRaffles] = useState([]);
-  const [displayedRaffles, setDisplayedRaffles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [sortBy, setSortBy] = useState("time.start");
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [page, setPage] = useState(1);
-  const [limit] = useState(5); // Static limit
-  const [totalRaffles, setTotalRaffles] = useState(0);
+  const [raffles, setRaffles] = useState([]); // Stores all raffles
+  const [displayedRaffles, setDisplayedRaffles] = useState([]); // For pagination
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error handling
+  const [sortBy, setSortBy] = useState("time.start"); // Default sorting
+  const [sortOrder, setSortOrder] = useState("asc"); // Default order
+  const [page, setPage] = useState(1); // Current page
+  const [limit] = useState(5); // Items per page
+  const [totalRaffles, setTotalRaffles] = useState(0); // Total raffles count
 
-  // Fetch all raffles initially
+  // Fetch raffles on component load or when dependencies change
   useEffect(() => {
     const loadRaffles = async () => {
       setLoading(true);
@@ -42,7 +42,7 @@ const RaffleList = () => {
     loadRaffles();
   }, [sortBy, sortOrder, page, limit]);
 
-  // Handle sorting and pagination
+  // Sorting and pagination logic
   useEffect(() => {
     const sortedRaffles = [...raffles].sort((a, b) => {
       const aField = a[sortBy] || "";
@@ -57,6 +57,7 @@ const RaffleList = () => {
     setDisplayedRaffles(paginatedRaffles);
   }, [raffles, sortBy, sortOrder, page, limit]);
 
+  // Loading or error states
   if (loading) return <p className="terminal-loading">> Loading active raffles...</p>;
   if (error) return <p className="terminal-error">> {error}</p>;
 
@@ -89,22 +90,25 @@ const RaffleList = () => {
         {displayedRaffles.length > 0 ? (
           displayedRaffles.map((raffle) => (
             <div key={raffle._id} className="raffle-entry">
-              <p>> <span className="key">Raffle ID:</span> {raffle.raffleId}</p>
+              <p>> <span className="key">Raffle Name:</span> {raffle.raffleName || "N/A"}</p>
+              <p>> <span className="key">Raffle ID:</span> {raffle.raffleId || "N/A"}</p>
               <p>> <span className="key">Entry Fee:</span> {raffle.entryFee || "N/A"} SOL</p>
-              <p>> <span className="key">Prize Amount:</span> {raffle.prizeDetails?.amount || "N/A"} SOL</p>
+              <p>> <span className="key">Prize Type:</span> {raffle.prizeDetails?.type || "N/A"}</p>
+              <p>> <span className="key">Prize:</span> {raffle.prizeDetails?.title || "N/A"}</p>
               <p>> <span className="key">Participants:</span>
                 {raffle.participants?.ticketsSold || 0} / {raffle.participants?.max || "N/A"}
               </p>
               <p>> <span className="key">End Time:</span> {new Date(raffle.time?.end).toLocaleString()}</p>
-              {raffle.imageUrl && (
+              {raffle.prizeDetails?.imageUrl && (
                 <p>> <span className="key">Image:</span>
                   <img
-                    src={raffle.imageUrl}
+                    src={raffle.prizeDetails.imageUrl}
                     alt={`Raffle ${raffle.raffleId}`}
                     className="raffle-image"
                   />
                 </p>
               )}
+              <p>> <span className="key">Question:</span> {raffle.question?.text || "N/A"}</p>
               <Link to={`/raffles/${raffle._id}`} className="details-link">
                 > View Details
               </Link>

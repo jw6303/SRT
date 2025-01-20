@@ -4,13 +4,6 @@ const API_BASE_URL = "http://localhost:5000/api/raffles";
 /**
  * Fetch all active raffles
  * @param {Object} options - Query options for filtering and pagination
- * @param {string} [options.prizeType] - Filter by prize type
- * @param {number} [options.maxParticipants] - Filter by maximum number of participants
- * @param {string} [options.fulfillment] - Filter by fulfillment status
- * @param {string} [options.sortField] - Field to sort by (default: "time.start")
- * @param {string} [options.sortOrder] - Sort order ("asc" or "desc", default: "asc")
- * @param {number} [options.page] - Page number for pagination (default: 1)
- * @param {number} [options.limit] - Number of raffles per page (default: 10)
  * @returns {Promise<Object>} - Object containing raffles and metadata
  */
 export const fetchActiveRaffles = async (options = {}) => {
@@ -38,20 +31,20 @@ export const fetchActiveRaffles = async (options = {}) => {
     queryParams.append("limit", limit);
 
     // Fetch data from API
-    const response = await fetch(`${API_BASE_URL}`);
+    const response = await fetch(`${API_BASE_URL}?${queryParams}`);
     if (!response.ok) throw new Error(`Failed to fetch raffles: ${response.statusText}`);
+
     const data = await response.json();
-    console.log("API Response:", data); // Debugging: Log full response
+    console.log("Fetched Active Raffles:", data); // Debugging: Log full response
     return {
       raffles: data?.data || [], // Map `data` to `raffles`
       meta: data?.meta || {},
     };
   } catch (error) {
-    console.error("Error fetching active raffles:", error);
+    console.error("Error fetching active raffles:", error.message);
     throw error;
   }
 };
-
 
 
 
@@ -80,14 +73,13 @@ export const fetchRaffleDetails = async (id) => {
     }
 
     const data = await response.json();
+    console.log(`Fetched details for raffle ID ${id}:`, data);
     return data;
   } catch (error) {
-    console.error(`Error fetching details for raffle ID ${id}:`, error);
+    console.error(`Error fetching details for raffle ID ${id}:`, error.message);
     throw error;
   }
 };
-
-
 
 
 /**
