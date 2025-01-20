@@ -19,6 +19,16 @@ const Raffle = () => {
   const { connected, publicKey } = useWallet();
   const connection = new Connection("https://api.devnet.solana.com");
 
+  // Detect Phantom Wallet availability
+  useEffect(() => {
+    if (window.solana?.isPhantom) {
+      console.log("Phantom Wallet detected.");
+    } else {
+      console.warn("Phantom Wallet not detected. Redirect may occur.");
+    }
+  }, []);
+
+  // Fetch wallet balance
   useEffect(() => {
     const fetchBalance = async () => {
       if (!connected || !publicKey) {
@@ -30,14 +40,16 @@ const Raffle = () => {
         const balanceInLamports = await connection.getBalance(publicKey);
         const balanceInSol = balanceInLamports / 1e9;
         setBalance(balanceInSol.toFixed(2));
+        console.log("Wallet balance fetched:", balanceInSol);
       } catch (error) {
         console.error("Error fetching wallet balance:", error);
       }
     };
 
     fetchBalance();
-  }, [connected, publicKey]);
+  }, [connected, publicKey, connection]);
 
+  // Open modal for a specific pool
   const openModal = (pool) => {
     if (!connected) {
       alert("Please connect your wallet to participate.");
@@ -47,6 +59,7 @@ const Raffle = () => {
     setSelectedPool(pool);
   };
 
+  // Close the modal
   const closeModal = () => {
     console.log("Closing modal");
     setSelectedPool(null);
