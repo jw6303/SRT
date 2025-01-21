@@ -215,7 +215,7 @@ exports.getActiveRaffles = async (req, res) => {
 
 exports.registerParticipant = async (req, res) => {
   const { id } = req.params; // Raffle ID from route parameters
-  const { participantId, name, pubkey, answer, amountPaid } = req.body; // Participant details from request body
+  const { participantId, name, pubkey, answer, amountPaid, shippingInfo } = req.body; // Include shipping info in request body
 
   // Validate and sanitize ObjectId
   if (!ObjectId.isValid(id)) {
@@ -243,6 +243,18 @@ exports.registerParticipant = async (req, res) => {
       return res.status(400).json({ error: "Participant is already registered." });
     }
 
+    // If the raffle requires shipping, validate the shipping info
+    if (raffle.prizeDetails.requiresShipping) {
+      const requiredFields = ["fullName", "email", "phone", "addressLine1", "city", "postalCode", "country"];
+      const missingFields = requiredFields.filter((field) => !shippingInfo?.[field]);
+
+      if (missingFields.length > 0) {
+        return res.status(400).json({
+          error: `Missing required shipping information: ${missingFields.join(", ")}`,
+        });
+      }
+    }
+
     // Determine if the answer is correct
     const isCorrect = answer === raffle.question.correctAnswer;
 
@@ -254,6 +266,7 @@ exports.registerParticipant = async (req, res) => {
       answer,
       amountPaid,
       registrationTime: new Date(),
+      shippingInfo: raffle.prizeDetails.requiresShipping ? shippingInfo : null, // Attach shipping info if required
     };
 
     // Prepare the new ticket data
