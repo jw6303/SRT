@@ -1,0 +1,61 @@
+/* General CLI Styling */
+.terminal-container {
+    font-family: "Courier New", Courier, monospace;
+    background-color: #1e1e1e; /* Neutral dark gray background */
+    color: #c0c0c0; /* Light gray text for readability */
+    padding: 10px;
+    border: 1px solid #333333; /* Subtle border */
+    border-radius: 5px;
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+  
+  /* Key Styling */
+  .key {
+    color: #ffd700; /* Gold for keys */
+    font-weight: bold;
+    display: inline-block;
+    min-width: 120px; /* Align all keys */
+  }
+  
+  /* Numbers and Monetary Values */
+  .number {
+    font-weight: bold;
+    color: #00ff00; /* Bright green for numbers */
+  }
+  
+  .money {
+    font-weight: bold;
+    color: #ffd700; /* Gold for monetary values */
+  }
+  
+  .threshold-warning {
+    font-weight: bold;
+    color: #ff4500; /* Orange-red for threshold-related numbers */
+  }
+  
+  /* Links */
+  .details-link {
+    color: #0087ff; /* Blue for links */
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 10px;
+    display: inline-block;
+  }
+  
+  .details-link:hover {
+    color: #ffffff; /* White on hover */
+  }
+  
+  /* Status Tags */
+  .status-tag {
+    font-weight: bold;
+    color: #ff4500; /* Orange-red for active/warning tags */
+  }
+  
+  /* Countdown Styling */
+  .countdown {
+    font-style: italic;
+    color: #f0e68c; /* Khaki yellow for countdown emphasis */
+  }
+  

@@ -277,3 +277,26 @@
     padding: 0.8rem;
   }
 }
+
+.wallet-section {
+  background-color: transparent !important; /* Remove the gray background */
+  padding: 10px; /* Adjust padding as needed */
+  border: none !important; /* Remove any border */
+  border-radius: 0 !important; /* Remove rounded corners */
+  box-shadow: none !important; /* Remove shadow effects */
+  color: #ccc; /* Soft gray text */
+  text-align: center; /* Center-align content */
+}
+
+
+.wallet-section {
+  background-color: transparent !important; /* Remove the gray background */
+  padding: 10px; /* Adjust padding as needed */
+  border: none !important; /* Remove any border */
+  border-radius: 0 !important; /* Remove rounded corners */
+  box-shadow: none !important; /* Remove shadow effects */
+  color: #ccc; /* Soft gray text */
+  text-align: center; /* Center-align content */
+}
+
+

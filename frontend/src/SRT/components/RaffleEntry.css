@@ -1,0 +1,71 @@
+.raffle-entry {
+  border: 1px solid #333333; /* Subtle, darker border */
+  padding: 15px;
+  margin-bottom: 20px;
+  font-family: "Courier New", Courier, monospace;
+  color: #c0c0c0; /* Keep light gray text */
+  background-color: #121212; /* Darker background for CLI style */
+  border-radius: 6px; /* Slightly rounded corners */
+  box-shadow: none; /* Remove neon glow for a cleaner look */
+}
+
+  
+  /* Key Styling */
+  .key {
+    color: #ffd700; /* Gold for keys */
+    font-weight: bold;
+  }
+  
+  /* Number and Monetary Values */
+  .number {
+    font-weight: bold;
+    color: #00ff00; /* Green for numbers */
+  }
+  
+  .money {
+    font-weight: bold;
+    color: #00cc99; /* Mint green for monetary values */
+  }
+  
+  /* Threshold Warnings */
+  .threshold-warning {
+    font-weight: bold;
+    color: #ff4500; /* Orange-red for threshold-related numbers */
+  }
+  
+  /* Links */
+  .details-link {
+    color: #0087ff; /* Blue for links */
+    text-decoration: none;
+    font-weight: bold;
+    margin-top: 10px;
+    display: inline-block;
+  }
+  
+  .details-link:hover {
+    color: #ffffff; /* White hover effect */
+  }
+  
+  /* Divider */
+  .divider {
+    border-top: 1px solid #4a4a4a; /* Subtle divider */
+    margin: 10px 0;
+  }
+  
+  /* Countdown */
+  .countdown {
+    font-style: italic;
+    color: #ffcc00; /* Yellow for countdown */
+  }
+  
+  /* Raffle Status Box */
+  .raffle-status {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #8a2be2; /* Purple border */
+    background-color: #1a1a1a; /* Slightly darker background */
+    color: #c0c0c0;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(138, 43, 226, 0.3); /* Subtle purple glow */
+  }
+  

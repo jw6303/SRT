@@ -6,70 +6,64 @@ import { fetchRaffleDetails, purchaseTicket, fetchRaffleTransactions } from "../
 import { getLogStyle } from "../utils/logStyling";
 import ConnectWalletButton from "../components/ConnectWalletButton";
 import "./RaffleDetails.css";
-
-
-
+import CLIShippingForm from "../components/CLIShippingForm";
 
 const RaffleDetails = () => {
   const { raffleId } = useParams();
-  const [raffle, setRaffle] = useState(null); // Store raffle details
-  const [logs, setLogs] = useState([]); // Store activity logs
-  const [selectedAnswer, setSelectedAnswer] = useState(""); // Selected question answer
-  const [ticketCount, setTicketCount] = useState(1); // Tickets to purchase
-  const [maxTickets, setMaxTickets] = useState(1); // Maximum available tickets
-  const [progress, setProgress] = useState(false); // Show progress during purchase
-  const [countdown, setCountdown] = useState(""); // Countdown timer
-  const logContainerRef = useRef(null); // For auto-scrolling logs
-  const [transactions, setTransactions] = useState([]); // Start with an empty array
+  const [raffle, setRaffle] = useState(null); 
+  const [logs, setLogs] = useState([]); 
+  const [selectedAnswer, setSelectedAnswer] = useState(""); 
+  const [ticketCount, setTicketCount] = useState(1); 
+  const [maxTickets, setMaxTickets] = useState(1); 
+  const [progress, setProgress] = useState(false); 
+  const [countdown, setCountdown] = useState(""); 
+  const logContainerRef = useRef(null); 
+  const [transactions, setTransactions] = useState([]); 
   const [txnError, setTxnError] = useState(null);
-  const [txnLoading, setTxnLoading] = useState(true);  
+  const [txnLoading, setTxnLoading] = useState(true);
+
+  const [shippingInfo, setShippingInfo] = useState({});
 
 
+  const { connected, publicKey } = useWallet();
+  const [balance, setBalance] = useState(null);
+  const connection = new Connection("https://api.devnet.solana.com");
 
- // Wallet connection state
- const { connected, publicKey } = useWallet();
- const [balance, setBalance] = useState(null);
- const connection = new Connection("https://api.devnet.solana.com");
+  // Fetch wallet balance
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!connected || !publicKey) {
+        setBalance(null);
+        return;
+      }
 
- // Fetch wallet balance
- useEffect(() => {
-   const fetchBalance = async () => {
-     if (!connected || !publicKey) {
-       setBalance(null);
-       return;
-     }
+      try {
+        const balanceInLamports = await connection.getBalance(publicKey);
+        const balanceInSol = balanceInLamports / 1e9;
+        setBalance(balanceInSol.toFixed(2));
+      } catch (error) {
+        console.error("Error fetching wallet balance:", error);
+      }
+    };
 
-     try {
-       const balanceInLamports = await connection.getBalance(publicKey);
-       const balanceInSol = balanceInLamports / 1e9;
-       setBalance(balanceInSol.toFixed(2));
-     } catch (error) {
-       console.error("Error fetching wallet balance:", error);
-     }
-   };
+    fetchBalance();
+  }, [connected, publicKey]);
 
-   fetchBalance();
- }, [connected, publicKey]);
+  // Fetch Transactions
+  useEffect(() => {
+    const loadTransactions = async () => {
+      try {
+        const data = await fetchRaffleTransactions(raffleId);
+        setTransactions(data); 
+      } catch (err) {
+        setTxnError("Failed to load transactions.");
+      } finally {
+        setTxnLoading(false);
+      }
+    };
 
-
-// Fetch Transactions
-useEffect(() => {
-  const loadTransactions = async () => {
-    try {
-      const data = await fetchRaffleTransactions(raffleId);
-      setTransactions(data); // Ensure this API returns an array
-    } catch (err) {
-      setTxnError("Failed to load transactions.");
-    } finally {
-      setTxnLoading(false);
-    }
-  };
-
-  loadTransactions();
-}, [raffleId]);
-  
-
-
+    loadTransactions();
+  }, [raffleId]);
 
   // Fetch raffle details
   useEffect(() => {
@@ -81,7 +75,7 @@ useEffect(() => {
 
       try {
         const data = await fetchRaffleDetails(raffleId);
-        setRaffle(data.data); // Assuming the API returns the raffle under `data`
+        setRaffle(data.data);
 
         const availableTickets = Math.max(
           0,
@@ -136,23 +130,46 @@ useEffect(() => {
       ]);
       return;
     }
-
+  
     if (progress) {
       setLogs((prev) => [
         ...prev,
-        { type: "info", message: "Ticket purchase is already in progress.", logTime: new Date().toISOString() },
+        { type: "info", message: "Ticket purchase is already in progress. Please wait.", logTime: new Date().toISOString() },
       ]);
       return;
     }
-
+  
+    // Check if shipping is required and validate fields
+    if (raffle?.prizeDetails?.requiresShipping) {
+      const missingFields = Object.keys(shippingInfo).filter((key) => !shippingInfo[key]);
+      if (missingFields.length > 0) {
+        setLogs((prev) => [
+          ...prev,
+          {
+            type: "error",
+            message: "Please fill out all required shipping details before purchasing tickets.",
+            logTime: new Date().toISOString(),
+          },
+        ]);
+        return;
+      }
+    }
+  
     setProgress(true);
     setLogs((prev) => [
       ...prev,
       { type: "info", message: `Purchasing ${ticketCount} ticket(s)...`, logTime: new Date().toISOString() },
     ]);
-
+  
     try {
-      await purchaseTicket(raffleId, { participantId: "user123", ticketCount });
+      const payload = {
+        participantId: "user123", // Replace with dynamic participant ID if available
+        ticketCount,
+        ...(raffle?.prizeDetails?.requiresShipping && { shippingInfo }),
+      };
+  
+      await purchaseTicket(raffleId, payload);
+  
       setLogs((prev) => [
         ...prev,
         { type: "success", message: `${ticketCount} ticket(s) purchased successfully!`, logTime: new Date().toISOString() },
@@ -167,6 +184,15 @@ useEffect(() => {
     }
   };
 
+  useEffect(() => {
+    if (raffle?.prizeDetails?.requiresShipping) {
+      setLogs((prev) => [
+        ...prev,
+        { type: "info", message: "This raffle requires shipping information. Please provide the necessary details.", logTime: new Date().toISOString() },
+      ]);
+    }
+  }, [raffle]);
+
   // Auto-scroll log box
   useEffect(() => {
     if (logContainerRef.current) {
@@ -174,17 +200,24 @@ useEffect(() => {
     }
   }, [logs]);
 
-
   return (
     <div className="raffle-details-container">
-      {/* Wallet Section */}
+      {/* CLI-like Prompt */}
+      <div className="cli-prompt">
+        <span className="user-id">{`userIDxxxx@PC:~`}</span>
+        <span className="project-name">Solana Raffle Terminal $</span>
+      </div>
+
+      {/* Wallet Section */}*/}
       <div className="wallet-section">
         <ConnectWalletButton />
         {connected ? (
           <div className="wallet-info">
             <p>
               <strong>Connected as:</strong>{" "}
-              <span>{publicKey?.toString().slice(0, 4)}...{publicKey?.toString().slice(-4)}</span>
+              <span>
+                {publicKey?.toString().slice(0, 4)}...{publicKey?.toString().slice(-4)}
+              </span>
             </p>
             <p>
               <strong>Balance:</strong>{" "}
@@ -231,6 +264,21 @@ useEffect(() => {
       ) : (
         <p className="loading-message">Loading raffle details...</p>
       )}
+
+
+{/* Shipping Information Form Section */}
+{raffle?.prizeDetails?.requiresShipping && (
+  <CLIShippingForm
+    onSubmit={(info) => {
+      setShippingInfo(info);
+      setLogs((prev) => [
+        ...prev,
+        { type: "success", message: "Shipping details captured successfully.", logTime: new Date().toISOString() },
+      ]);
+    }}
+  />
+)}
+
   
       {/* Question Section */}
       <div className="raffle-question">
@@ -317,11 +365,7 @@ useEffect(() => {
             <tbody>
               {transactions.map((txn, index) => (
                 <tr key={index}>
-                  <td>
-                    {txn.timestamp
-                      ? new Date(txn.timestamp).toLocaleString()
-                      : "N/A"}
-                  </td>
+                  <td>{txn.timestamp ? new Date(txn.timestamp).toLocaleString() : "N/A"}</td>
                   <td>{txn.type || "N/A"}</td>
                   <td>{txn.tickets || 0}</td>
                   <td>
@@ -346,11 +390,6 @@ useEffect(() => {
       </div>
     </div>
   );
-  
-  
-  
-  
-  };
-  
-  export default RaffleDetails;
-  
+};
+
+export default RaffleDetails;

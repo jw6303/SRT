@@ -19,12 +19,12 @@ const Raffle = () => {
   const { connected, publicKey } = useWallet();
   const connection = new Connection("https://api.devnet.solana.com");
 
-  // Detect Phantom Wallet availability
+  // Detect wallet availability
   useEffect(() => {
     if (window.solana?.isPhantom) {
       console.log("Phantom Wallet detected.");
     } else {
-      console.warn("Phantom Wallet not detected. Redirect may occur.");
+      console.warn("Phantom Wallet not detected. Ensure another supported wallet is available.");
     }
   }, []);
 
@@ -49,7 +49,7 @@ const Raffle = () => {
     fetchBalance();
   }, [connected, publicKey, connection]);
 
-  // Open modal for a specific pool
+  // Handle modal open
   const openModal = (pool) => {
     if (!connected) {
       alert("Please connect your wallet to participate.");
@@ -59,7 +59,7 @@ const Raffle = () => {
     setSelectedPool(pool);
   };
 
-  // Close the modal
+  // Handle modal close
   const closeModal = () => {
     console.log("Closing modal");
     setSelectedPool(null);
@@ -72,24 +72,32 @@ const Raffle = () => {
         <h1>Solana Raffle Terminal</h1>
       </header>
 
-      {/* Wallet Section */}
-      <div className="wallet-section centered">
-        <ConnectWalletButton />
-        {connected ? (
-          <div className="wallet-info">
-            <p className="syntax-green">
-              Connected as: {publicKey?.toString().slice(0, 4)}...
-              {publicKey?.toString().slice(-4)}
-            </p>
-            <p className="syntax-cyan">
-              Balance: {balance !== null ? `${balance} SOL` : "Loading..."}
-            </p>
-          </div>
-        ) : (
-          <p className="syntax-red">Please connect your wallet to participate.</p>
-        )}
-      </div>
-
+{/* Wallet Section */}
+<div
+  className="wallet-section centered"
+  style={{
+    backgroundColor: "transparent",
+    padding: "10px",
+    border: "none",
+    borderRadius: "0",
+    boxShadow: "none",
+  }}
+>
+  <ConnectWalletButton />
+  {connected ? (
+    <div className="wallet-info">
+      <p className="syntax-green">
+        Connected as: {publicKey?.toString().slice(0, 4)}...
+        {publicKey?.toString().slice(-4)}
+      </p>
+      <p className="syntax-cyan">
+        Balance: {balance !== null ? `${balance} SOL` : "Loading..."}
+      </p>
+    </div>
+  ) : (
+    <p className="syntax-red">Please connect your wallet to participate.</p>
+  )}
+</div>
       {/* Divider */}
       <div className="divider" />
 

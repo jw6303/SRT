@@ -1,15 +1,15 @@
-/* General Terminal Styling */
 .raffle-terminal {
-    font-family: "Courier New", monospace; /* Terminal font */
-    color: #e9dce8; /* Soft terminal green text */
-    background-color: #000; /* Black background */
+    font-family: "Courier New", monospace;
+    color: #e9dce8; /* Terminal green */
+    background-color: #000; /* Pure black background */
     padding: 20px;
-    border: 1px solid #333; /* Subtle border for terminal box */
+    border: 1px solid #222; /* Subtle border */
     max-width: 900px;
-    margin: 40px auto; /* Center horizontally */
+    margin: 40px auto;
     border-radius: 5px;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); /* Terminal glow */
-  }
+    box-shadow: 0 0 15px rgba(160, 160, 255, 0.2); /* Soft purple glow */
+}
+
   
   /* Header */
   .terminal-header {
@@ -241,3 +241,130 @@
     transition: width 0.3s ease-in-out;
   }
   
+
+/* Raffle Grid */
+.raffle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
+    gap: 20px; /* Spacing between entries */
+    padding: 20px 0; /* Add spacing above and below */
+  }
+  
+  /* Raffle Entry */
+  .raffle-entry {
+    padding: 15px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #000; /* Black background */
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2); /* Glow effect */
+    transition: transform 0.3s;
+  }
+  
+  .raffle-entry:hover {
+    transform: scale(1.05); /* Zoom effect on hover */
+  }
+  
+  .key {
+    color: #7FDBFF; /* Cyan key color */
+    font-weight: bold;
+  }
+  
+  .details-link {
+    color: #7FDBFF; /* Cyan link */
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .details-link:hover {
+    text-decoration: underline;
+    color: #fff; /* Bright white hover */
+  }
+  
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .pagination button {
+    background-color: #111;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .pagination button:hover {
+    background-color: #222;
+  }
+  
+  .pagination span {
+    color: #fff;
+    font-size: 1rem;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .raffle-grid {
+      grid-template-columns: 1fr; /* Single column for smaller screens */
+      gap: 15px;
+    }
+  
+    .raffle-entry {
+      font-size: 0.9rem; /* Adjust font size for smaller screens */
+    }
+  }
+  
+
+  .bold {
+    font-weight: bold;
+  }
+  
+  .syntax-green {
+    color: #33ff33;
+  }
+  
+  .syntax-cyan {
+    color: #56b6c2;
+  }
+  
+  .syntax-purple {
+    color: #a29bfe;
+  }
+  
+  .syntax-amber {
+    color: #ffca28;
+  }
+  
+  .syntax-money {
+    color: #ffd700; /* Gold for monetary values */
+  }
+  
+  .syntax-number {
+    color: #ff4500; /* Orange-red for numbers */
+  }
+  
+
+  .pagination button {
+    background-color: #0a0a0a; /* Match the container background */
+    border: 1px solid #333;
+    color: #fff;
+}
+
+.pagination button:hover {
+    background-color: #222;
+}
+
+.raffle-grid {
+    background-color: transparent; /* Remove grid background if it exists */
+}
+
+.raffle-entry {
+    background-color: #0a0a0a; /* Match the new terminal background */
+    border: 1px solid #222;
+}

@@ -1,0 +1,59 @@
+.cli-progress-container {
+  font-family: "Courier New", Courier, monospace;
+  color: #9c27b0;
+  background: #000;
+  padding: 15px;
+  border: 2px solid #9c27b0;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.cli-header {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #9c27b0;
+}
+
+.cli-progress-bar {
+  font-size: 1.2em;
+  margin: 15px 0;
+  color: #00ff00;
+  display: flex;
+  align-items: center;
+}
+
+.cli-progress-text {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  font-size: 0.9em;
+}
+
+.cli-financials {
+  margin: 15px 0;
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+.sol-text {
+  color: #9c27b0; /* Purple color for SOL text */
+  font-weight: bold; /* Distinguish SOL text */
+}
+
+.cli-threshold-indicator {
+  color: #ffcc00;
+  font-size: 0.9em;
+  margin-top: 5px;
+  white-space: pre;
+}
+
+.cli-feedback {
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: #ffcc00;
+}

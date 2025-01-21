@@ -59,8 +59,11 @@ export const fetchRaffleDetails = async (id) => {
     throw new Error("Raffle ID is required.");
   }
 
+  const url = `${API_BASE_URL}/${id}`;
+  console.log(`Fetching raffle details from: ${url}`);
+
   try {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
+    const response = await fetch(url, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -69,10 +72,19 @@ export const fetchRaffleDetails = async (id) => {
 
     if (!response.ok) {
       const errorMessage = await response.text();
+      console.error(`Backend Response Error: ${response.status} - ${errorMessage}`);
       throw new Error(`Failed to fetch raffle details: ${errorMessage}`);
     }
 
     const data = await response.json();
+    console.log("Fetched raffle details:", data);
+    
+    
+        // Ensure the response includes `requiresShipping`
+        if (data?.data?.prizeDetails?.requiresShipping === true) {
+          console.log("Shipping information is required for this raffle.");
+        }
+    
     return data;
   } catch (error) {
     console.error(`Error fetching details for raffle ID ${id}:`, error);
@@ -82,11 +94,10 @@ export const fetchRaffleDetails = async (id) => {
 
 
 
-
 /**
  * Register a participant in a raffle
  * @param {string} id - The ID of the raffle
- * @param {Object} participantData - The participant details (participantId, name, pubkey, answer, amountPaid)
+ * @param {Object} participantData - The participant details (participantId, name, pubkey, answer, amountPaid, shippingInfo)
  * @returns {Promise<Object>} - Confirmation of registration
  */
 export const registerParticipant = async (id, participantData) => {
@@ -95,7 +106,14 @@ export const registerParticipant = async (id, participantData) => {
     throw new Error("Raffle ID is required.");
   }
 
-  if (!participantData || !participantData.participantId || !participantData.name || !participantData.pubkey || !participantData.answer || !participantData.amountPaid) {
+  if (
+    !participantData ||
+    !participantData.participantId ||
+    !participantData.name ||
+    !participantData.pubkey ||
+    !participantData.answer ||
+    !participantData.amountPaid
+  ) {
     console.error("Participant data is incomplete.");
     throw new Error("All participant details (participantId, name, pubkey, answer, amountPaid) are required.");
   }
@@ -104,7 +122,7 @@ export const registerParticipant = async (id, participantData) => {
     const response = await fetch(`${API_BASE_URL}/${id}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(participantData),
+      body: JSON.stringify(participantData), // Include shippingInfo dynamically
     });
 
     if (!response.ok) {

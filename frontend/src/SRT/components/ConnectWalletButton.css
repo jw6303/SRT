@@ -1,30 +1,39 @@
+/* Wrapper container styling */
+.wallet-container {
+    background-color: transparent; /* Remove gray box */
+    padding: 0; /* Remove extra padding */
+}
+
+/* Wallet button styling */
 .custom-wallet-button {
     font-family: 'Courier New', monospace;
     font-size: 16px;
     padding: 8px 12px;
-    border: 1px solid #555;
-    background-color: #1e1e1e;
-    color: #cccccc;
-    border-radius: 5px;
+    border: 1px solid #444; /* Subtle dark border */
+    background-color: #000000; /* Pure black background */
+    color: #00ff00; /* Green text for CLI theme */
+    border-radius: 0; /* No rounded corners */
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
 }
 
 .custom-wallet-button:hover {
-    color: #ffffff;
+    color: #ffffff; /* Bright white hover effect */
     border-color: #888;
     transform: scale(1.05);
 }
 
+/* Connected button style */
 .custom-wallet-button.connected {
-    background-color: #33ff33;
-    color: #000000;
-    box-shadow: 0 0 8px rgba(51, 255, 51, 0.5);
+    background-color: #00ff00; /* Bright green for connected state */
+    color: #000000; /* Black text */
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.5); /* Subtle green glow */
 }
 
+/* Disconnected button style */
 .custom-wallet-button.disconnected {
-    animation: pulse 2s infinite;
+    animation: pulse 2s infinite; /* Pulsing animation */
 }
 
 @keyframes pulse {

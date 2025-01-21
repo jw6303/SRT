@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { fetchActiveRaffles } from "../../api";
+import ProgressBar from "./ProgressBar"; // Import the ProgressBar component
 import "./RaffleList.css";
+import RaffleEntry from "./RaffleEntry";
 
 const RaffleList = () => {
   const [raffles, setRaffles] = useState([]); // Stores all raffles
@@ -58,31 +60,35 @@ const RaffleList = () => {
     setDisplayedRaffles(paginatedRaffles);
   }, [raffles, sortBy, sortOrder, page, limit]);
 
-  // Update countdowns for each raffle
-  useEffect(() => {
-    const updateCountdowns = () => {
-      const newCountdowns = {};
-      displayedRaffles.forEach((raffle) => {
-        const endTime = new Date(raffle.time?.end).getTime();
-        const now = new Date().getTime();
-        const timeLeft = endTime - now;
+// Updated Countdown Logic
+useEffect(() => {
+  const updateCountdowns = () => {
+    const newCountdowns = {};
+    displayedRaffles.forEach((raffle) => {
+      const endTime = new Date(raffle.time?.end);
+      if (isNaN(endTime)) {
+        newCountdowns[raffle._id] = "Invalid End Time"; // Handle invalid dates
+        return;
+      }
 
-        if (timeLeft <= 0) {
-          newCountdowns[raffle._id] = "Raffle Ended";
-        } else {
-          const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-          const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-          newCountdowns[raffle._id] = `${hours}h ${minutes}m ${seconds}s`;
-        }
-      });
-      setCountdowns(newCountdowns);
-    };
+      const now = new Date().getTime();
+      const timeLeft = endTime.getTime() - now;
 
-    const interval = setInterval(updateCountdowns, 1000);
+      if (timeLeft <= 0) {
+        newCountdowns[raffle._id] = "Raffle Ended";
+      } else {
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        newCountdowns[raffle._id] = `${hours}h ${minutes}m ${seconds}s`;
+      }
+    });
+    setCountdowns(newCountdowns);
+  };
 
-    return () => clearInterval(interval);
-  }, [displayedRaffles]);
+  const interval = setInterval(updateCountdowns, 1000);
+  return () => clearInterval(interval);
+}, [displayedRaffles]);
 
   // Loading or error states
   if (loading) return <p className="terminal-loading">> Loading active raffles...</p>;
@@ -92,12 +98,10 @@ const RaffleList = () => {
     <div className="raffle-terminal">
       <h1 className="terminal-header">Active Raffles</h1>
 
-      {/* Total Raffles */}
       <div className="raffle-summary">
-        <p>> Total Active Raffles: {totalRaffles}</p>
+        <p>> Total Active Raffles: <span className="syntax-green bold">{totalRaffles}</span></p>
       </div>
 
-      {/* Sorting Controls */}
       <div className="controls">
         <label>
           Sort By:
@@ -112,32 +116,45 @@ const RaffleList = () => {
         </button>
       </div>
 
-      {/* Render Raffles */}
-      <div className="terminal-output">
+      <div className="raffle-grid">
         {displayedRaffles.length > 0 ? (
-          displayedRaffles.map((raffle) => (
-            <div key={raffle._id} className="raffle-entry">
-              <p>> <span className="key">Raffle Name:</span> {raffle.raffleName || "N/A"}</p>
-              <p>> <span className="key">Raffle ID:</span> {raffle.raffleId || "N/A"}</p>
-              <p>> <span className="key">Entry Fee:</span> {raffle.entryFee || "N/A"} SOL</p>
-              <p>> <span className="key">Prize Type:</span> {raffle.prizeDetails?.type || "N/A"}</p>
-              <p>> <span className="key">Prize:</span> {raffle.prizeDetails?.title || "N/A"}</p>
-              <p>> <span className="key">Participants:</span>
-                {raffle.participants?.ticketsSold || 0} / {raffle.participants?.max || "N/A"}
-              </p>
-              <p>> <span className="key">End Time:</span> {new Date(raffle.time?.end).toLocaleString()}</p>
-              <p>> <span className="key">Countdown:</span> {countdowns[raffle._id] || "Loading..."}</p>
-              <Link to={`/raffles/${raffle._id}`} className="details-link">
-                > View Details
-              </Link>
-            </div>
-          ))
+          displayedRaffles.map((raffle) => {
+            const currentTickets = raffle.participants?.ticketsSold || 0;
+            const totalTickets = raffle.participants?.max || 1;
+            const minThreshold = raffle.participants?.min || 0;
+
+            return (
+              <div key={raffle._id} className="raffle-entry">
+                <p>> <span className="syntax-cyan bold">Raffle Name:</span> <span className="syntax-amber bold">{raffle.raffleName || "N/A"}</span></p>
+                <p>> <span className="syntax-purple bold">Raffle ID:</span> <span>{raffle.raffleId || "N/A"}</span></p>
+                <p>> <span className="syntax-green bold">Entry Fee:</span> <span className="syntax-money">{raffle.entryFee || "N/A"} SOL</span></p>
+                <p>> <span className="syntax-yellow bold">Prize Type:</span> {raffle.prizeDetails?.type || "N/A"}</p>
+                <p>> <span className="syntax-cyan bold">Prize:</span> {raffle.prizeDetails?.title || "N/A"}</p>
+                <p>> <span className="syntax-amber bold">Participants:</span> <span className="syntax-number">{currentTickets}</span> / {totalTickets}</p>
+                <p>> <span className="syntax-purple bold">End Time:</span> {new Date(raffle.time?.end).toLocaleString()}</p>
+                <p>> <span className="syntax-green bold">Countdown:</span> <span className="syntax-cyan">{countdowns[raffle._id] || "Loading..."}</span></p>
+
+                <div className="progress-bar-wrapper">
+                  <ProgressBar
+                    current={raffle.participants?.ticketsSold || 0}
+                    total={raffle.participants?.max || 1}
+                    min={raffle.participants?.min || 0}
+                    entryFee={raffle.entryFee}
+                    endTime={raffle.time?.end}
+                  />
+                </div>
+
+                <Link to={`/raffles/${raffle._id}`} className="details-link">
+                  > View Details
+                </Link>
+              </div>
+            );
+          })
         ) : (
           <p className="terminal-info">No active raffles found.</p>
         )}
       </div>
 
-      {/* Pagination Controls */}
       <div className="pagination">
         <button onClick={() => setPage((p) => Math.max(p - 1, 1))} disabled={page === 1}>
           Previous

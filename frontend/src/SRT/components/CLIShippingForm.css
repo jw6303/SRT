@@ -1,0 +1,139 @@
+/* General CLI Container */
+.cli-shipping-form {
+    font-family: "Courier New", monospace;
+    background-color: #1e1e1e; /* Terminal background */
+    color: #d3d3d3; /* Softer white text */
+    padding: 1rem;
+    border-radius: 5px;
+    line-height: 1.6;
+  }
+  
+  /* CLI Header: Machine Name and Path */
+  .cli-prompt {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .machine-name {
+    color: #00b4d8; /* Light blue */
+    font-weight: bold;
+    font-style: italic;
+  }
+  
+  .path {
+    color: #8892b0; /* Slate gray-blue */
+    font-weight: bold;
+  }
+  
+  /* Section Title */
+  .cli-section-title {
+    color: #ffd700; /* Amber */
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Field Labels */
+  .cli-label {
+    color: #8ac926; /* Green for labels */
+    font-size: 1rem;
+  }
+  
+  /* User-Entered Data */
+  .user-input {
+    color: #d3d3d3; /* Softer white for input */
+    font-weight: bold;
+    font-size: 1.1rem; /* Slightly larger */
+  }
+  
+  .user-input.editable {
+    cursor: pointer;
+  }
+  
+  /* Highlighted Input Prompt */
+  .cli-highlight {
+    color: #ffd700; /* Amber for current input */
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+  }
+  
+  /* Inline Edit Input */
+  .cli-edit-inline input.cli-edit-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #5a73db; /* Slate blue underline */
+    color: #9cdcfb; /* Soft cyan for input */
+    font-weight: bold;
+    outline: none;
+    font-size: 1.2rem; /* Match user input size */
+  }
+  
+  /* Confirm Button for Inline Edit */
+  .cli-confirm-btn {
+    background-color: #5a73db; /* Slate blue button */
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border: none;
+    cursor: pointer;
+    margin-left: 0.5rem;
+    font-weight: bold;
+    font-size: 0.9rem;
+    border-radius: 3px;
+  }
+  
+  .cli-confirm-btn:hover {
+    background-color: #425ea1; /* Darker slate blue on hover */
+  }
+  
+  /* CLI Input Box */
+  .cli-input-box {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #ffd700; /* Amber underline for input */
+    color: #d3d3d3;
+    padding: 0.2rem;
+    outline: none;
+    font-family: "Courier New", monospace;
+    font-weight: bold;
+    font-size: 1rem;
+    min-width: 15ch;
+    width: auto;
+    max-width: 100%;
+  }
+  
+  /* Email Suggestions */
+  .email-suggestions {
+    background-color: #2b2b2b;
+    border: 1px solid #5a73db;
+    border-radius: 4px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .email-suggestions .suggestion-item {
+    color: #8ac926; /* Green for suggestions */
+    cursor: pointer;
+  }
+  
+  .email-suggestions .suggestion-item:hover {
+    background-color: #3d3d3d;
+  }
+  
+  /* Completion Message */
+  .cli-completion-message {
+    color: #8ac926; /* Green for success */
+    font-weight: bold;
+  }
+  
+  .cli-completion-instructions {
+    color: #d3d3d3; /* Neutral white for instructions */
+  }
+  
+  /* Error Message */
+  .cli-error {
+    color: #e63946; /* Red for errors */
+    margin-top: 0.5rem;
+    font-weight: bold;
+  }
+  

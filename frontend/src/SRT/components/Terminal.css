@@ -7,7 +7,7 @@ html, body {
     overflow-x: hidden; /* Prevent horizontal scrolling */
     overflow-y: auto; /* Enable vertical scrolling */
     box-sizing: border-box;
-    font-size: 9px; /* Small font size */
+    font-size: 10px; /* Small font size */
     background-color: #000; /* Sleek black background */
     color: #ccc; /* Soft gray for text */
     font-family: "Courier New", monospace; /* Monospace for a terminal-like feel */
@@ -232,3 +232,128 @@ button:hover {
 
 
 
+/* Modal Background */
+.wallet-adapter-modal-wrapper {
+    background-color: rgba(0, 0, 0, 0.8) !important; /* Darker overlay */
+  }
+  
+  /* Modal Container */
+  .wallet-adapter-modal {
+    background-color: #121212 !important; /* Change modal background */
+    border-radius: 12px !important;       /* Add rounded corners */
+    color: #ffffff !important;           /* Change text color */
+    font-family: 'Arial', sans-serif !important; /* Custom font */
+  }
+  
+  /* Close Button */
+  .wallet-adapter-modal-button-close {
+    color: #ffffff !important; /* Change close button color */
+    font-size: 18px !important;
+    opacity: 0.7;
+  }
+  .wallet-adapter-modal-button-close:hover {
+    opacity: 1; /* Brighten on hover */
+  }
+  
+  /* Wallet List Items */
+  .wallet-adapter-modal-list li {
+    background-color: #1e1e1e !important; /* Wallet button background */
+    border: 1px solid #333 !important;    /* Add border */
+    border-radius: 8px !important;        /* Rounded corners */
+    padding: 10px 20px !important;
+    margin: 8px 0 !important;
+    transition: background-color 0.3s ease;
+  }
+  .wallet-adapter-modal-list li:hover {
+    background-color: #292929 !important; /* Slight hover effect */
+  }
+  
+  /* Wallet Name and Status */
+  .wallet-adapter-modal-list li .wallet-adapter-modal-list-item {
+    color: #ffffff !important; /* Wallet name color */
+    font-weight: bold !important;
+    font-size: 12px !important;
+
+  }
+  .wallet-adapter-modal-list li .wallet-adapter-modal-list-item[aria-label="Detected"] {
+    color: #4caf50 !important; /* Change "Detected" text color */
+  }
+  
+
+  .raffle-image {
+    max-width: 100%;
+    height: auto;
+    margin: 20px 0;
+    border: 1px solid #444;
+    border-radius: 8px;
+  }
+  
+
+  .terminal-container {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    font-family: "Courier New", Courier, monospace;
+    padding: 20px;
+  }
+  
+  .terminal-header {
+    color: #61dafb;
+    text-align: center;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+  }
+  
+  .terminal-section {
+    margin: 20px 0;
+  }
+  
+  .syntax-green {
+    color: #98c379;
+  }
+  
+  .syntax-cyan {
+    color: #56b6c2;
+  }
+  
+  .syntax-red {
+    color: #e06c75;
+  }
+  
+  .syntax-yellow {
+    color: #e5c07b;
+  }
+  
+  :root {
+    /* Primary Colors */
+    --black: #000000;
+    --white: #ffffff;
+    --gray: #cccccc;
+  
+    /* CLI-Themed Colors */
+    --green: #00ff00;      /* For success states */
+    --yellow: #ffdc00;     /* For warnings or highlights */
+    --purple: #9b59b6;     /* Accent or borders */
+    --cyan: #7FDBFF;       /* Links and headings */
+    --amber: #e67e22;      /* Important numbers or callouts */
+    --red: #e74c3c;        /* Errors or negative feedback */
+  
+    /* Backgrounds */
+    --dark-bg: #1e1e1e;    /* Darker container background */
+    --terminal-bg: #000000;
+    --box-bg: #2c2c2c;     /* Slightly lighter than dark background */
+  
+    /* Borders */
+    --border-color: rgba(255, 255, 255, 0.2); /* Subtle dashed borders */
+  
+    /* Fonts */
+    --font-monospace: 'Courier New', monospace; /* Terminal-style font */
+    --font-size-small: 0.9rem;
+    --font-size-medium: 1.2rem;
+    --font-size-large: 1.5rem;
+  
+    /* Shadows */
+    --glow-purple: 0 0 8px rgba(155, 89, 182, 0.8);
+    --glow-green: 0 0 8px rgba(0, 255, 0, 0.8);
+  }
+  
+  
