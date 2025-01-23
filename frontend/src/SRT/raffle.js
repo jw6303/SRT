@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { Connection } from "@solana/web3.js";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import Modal from "./components/Modal";
 import RaffleList from "./components/RaffleList";
 import ConnectWalletButton from "./components/ConnectWalletButton";
@@ -17,18 +16,36 @@ const Raffle = () => {
   const [activeTab, setActiveTab] = useState("Screener");
   const [isChatOpen, setIsChatOpen] = useState(false);
   const { connected, publicKey } = useWallet();
-  const connection = new Connection("https://api.devnet.solana.com");
+  const { connection } = useConnection(); // Reuse connection from WalletContext
 
   // Theme state
   const [theme, setTheme] = useState("dark");
 
-  // Detect wallet availability
+  // Enhanced wallet detection logic
   useEffect(() => {
-    if (window.solana?.isPhantom) {
-      console.log("Phantom Wallet detected.");
-    } else {
-      console.warn("Phantom Wallet not detected. Ensure another supported wallet is available.");
-    }
+    const checkWallet = async () => {
+      if (window.solana?.isPhantom) {
+        console.log("Phantom Wallet detected.");
+      } else {
+        console.warn(
+          "Phantom Wallet not detected. Ensure another supported wallet is available."
+        );
+      }
+    };
+
+    checkWallet();
+
+    // Add wallet connection and disconnection event listeners
+    const handleConnect = () => console.log("Wallet connected.");
+    const handleDisconnect = () => console.log("Wallet disconnected.");
+
+    window.solana?.on("connect", handleConnect);
+    window.solana?.on("disconnect", handleDisconnect);
+
+    return () => {
+      window.solana?.off("connect", handleConnect);
+      window.solana?.off("disconnect", handleDisconnect);
+    };
   }, []);
 
   // Fetch wallet balance
@@ -85,14 +102,14 @@ const Raffle = () => {
       <header className="raffle-header">
         <h1 className="cli-title">Solana Raffle Terminal</h1>
       </header>
-  
+
       {/* Theme Toggle Button */}
       <div className="theme-toggle">
         <button className="theme-toggle-btn" onClick={toggleTheme}>
           Switch to {theme === "dark" ? "Light" : "Dark"} Mode
         </button>
       </div>
-  
+
       <div className="main-layout">
         {/* Left Column */}
         <div className="left-column">
@@ -101,37 +118,52 @@ const Raffle = () => {
             {connected ? (
               <div className="wallet-info">
                 <p className="syntax-green">
-                  Connected as: <span className="cli-status-value">{publicKey?.toString().slice(0, 4)}...</span>{publicKey?.toString().slice(-4)}
+                  Connected as:{" "}
+                  <span className="cli-status-value">
+                    {publicKey?.toString().slice(0, 4)}...
+                  </span>
+                  {publicKey?.toString().slice(-4)}
                 </p>
                 <p className="syntax-cyan">
-                  Balance: <span className="cli-financial-value">{balance !== null ? `${balance} SOL` : "Loading..."}</span>
+                  Balance:{" "}
+                  <span className="cli-financial-value">
+                    {balance !== null ? `${balance} SOL` : "Loading..."}
+                  </span>
                 </p>
               </div>
             ) : (
               <p className="syntax-red">
-                <span className="cli-status-highlight">Please connect your wallet to participate.</span>
+                <span className="cli-status-highlight">
+                  Please connect your wallet to participate.
+                </span>
               </p>
             )}
           </div>
-  
+
           {/* Divider */}
           <div className="divider" />
-  
+
           {/* Raffle List */}
           <RaffleList openModal={openModal} />
         </div>
-  
+
         {/* Right Column */}
         <div className="right-column">
           {/* Conditional Tab Content */}
-          {activeTab === "Chat" && <ChatBubble onClose={() => setActiveTab("Screener")} />}
-  
+          {activeTab === "Chat" && (
+            <ChatBubble onClose={() => setActiveTab("Screener")} />
+          )}
+
           {/* ChatBubble (Overlay) */}
-          {isChatOpen && <ChatBubble onClose={() => setIsChatOpen(false)} />}
-  
+          {isChatOpen && (
+            <ChatBubble onClose={() => setIsChatOpen(false)} />
+          )}
+
           {/* Modal */}
-          {selectedPool && <Modal pool={selectedPool} onClose={closeModal} />}
-  
+          {selectedPool && (
+            <Modal pool={selectedPool} onClose={closeModal} />
+          )}
+
           {/* Bottom Navigation Bar */}
           <BottomNavBar
             activeTab={activeTab}
@@ -147,6 +179,6 @@ const Raffle = () => {
       </div>
     </div>
   );
-  };
+};
 
 export default Raffle;

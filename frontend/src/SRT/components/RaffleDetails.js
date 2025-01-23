@@ -139,50 +139,68 @@ const RaffleDetails = () => {
       return;
     }
   
-    // Check if shipping is required and validate fields
-    if (raffle?.prizeDetails?.requiresShipping) {
-      const missingFields = Object.keys(shippingInfo).filter((key) => !shippingInfo[key]);
-      if (missingFields.length > 0) {
+    // Check if the raffle is at or beyond its ticket capacity
+    const currentTicketsSold = raffle.participants?.ticketsSold || 0;
+    const maxTickets = raffle.participants?.max || 0;
+    const availableTickets = maxTickets - currentTicketsSold;
+  
+    if (ticketCount > availableTickets) {
+      if (availableTickets > 0) {
         setLogs((prev) => [
           ...prev,
-          {
-            type: "error",
-            message: "Please fill out all required shipping details before purchasing tickets.",
-            logTime: new Date().toISOString(),
+          { 
+            type: "error", 
+            message: `You can only purchase up to ${availableTickets} ticket(s). Please adjust your selection.`, 
+            logTime: new Date().toISOString() 
           },
         ]);
+        setProgress(false);
+        return;
+      } else {
+        setLogs((prev) => [
+          ...prev,
+          { type: "error", message: "Ticket limit reached. No more tickets can be purchased.", logTime: new Date().toISOString() },
+        ]);
+        setProgress(false);
         return;
       }
     }
   
-    setProgress(true);
+    setProgress(true); // Simulate processing
     setLogs((prev) => [
       ...prev,
       { type: "info", message: `Purchasing ${ticketCount} ticket(s)...`, logTime: new Date().toISOString() },
     ]);
   
     try {
-      const payload = {
-        participantId: "user123", // Replace with dynamic participant ID if available
-        ticketCount,
-        ...(raffle?.prizeDetails?.requiresShipping && { shippingInfo }),
-      };
+      // Simulated delay to mimic API response time
+      await new Promise((resolve) => setTimeout(resolve, 1000));
   
-      await purchaseTicket(raffleId, payload);
-  
+      // Update state to reflect a successful purchase
       setLogs((prev) => [
         ...prev,
         { type: "success", message: `${ticketCount} ticket(s) purchased successfully!`, logTime: new Date().toISOString() },
       ]);
+  
+      // Update ticketsSold locally to simulate progress
+      setRaffle((prev) => ({
+        ...prev,
+        participants: {
+          ...prev.participants,
+          ticketsSold: (prev.participants?.ticketsSold || 0) + ticketCount,
+        },
+      }));
     } catch (error) {
       setLogs((prev) => [
         ...prev,
-        { type: "error", message: "Failed to purchase tickets. Please try again.", logTime: new Date().toISOString() },
+        { type: "error", message: "Something went wrong. Please try again.", logTime: new Date().toISOString() },
       ]);
     } finally {
-      setProgress(false);
+      setProgress(false); // Re-enable the button
     }
-  };
+  };  
+
+  
 
   useEffect(() => {
     if (raffle?.prizeDetails?.requiresShipping) {
@@ -268,15 +286,21 @@ const RaffleDetails = () => {
 
 {/* Shipping Information Form Section */}
 {raffle?.prizeDetails?.requiresShipping && (
-  <CLIShippingForm
-    onSubmit={(info) => {
-      setShippingInfo(info);
-      setLogs((prev) => [
-        ...prev,
-        { type: "success", message: "Shipping details captured successfully.", logTime: new Date().toISOString() },
-      ]);
-    }}
-  />
+  <div className="shipping-info-section">
+    <CLIShippingForm
+      onSubmit={(info) => {
+        setShippingInfo(info);
+        setLogs((prev) => [
+          ...prev,
+          { 
+            type: "success", 
+            message: `Shipping details captured: Name: ${info.name}, Address: ${info.address}, City: ${info.city}, Country: ${info.country}, Postal Code: ${info.postalCode}`, 
+            logTime: new Date().toISOString() 
+          },
+        ]);
+      }}
+    />
+  </div>
 )}
 
   
