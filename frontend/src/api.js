@@ -81,9 +81,9 @@ export const fetchRaffleDetails = async (id) => {
     
     
         // Ensure the response includes `requiresShipping`
-        if (data?.data?.prizeDetails?.requiresShipping === true) {
-          console.log("Shipping information is required for this raffle.");
-        }
+    if (data?.data?.prizeDetails?.requiresShipping === true) {
+      console.log("Shipping information is required for this raffle.");
+    }
     
     return data;
   } catch (error) {

@@ -1,0 +1,61 @@
+/* Default Dark Theme Syntax */
+:root {
+    --syntax-text: #f8f8f2;
+    --syntax-blue: #6272a4;
+    --syntax-purple: #bd93f9;
+    --syntax-red: #ff5555;
+    --syntax-green: #50fa7b;
+    --syntax-yellow: #f1fa8c;
+  }
+  
+  /* Light Theme Syntax */
+  [data-theme="light"] {
+    --syntax-text: #2e2e2e;
+    --syntax-blue: #569cd6;
+    --syntax-purple: #b4aee6;
+    --syntax-red: #f44747;
+    --syntax-green: #6a9e31;
+    --syntax-yellow: #e5c07b;
+  }
+  
+  /* General Syntax for text */
+  .syntax-text {
+    color: var(--syntax-text);
+  }
+  
+  /* Syntax Highlighting Rules */
+  .syntax-blue {
+    color: var(--syntax-blue);
+  }
+  
+  .syntax-purple {
+    color: var(--syntax-purple);
+  }
+  
+  .syntax-red {
+    color: var(--syntax-red);
+  }
+  
+  .syntax-green {
+    color: var(--syntax-green);
+  }
+  
+  .syntax-yellow {
+    color: var(--syntax-yellow);
+  }
+  
+  /* Optional: Additional styling for specific components */
+  .terminal-output {
+    font-family: "Courier New", monospace;
+    background-color: var(--background-color);
+    color: var(--syntax-text);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--syntax-blue);
+  }
+  
+  button {
+    background-color: var(--syntax-blue);
+    color: var(--syntax-text);
+  }
+  

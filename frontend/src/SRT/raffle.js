@@ -19,6 +19,9 @@ const Raffle = () => {
   const { connected, publicKey } = useWallet();
   const connection = new Connection("https://api.devnet.solana.com");
 
+  // Theme state
+  const [theme, setTheme] = useState("dark");
+
   // Detect wallet availability
   useEffect(() => {
     if (window.solana?.isPhantom) {
@@ -65,74 +68,85 @@ const Raffle = () => {
     setSelectedPool(null);
   };
 
+  // Theme toggle logic
+  useEffect(() => {
+    document.body.setAttribute("data-theme", theme); // Set the theme on body
+    localStorage.setItem("theme", theme); // Store theme in localStorage
+  }, [theme]);
+
+  // Toggle theme function
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
+
   return (
     <div className="raffle-container">
       {/* Header */}
       <header className="raffle-header">
-        <h1>Solana Raffle Terminal</h1>
+        <h1 className="cli-title">Solana Raffle Terminal</h1>
       </header>
-
-{/* Wallet Section */}
-<div
-  className="wallet-section centered"
-  style={{
-    backgroundColor: "transparent",
-    padding: "10px",
-    border: "none",
-    borderRadius: "0",
-    boxShadow: "none",
-  }}
->
-  <ConnectWalletButton />
-  {connected ? (
-    <div className="wallet-info">
-      <p className="syntax-green">
-        Connected as: {publicKey?.toString().slice(0, 4)}...
-        {publicKey?.toString().slice(-4)}
-      </p>
-      <p className="syntax-cyan">
-        Balance: {balance !== null ? `${balance} SOL` : "Loading..."}
-      </p>
-    </div>
-  ) : (
-    <p className="syntax-red">Please connect your wallet to participate.</p>
-  )}
-</div>
-      {/* Divider */}
-      <div className="divider" />
-
-      {/* Raffle List */}
-      <RaffleList openModal={openModal} />
-
-      {/* Divider */}
-      <div className="divider" />
-
-      {/* Conditional Tab Content */}
-      {activeTab === "Chat" && (
-        <ChatBubble onClose={() => setActiveTab("Screener")} />
-      )}
-
-      {/* ChatBubble (Overlay) */}
-      {isChatOpen && (
-        <ChatBubble onClose={() => setIsChatOpen(false)} />
-      )}
-
-      {/* Modal */}
-      {selectedPool && <Modal pool={selectedPool} onClose={closeModal} />}
-
-      {/* Bottom Navigation Bar */}
-      <BottomNavBar
-        activeTab={activeTab}
-        setActiveTab={(tab) => {
-          if (tab === "Chat") {
-            setIsChatOpen(!isChatOpen);
-          } else {
-            setActiveTab(tab);
-          }
-        }}
-      />
+  
+      {/* Theme Toggle Button */}
+      <div className="theme-toggle">
+        <button className="theme-toggle-btn" onClick={toggleTheme}>
+          Switch to {theme === "dark" ? "Light" : "Dark"} Mode
+        </button>
+      </div>
+  
+      <div className="main-layout">
+        {/* Left Column */}
+        <div className="left-column">
+          <div className="wallet-section">
+            <ConnectWalletButton />
+            {connected ? (
+              <div className="wallet-info">
+                <p className="syntax-green">
+                  Connected as: <span className="cli-status-value">{publicKey?.toString().slice(0, 4)}...</span>{publicKey?.toString().slice(-4)}
+                </p>
+                <p className="syntax-cyan">
+                  Balance: <span className="cli-financial-value">{balance !== null ? `${balance} SOL` : "Loading..."}</span>
+                </p>
+              </div>
+            ) : (
+              <p className="syntax-red">
+                <span className="cli-status-highlight">Please connect your wallet to participate.</span>
+              </p>
+            )}
+          </div>
+  
+          {/* Divider */}
+          <div className="divider" />
+  
+          {/* Raffle List */}
+          <RaffleList openModal={openModal} />
+        </div>
+  
+        {/* Right Column */}
+        <div className="right-column">
+          {/* Conditional Tab Content */}
+          {activeTab === "Chat" && <ChatBubble onClose={() => setActiveTab("Screener")} />}
+  
+          {/* ChatBubble (Overlay) */}
+          {isChatOpen && <ChatBubble onClose={() => setIsChatOpen(false)} />}
+  
+          {/* Modal */}
+          {selectedPool && <Modal pool={selectedPool} onClose={closeModal} />}
+  
+          {/* Bottom Navigation Bar */}
+          <BottomNavBar
+            activeTab={activeTab}
+            setActiveTab={(tab) => {
+              if (tab === "Chat") {
+                setIsChatOpen(!isChatOpen);
+              } else {
+                setActiveTab(tab);
+              }
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
-};
+  };
 
 export default Raffle;

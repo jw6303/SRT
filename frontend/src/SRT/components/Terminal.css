@@ -1,359 +1,352 @@
+
+
+/* Global Body Styling */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-y: auto;
+  box-sizing: border-box;
+  font-family: "Courier New", monospace;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transform-origin: top left; /* Ensures scaling starts from the top left */
+  zoom: 0.95; /* Apply zoom effect to scale down the entire content */
+}
+
+/* Wrapper for scaling */
+.body-wrapper {
+  transform: scale(0.67); /* Scale content to 67% of original size */
+  transform-origin: top left; /* Ensure scaling is relative to the top left corner */
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal overflow */
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Adjust scaling for mobile view */
+@media (max-width: 768px) {
+  .body-wrapper {
+    transform: scale(0.9); /* Slightly larger scaling for mobile devices */
+  }
+}
+
+
+/* CLI Themed Global Styles */
+:root {
+  --background-color: #020202; /* Dark background */
+  --text-color: #f8f8f2; /* Light text */
+  --primary-accent: #50fa7b; /* Green CLI text */
+  --highlight-text: #ff79c6; /* Pink highlight text */
+  --button-color: #6272a4; /* Blue button */
+  --hover-bg: #44475a; /* Darker background on hover */
+  --divider-cyan: #8be9fd; /* Cyan for dividers */
+  --primary-bg: #21222c; /* Background for entries */
+  --secondary-text: #bd93f9; /* Purple secondary text */
+  --highlight-text: #ff79c6; /* Highlighted text */
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --background-color: #21212b; /* Lighter background */
+  --text-color: #2e2e2e; /* Dark text */
+  --primary-accent: #569cd6; /* Blue CLI text */
+  --highlight-text: #ff79c6; /* Pink highlight */
+  --button-color: #f1fa8c; /* Yellow button */
+  --hover-bg: #44475a; /* Darker background */
+  --divider-cyan: #8be9fd; /* Cyan for dividers */
+  --primary-bg: #ffffff; /* White background for entries */
+  --secondary-text: #bd93f9; /* Purple secondary text */
+  --highlight-text: #ff79c6; /* Highlighted text */
+}
+
+/* Neon Theme */
+[data-theme="neon"] {
+  --background-color: #1fb6b6; /* Dark background with neon vibes */
+  --text-color: #00ff00; /* Neon green text */
+  --primary-accent: #ff00ff; /* Neon purple */
+  --highlight-text: #00ffff; /* Cyan highlight */
+  --button-color: #ff0080; /* Neon pink button */
+  --hover-bg: #333333; /* Darker background on hover */
+  --divider-cyan: #ffff00; /* Neon yellow for dividers */
+  --primary-bg: #333333; /* Background for entries */
+  --secondary-text: #00ff00; /* Neon green secondary text */
+  --highlight-text: #ff0080; /* Highlighted neon pink text */
+}
+
+/* Progress Bar Background */
+.cli-themed-progress-bar .pill-bar-background {
+  background-color: var(--progress-bar-bg); /* Use theme-specific background */
+}
+
 /* General Styles */
 html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden; /* Prevent horizontal scrolling */
-    overflow-y: auto; /* Enable vertical scrolling */
-    box-sizing: border-box;
-    font-size: 10px; /* Small font size */
-    background-color: #000; /* Sleek black background */
-    color: #ccc; /* Soft gray for text */
-    font-family: "Courier New", monospace; /* Monospace for a terminal-like feel */
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-y: auto;
+  box-sizing: border-box;
+  font-family: "Courier New", monospace;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
-/* Raffle Container */
+/* Wrapper for content scaling */
+.body-wrapper {
+  transform: none; /* No scaling here */
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+/* Remove scaling for general use */
+body {
+  transform: none; /* No scaling effect */
+}
+
+/* Content inside the wrapper */
 .raffle-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    min-height: 100vh;
-    width: 100%;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0; /* No extra padding */
+  min-height: 100vh; /* Full height */
+  width: 100%; /* Full width */
+  box-sizing: border-box; /* Ensure no extra space from borders/padding */
 }
 
-/* Pools Section */
-.pools-section {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 10px;
+/* Adjusting the scaling for mobile view */
+@media (max-width: 768px) {
+  .body-wrapper {
+    transform: scale(0.9); /* Slightly larger scaling for smaller screens */
+  }
+
+  .raffle-container {
+    font-size: 0.85rem;
+    padding: 12px;
+  }
 }
 
-/* Wallet Section */
-.wallet-section {
-    width: 100%;
-    text-align: center;
-    padding: 10px;
-    font-size: 8px; /* Smaller font for wallet section */
-}
-
-/* Transactions Section */
-.transactions-section {
-    width: 100%;
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 10px;
-}
-
-/* Transaction Table */
-.transaction-table {
-    width: 100%;
-    overflow-x: auto; /* Horizontal scroll for smaller screens */
-    border-collapse: collapse;
-    font-size: 8px; /* Compact table font */
-}
-
-.transaction-table th, 
-.transaction-table td {
-    padding: 8px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
-}
-
-/* Carousel Adjustments */
-.slick-slide {
-    display: flex;
-    justify-content: center;
-}
-
-.slick-list {
-    padding: 0 5px; /* Space on edges */
-}
-
-/* Universal Button Style */
+/* Button Styling */
 button {
-    padding: 8px 12px;
-    font-size: 8px;
-    color: #fff;
-    background-color: #333;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+  background-color: var(--button-color);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  font-family: "Courier New", monospace; /* Terminal-style font */
+  text-transform: uppercase;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #555;
-    transform: scale(1.05);
+  opacity: 0.8;
+  background-color: var(--highlight-text);
 }
 
-/* Adjustments for Small Screens */
-@media (max-width: 768px) {
-    .pools-section {
-        padding: 5px;
-    }
-
-    .transaction-table th, 
-    .transaction-table td {
-        font-size: 7px; /* Smaller table font */
-        padding: 6px;
-    }
+/* Link Styling (Clickable CLI Items) */
+a {
+  color: var(--primary-accent);
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
-@media (max-width: 480px) {
-    .wallet-section {
-        padding: 5px;
-    }
-
-    .pools-section {
-        padding: 5px;
-    }
-
-    .transaction-table th, 
-    .transaction-table td {
-        font-size: 6px; /* Compact font for very small screens */
-        padding: 4px;
-    }
-
-    button {
-        font-size: 6px;
-        padding: 6px 8px;
-    }
+a:hover {
+  color: var(--highlight-text);
+  text-decoration: underline;
 }
 
-.wallet-connect-text {
+/* CLI-Themed Header */
+.terminal-header {
+  font-size: 1.8rem;
+  font-family: "Courier New", monospace;
+  color: var(--primary-accent);
   text-align: center;
+  margin-top: 20px;
+}
+
+/* General Section Styling */
+.section {
+  padding: 20px;
+  margin: 20px;
+  background-color: var(--primary-bg);
+  border-radius: 5px;
+  border: 2px solid var(--divider-cyan);
+  box-shadow: 0 0 10px rgba(0, 211, 255, 0.3);
+}
+
+/* Terminal-like Buttons */
+button, .filter-btn, .details-link, .view-toggle button {
+  background-color: var(--primary-bg);
+  color: var(--primary-accent);
+  border: 1px solid var(--divider-cyan);
+  padding: 10px 20px;
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+}
+
+/* Active Button State */
+button.active, .filter-btn.active {
+  background-color: var(--highlight-text);
+  color: var(--background-color);
+  border-color: var(--highlight-text);
+}
+
+/* Hover State */
+button:hover, .filter-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--highlight-text);
+}
+
+/* Progress Bar */
+.progress-bars-container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Progress Bar Container */
+.pill-progress-bar-wrapper, .linear-progress-bar-wrapper {
+  width: 100%;
+}
+
+/* CLI-Themed Divider */
+.cli-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  text-align: center;
+  color: var(--divider-cyan);
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+}
+
+/* View Toggle Container */
+.view-toggle {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+/* Dynamic Padding for Entries */
+.raffle-entry p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* CLI-Themed Divider Enhancements */
+.cli-divider span {
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   margin: 10px 0;
 }
 
-.text-connect-button {
-    background: none;
-    border: none;
-    color: #00ff00;
-    font-family: "Courier New", monospace;
-    font-size: 18px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-bottom: 10px;
+/* General Responsive */
+@media (max-width: 768px) {
+  .section {
+    margin: 10px;
   }
-  
-  .text-connect-button:hover {
-    color: #ffffff;
-    text-decoration: underline;
+
+  .filter-row {
+    flex-wrap: wrap;
+    gap: 10px;
   }
-  
-  .wallet-info {
+
+  .filter-btn {
+    width: 100%;
     text-align: center;
-    margin-top: 10px;
-    color: #00ff00;
   }
-  
-  .wallet-disconnected {
-    text-align: center;
-    margin-top: 10px;
-    color: #ff0000;
+
+  .raffle-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-  
 
-/* Terminal Container */
-.raffle-terminal {
-    font-family: "Courier New", monospace; /* Terminal font */
-    color: #e9dce8; /* Terminal green text */
-    background-color: #000; /* Terminal black background */
-    padding: 20px;
-    border: 1px solid #333;
-    max-width: 800px;
-    margin: 40px auto; /* Center horizontally */
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2); /* Terminal glow */
-}
+  .raffle-entry {
+    font-size: 0.85rem;
+    padding: 10px;
+  }
 
-/* Terminal Header */
-.terminal-header {
-    font-size: 1.5rem;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #7FDBFF; /* Cyan header */
-    text-decoration: underline;
-}
+  .pill-progress-bar-wrapper, .linear-progress-bar-wrapper {
+    width: 100%;
+  }
 
-/* Terminal Output Section */
-.terminal-output {
-    text-align: left;
-    line-height: 1.6;
-    font-size: 1rem;
-}
-
-/* Raffle Entry */
-.raffle-entry {
-    margin-bottom: 15px;
-}
-
-/* Keys and Values */
-.key {
-    color: #dfddd5; /* Yellow for keys */
-}
-
-/* Link Styling */
-.details-link {
-    color: #7FDBFF; /* Cyan link */
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.details-link:hover {
-    color: #FFFFFF; /* Bright white on hover */
-    text-decoration: underline;
-}
-
-/* Loading and Error States */
-.terminal-loading {
-    color: #FFDC00; /* Yellow for loading */
-    font-size: 1.2rem;
-    text-align: center;
-}
-
-.terminal-error {
-    color: red;
-    font-size: 1.2rem;
-    text-align: center;
-}
-
-/* Separator Between Entries */
-.separator {
-    margin: 10px 0;
-    border-top: 1px dashed rgba(255, 255, 255, 0.2);
+  .progress-bars-container {
+    gap: 5px;
+  }
 }
 
 
 
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px; /* Set the width of the scrollbar */
+  height: 8px; /* Set the height of horizontal scrollbar */
+}
 
+/* Handle of the Scrollbar */
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary-accent); /* Color of the scrollbar thumb */
+  border-radius: 8px; /* Rounded edges for the thumb */
+  border: 2px solid var(--primary-bg); /* Border to create some contrast */
+  box-shadow: 0 0 5px var(--highlight-text); /* Subtle glowing effect */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-/* Modal Background */
-.wallet-adapter-modal-wrapper {
-    background-color: rgba(0, 0, 0, 0.8) !important; /* Darker overlay */
-  }
-  
-  /* Modal Container */
-  .wallet-adapter-modal {
-    background-color: #121212 !important; /* Change modal background */
-    border-radius: 12px !important;       /* Add rounded corners */
-    color: #ffffff !important;           /* Change text color */
-    font-family: 'Arial', sans-serif !important; /* Custom font */
-  }
-  
-  /* Close Button */
-  .wallet-adapter-modal-button-close {
-    color: #ffffff !important; /* Change close button color */
-    font-size: 18px !important;
-    opacity: 0.7;
-  }
-  .wallet-adapter-modal-button-close:hover {
-    opacity: 1; /* Brighten on hover */
-  }
-  
-  /* Wallet List Items */
-  .wallet-adapter-modal-list li {
-    background-color: #1e1e1e !important; /* Wallet button background */
-    border: 1px solid #333 !important;    /* Add border */
-    border-radius: 8px !important;        /* Rounded corners */
-    padding: 10px 20px !important;
-    margin: 8px 0 !important;
-    transition: background-color 0.3s ease;
-  }
-  .wallet-adapter-modal-list li:hover {
-    background-color: #292929 !important; /* Slight hover effect */
-  }
-  
-  /* Wallet Name and Status */
-  .wallet-adapter-modal-list li .wallet-adapter-modal-list-item {
-    color: #ffffff !important; /* Wallet name color */
-    font-weight: bold !important;
-    font-size: 12px !important;
+/* Handle Hover Effects */
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--highlight-text); /* Change thumb color on hover */
+  box-shadow: 0 0 10px var(--highlight-text); /* Increase glow on hover */
+}
 
-  }
-  .wallet-adapter-modal-list li .wallet-adapter-modal-list-item[aria-label="Detected"] {
-    color: #4caf50 !important; /* Change "Detected" text color */
-  }
-  
+/* Track of the Scrollbar */
+::-webkit-scrollbar-track {
+  background: var(--primary-bg); /* Track background color */
+  border-radius: 8px; /* Rounded corners for the track */
+  border: 2px solid var(--divider-cyan); /* Border for contrast */
+}
 
-  .raffle-image {
-    max-width: 100%;
-    height: auto;
-    margin: 20px 0;
-    border: 1px solid #444;
-    border-radius: 8px;
-  }
-  
+/* For Horizontal Scrollbar */
+::-webkit-scrollbar-horizontal {
+  height: 8px;
+}
 
-  .terminal-container {
-    background-color: #1e1e1e;
-    color: #d4d4d4;
-    font-family: "Courier New", Courier, monospace;
-    padding: 20px;
-  }
-  
-  .terminal-header {
-    color: #61dafb;
-    text-align: center;
-    border-bottom: 2px solid #333;
-    padding-bottom: 10px;
-  }
-  
-  .terminal-section {
-    margin: 20px 0;
-  }
-  
-  .syntax-green {
-    color: #98c379;
-  }
-  
-  .syntax-cyan {
-    color: #56b6c2;
-  }
-  
-  .syntax-red {
-    color: #e06c75;
-  }
-  
-  .syntax-yellow {
-    color: #e5c07b;
-  }
-  
-  :root {
-    /* Primary Colors */
-    --black: #000000;
-    --white: #ffffff;
-    --gray: #cccccc;
-  
-    /* CLI-Themed Colors */
-    --green: #00ff00;      /* For success states */
-    --yellow: #ffdc00;     /* For warnings or highlights */
-    --purple: #9b59b6;     /* Accent or borders */
-    --cyan: #7FDBFF;       /* Links and headings */
-    --amber: #e67e22;      /* Important numbers or callouts */
-    --red: #e74c3c;        /* Errors or negative feedback */
-  
-    /* Backgrounds */
-    --dark-bg: #1e1e1e;    /* Darker container background */
-    --terminal-bg: #000000;
-    --box-bg: #2c2c2c;     /* Slightly lighter than dark background */
-  
-    /* Borders */
-    --border-color: rgba(255, 255, 255, 0.2); /* Subtle dashed borders */
-  
-    /* Fonts */
-    --font-monospace: 'Courier New', monospace; /* Terminal-style font */
-    --font-size-small: 0.9rem;
-    --font-size-medium: 1.2rem;
-    --font-size-large: 1.5rem;
-  
-    /* Shadows */
-    --glow-purple: 0 0 8px rgba(155, 89, 182, 0.8);
-    --glow-green: 0 0 8px rgba(0, 255, 0, 0.8);
-  }
-  
-  
+/* For Vertical Scrollbar */
+::-webkit-scrollbar-vertical {
+  width: 8px;
+}
+
+/* Light Theme Scrollbar */
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background-color: var(--primary-accent); /* Light theme thumb color */
+  box-shadow: 0 0 5px var(--primary-accent); /* Light theme glow */
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--highlight-text); /* Hover effect for light theme */
+}
+
+/* Neon Theme Scrollbar */
+[data-theme="neon"] ::-webkit-scrollbar-thumb {
+  background-color: var(--primary-accent); /* Neon theme thumb color */
+  box-shadow: 0 0 5px var(--primary-accent); /* Neon glow */
+}
+
+[data-theme="neon"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--highlight-text); /* Hover effect for neon theme */
+}
+

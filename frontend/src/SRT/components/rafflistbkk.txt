@@ -1,0 +1,141 @@
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { fetchActiveRaffles } from "../../api";
+import ProgressBar from "./ProgressBar";
+import PillProgressBar from "./PillProgressBar";
+import "./RaffleList.css";
+
+const RaffleList = () => {
+  // State Variables
+  const [raffles, setRaffles] = useState([]); // Cached all raffles
+  const [displayedRaffles, setDisplayedRaffles] = useState([]); // Raffles to render
+  const [onChainCount, setOnChainCount] = useState(0);
+  const [offChainCount, setOffChainCount] = useState(0);
+  const [allCount, setAllCount] = useState(0);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [filterType, setFilterType] = useState("all"); // "all", "onChain", or "offChain"
+
+  // Fetch Raffles
+  const loadRaffles = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetchActiveRaffles();
+      const now = new Date();
+      const allRaffles = response?.raffles || [];
+
+      // Categorize raffles
+      const activeRaffles = allRaffles.filter(
+        (raffle) => new Date(raffle.time?.end) > now
+      );
+      const onChain = activeRaffles.filter(
+        (raffle) => raffle.prizeDetails?.type === "onChain"
+      );
+      const offChain = activeRaffles.filter(
+        (raffle) => raffle.prizeDetails?.type === "physical"
+      );
+
+      // Cache and precompute counts
+      setRaffles(activeRaffles); // Cache active raffles
+      setDisplayedRaffles(activeRaffles); // Default display: All active raffles
+      setAllCount(activeRaffles.length);
+      setOnChainCount(onChain.length);
+      setOffChainCount(offChain.length);
+    } catch (err) {
+      setError("Failed to fetch raffles. Please try again later.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle Filter Selection
+  const handleFilter = (type) => {
+    setFilterType(type);
+    if (type === "onChain") {
+      setDisplayedRaffles(raffles.filter((raffle) => raffle.prizeDetails?.type === "onChain"));
+    } else if (type === "offChain") {
+      setDisplayedRaffles(raffles.filter((raffle) => raffle.prizeDetails?.type === "physical"));
+    } else {
+      setDisplayedRaffles(raffles); // Default to all active raffles
+    }
+  };
+
+  // Effects
+  useEffect(() => {
+    loadRaffles(); // Fetch raffles on mount
+  }, []);
+
+  // JSX Render
+  if (loading) return <p className="terminal-loading">> Loading active raffles...</p>;
+  if (error) return <p className="terminal-error">> {error}</p>;
+
+  return (
+    <div className="raffle-terminal">
+      {/* Header Section */}
+      <div className="raffle-filter-container">
+        <div className="raffle-filter-header">
+          <h1 className="terminal-title">Active Raffles</h1>
+          <p className="terminal-subtitle">Choose On-Chain or Off-Chain prizes below.</p>
+        </div>
+
+        {/* Filter Buttons */}
+        <div className="filter-controls">
+          <button
+            className={`filter-btn ${filterType === "all" ? "active" : ""}`}
+            onClick={() => handleFilter("all")}
+          >
+            All ({allCount})
+          </button>
+          <button
+            className={`filter-btn ${filterType === "onChain" ? "active" : ""}`}
+            onClick={() => handleFilter("onChain")}
+          >
+            On-Chain ({onChainCount})
+          </button>
+          <button
+            className={`filter-btn ${filterType === "offChain" ? "active" : ""}`}
+            onClick={() => handleFilter("offChain")}
+          >
+            Off-Chain ({offChainCount})
+          </button>
+        </div>
+      </div>
+
+      {/* Active Raffles Grid */}
+      <div className="raffle-grid">
+        {displayedRaffles.length > 0 ? (
+          displayedRaffles.map((raffle) => (
+            <div key={raffle._id} className="raffle-entry">
+              <img
+                src={raffle.prizeDetails?.imageUrl || ""}
+                alt={raffle.prizeDetails?.title || "Raffle Image"}
+                className="raffle-image"
+              />
+              <p>
+                Prize:{" "}
+                <span className="syntax-cyan">
+                  {raffle.prizeDetails?.title || "N/A"}
+                </span>
+              </p>
+              <p>
+                Entry Fee:{" "}
+                <span className="syntax-green">{raffle.entryFee || "N/A"} SOL</span>
+              </p>
+              <Link to={`/raffles/${raffle._id}`} className="details-link">
+                View Details
+              </Link>
+            </div>
+          ))
+        ) : (
+          <p>No raffles found.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default RaffleList;

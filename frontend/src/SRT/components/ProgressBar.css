@@ -1,30 +1,83 @@
+/* Base Styles */
 .cli-progress-container {
-  font-family: "Courier New", Courier, monospace;
-  color: #9c27b0;
-  background: #000;
-  padding: 15px;
-  border: 2px solid #9c27b0;
+  font-family: "Courier New", monospace;
+  color: #f0f0f0; /* Default muted text color */
+  background: #000000; /* Dark muted green-gray background */
+  padding: 20px;
+  border: 2px solid #5d95a9; /* Blue-gray border */
   border-radius: 8px;
-  max-width: 600px;
+  max-width: 700px;
   margin: 20px auto;
   text-align: left;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
+/* Header */
 .cli-header {
-  font-size: 1.2em;
-  margin-bottom: 10px;
+  font-size: 1.3em;
+  margin-bottom: 15px;
+  color: #c25d9b; /* Pink for headers */
   text-transform: uppercase;
-  padding-bottom: 5px;
-  border-bottom: 1px solid #9c27b0;
+  border-bottom: 2px solid #c25d9b; /* Matching pink underline */
+  padding-bottom: 8px;
 }
 
+/* Raffle Information */
+.cli-raffle-info {
+  margin: 20px 0;
+  border-left: 3px solid #5d95a9; /* Blue-gray left border for sections */
+  padding-left: 15px;
+}
+
+.cli-info-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  color: #ffffff; /* Default muted text color */
+  margin-bottom: 10px;
+}
+
+.cli-title {
+  font-weight: bold;
+  color: #558899; /* Muted teal for titles */
+}
+
+.cli-raffle-name {
+  color: #ffffff; /* Default muted text */
+}
+
+.cli-prize-title {
+  color: #c25d9b; /* Pink for prize titles */
+}
+
+.cli-prize-type {
+  color: #494f6d; /* Blue-gray for prize type */
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+.cli-prize-description {
+  color: #c35577; /* Reddish-pink for descriptions */
+}
+
+.cli-shipping-info {
+  color: #593c63; /* Purple for shipping info */
+  font-weight: bold;
+}
+
+/* Progress Bar */
 .cli-progress-bar {
-  font-size: 1.2em;
+  font-size: 1.1em;
   margin: 15px 0;
-  color: #00ff00;
+  color: #5d95a9; /* Blue-gray for progress bar text */
   display: flex;
   align-items: center;
+}
+
+.cli-progress-bar-fill {
+  background: #558899; /* Muted teal for filled progress */
+  height: 100%;
+  transition: width 0.4s ease-in-out;
 }
 
 .cli-progress-text {
@@ -32,28 +85,136 @@
   justify-content: space-between;
   margin: 10px 0;
   font-size: 0.9em;
+  color: #ffffff; /* Default muted text */
 }
 
+/* Financial Details */
 .cli-financials {
-  margin: 15px 0;
+  margin: 20px 0;
   font-size: 0.9em;
   line-height: 1.6;
 }
 
-.sol-text {
-  color: #9c27b0; /* Purple color for SOL text */
-  font-weight: bold; /* Distinguish SOL text */
+.cli-financial-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
-.cli-threshold-indicator {
-  color: #ffcc00;
-  font-size: 0.9em;
-  margin-top: 5px;
-  white-space: pre;
+.cli-financial-value {
+  color: #c35577; /* Reddish-pink for financial values */
+  font-weight: bold;
 }
 
-.cli-feedback {
-  margin-top: 10px;
-  font-size: 0.9em;
-  color: #ffcc00;
+/* Time Remaining */
+.cli-title-time {
+  color: #c35577; /* Reddish-pink for urgency */
+}
+
+.cli-time-remaining {
+  color: #ffffff; /* Default muted text */
+  font-weight: bold;
+}
+
+/* Quiz Section */
+.cli-quiz {
+  font-weight: bold;
+  color: #558899; /* Muted teal for quiz title */
+  margin: 15px 0;
+}
+
+.cli-quiz ul {
+  margin: 10px 0;
+  padding-left: 20px;
+  color: #e2d7bb; /* Default muted text */
+}
+
+.cli-quiz li {
+  margin-bottom: 5px;
+  color: #c25d9b; /* Pink for quiz options */
+}
+
+/* Feedback and Status */
+.cli-status {
+  margin-top: 20px;
+  border-left: 3px solid #5d95a9; /* Blue-gray for status section border */
+  padding-left: 15px;
+}
+
+.cli-status-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.cli-status-value {
+  color: #558899; /* Muted teal for status */
+  font-weight: bold;
+}
+
+.cli-feedback-success {
+  color: #494f6d; /* Blue-gray for success */
+  font-weight: bold;
+}
+
+.cli-feedback-warning {
+  color: #c35577; /* Reddish-pink for warnings */
+  font-weight: bold;
+}
+
+.cli-status-highlight {
+  color: #e2d7bb; /* Default muted text for highlighted text */
+  background: #383855; /* Dark muted purple background */
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+/* Divider */
+.cli-divider {
+  border: none;
+  border-top: 2px solid #558899; /* Muted teal for divider */
+  margin: 20px 0;
+  width: 100%;
+}
+
+.cli-divider span {
+  color: #c25d9b; /* Pink for divider text */
+  font-weight: bold;
+  margin: 10px 0;
+  text-transform: uppercase;
+}
+
+/* Buttons */
+button {
+  background-color: #435048; /* Dark muted green-gray for button background */
+  color: #558899; /* Muted teal for button text */
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: 1px solid #558899;
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: #494f6d; /* Blue-gray background on hover */
+  color: #e2d7bb; /* Default muted text on hover */
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #558899; /* Muted teal for scrollbar */
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #c25d9b; /* Pink scrollbar on hover */
+}
+
+::-webkit-scrollbar-track {
+  background: #435048; /* Dark muted green-gray for scrollbar track */
 }
