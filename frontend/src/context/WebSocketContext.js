@@ -10,7 +10,10 @@ export const WebSocketProvider = ({ children }) => {
   const connectWebSocket = (raffleId, onNotification) => {
     if (!raffleId) return;
 
-    socketRef.current = new WebSocket(`ws://localhost:5000/ws/raffle/${raffleId}`);
+    // Dynamically set WebSocket URL
+    const WS_BASE_URL = process.env.REACT_APP_WS_URL || "ws://localhost:5000";
+
+    socketRef.current = new WebSocket(`${WS_BASE_URL}/ws/raffle/${raffleId}`);
 
     socketRef.current.onopen = () => console.log("WebSocket connected");
     socketRef.current.onmessage = (event) => {

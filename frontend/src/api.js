@@ -1,5 +1,5 @@
-// Base URL for the backend
-const API_BASE_URL = "http://localhost:5000/api/raffles";
+// Base URL for the backend, read from environment variables
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/raffles";
 
 /**
  * Fetch all active raffles
@@ -31,13 +31,18 @@ export const fetchActiveRaffles = async (options = {}) => {
     queryParams.append("limit", limit);
 
     // Fetch data from API
-    const response = await fetch(`${API_BASE_URL}?${queryParams}`);
+    const response = await fetch(`${API_BASE_URL}?${queryParams}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
     if (!response.ok) throw new Error(`Failed to fetch raffles: ${response.statusText}`);
 
     const data = await response.json();
-    console.log("Fetched Active Raffles:", data); // Debugging: Log full response
+    console.log("Fetched Active Raffles:", data);
     return {
-      raffles: data?.data || [], // Map `data` to `raffles`
+      raffles: data?.data || [],
       meta: data?.meta || {},
     };
   } catch (error) {
@@ -45,6 +50,7 @@ export const fetchActiveRaffles = async (options = {}) => {
     throw error;
   }
 };
+
 
 
 
