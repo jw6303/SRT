@@ -159,55 +159,6 @@ exports.getActiveRaffles = async (req, res) => {
 };
 
 
-exports.getActiveRaffles = async (req, res) => {
-  try {
-    const {
-      prizeType,
-      maxParticipants,
-      fulfillment,
-      sortField = "time.start",
-      sortOrder = "asc",
-      limit = 10,
-      page = 1,
-    } = req.query;
-
-    // Construct query
-    const query = { "status.current": "active" };
-    if (prizeType) query["prizeDetails.type"] = prizeType;
-    if (maxParticipants) query["participants.max"] = { $lte: parseInt(maxParticipants) };
-    if (fulfillment) query["status.fulfillment"] = fulfillment;
-
-    // Sort and pagination
-    const sortOrderValue = sortOrder === "desc" ? -1 : 1;
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const options = { sort: { [sortField]: sortOrderValue } };
-
-    // Fetch raffles
-    console.log("[DEBUG] Query:", query);
-    const raffles = await req.db.collection("raffles").find(query, options).skip(skip).limit(parseInt(limit)).toArray();
-    console.log("[DEBUG] Fetched raffles:", raffles);
-
-    // Fetch total count
-    const totalCount = await req.db.collection("raffles").countDocuments(query);
-
-    // Response
-    res.status(200).json({
-      message: "Active raffles fetched successfully.",
-      data: raffles,
-      meta: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total: raffles.length,
-        totalCount,
-      },
-    });
-  } catch (err) {
-    console.error("[ERROR] Failed to fetch active raffles:", err);
-    res.status(500).json({ error: "Failed to fetch active raffles." });
-  }
-};
-
-
 
 
 
@@ -215,7 +166,7 @@ exports.getActiveRaffles = async (req, res) => {
 
 exports.registerParticipant = async (req, res) => {
   const { id } = req.params; // Raffle ID from route parameters
-  const { participantId, name, pubkey, answer, amountPaid, shippingInfo } = req.body; // Include shipping info in request body
+  const { participantId, name, pubkey, answer, amountPaid } = req.body; // Participant details from request body
 
   // Validate and sanitize ObjectId
   if (!ObjectId.isValid(id)) {
@@ -243,18 +194,6 @@ exports.registerParticipant = async (req, res) => {
       return res.status(400).json({ error: "Participant is already registered." });
     }
 
-    // If the raffle requires shipping, validate the shipping info
-    if (raffle.prizeDetails.requiresShipping) {
-      const requiredFields = ["fullName", "email", "phone", "addressLine1", "city", "postalCode", "country"];
-      const missingFields = requiredFields.filter((field) => !shippingInfo?.[field]);
-
-      if (missingFields.length > 0) {
-        return res.status(400).json({
-          error: `Missing required shipping information: ${missingFields.join(", ")}`,
-        });
-      }
-    }
-
     // Determine if the answer is correct
     const isCorrect = answer === raffle.question.correctAnswer;
 
@@ -266,7 +205,6 @@ exports.registerParticipant = async (req, res) => {
       answer,
       amountPaid,
       registrationTime: new Date(),
-      shippingInfo: raffle.prizeDetails.requiresShipping ? shippingInfo : null, // Attach shipping info if required
     };
 
     // Prepare the new ticket data

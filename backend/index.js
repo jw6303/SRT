@@ -4,14 +4,23 @@ const bodyParser = require("body-parser");
 const { MongoClient } = require("mongodb");
 const { createServer } = require("http");
 const logger = require("./src/utils/logger");
-const initializeWebSocket = require("./src/utils/websocket"); // Import WebSocket setup
+const initializeWebSocket = require("./src/utils/websocket");
 require("dotenv").config();
 
 const app = express();
-const httpServer = createServer(app); // Create HTTP server
+const httpServer = createServer(app);
+
+// CORS Configuration
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGINS?.split(",") || "*", // Allow specific origins
+  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+  credentials: true, // Enable credentials
+};
+app.use(cors(corsOptions)); // Apply CORS to all routes
+app.options("*", cors(corsOptions)); // Handle preflight requests
 
 // Middleware
-app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
@@ -33,7 +42,7 @@ async function connectToDatabase() {
 }
 
 // Attach WebSocket to requests
-initializeWebSocket(httpServer); // Initialize WebSocket with HTTP server
+initializeWebSocket(httpServer);
 
 // Root Route
 app.get("/", (req, res) => {
