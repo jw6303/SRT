@@ -1,5 +1,6 @@
 // Base URL for the backend, read from environment variables
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/raffles";
+console.log("API Base URL:", API_BASE_URL); // For debugging
 
 /**
  * Fetch all active raffles
