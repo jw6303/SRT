@@ -11,14 +11,23 @@ const app = express();
 const httpServer = createServer(app);
 
 // CORS Configuration
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
 const corsOptions = {
-  origin: process.env.ALLOWED_ORIGINS?.split(",") || "*", // Allow specific origins
-  methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
-  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-  credentials: true, // Enable credentials
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.error(`Blocked by CORS: ${origin}`);
+      callback(new Error(`CORS policy does not allow access from ${origin}`));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
 };
-app.use(cors(corsOptions)); // Apply CORS to all routes
-app.options("*", cors(corsOptions)); // Handle preflight requests
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Middleware
 app.use(bodyParser.json());
@@ -34,7 +43,7 @@ async function connectToDatabase() {
     logger.info("Connecting to MongoDB...");
     await client.connect();
     logger.info("Successfully connected to MongoDB!");
-    db = client.db("solana_raffle_terminal"); // Replace with your actual database name
+    db = client.db("solana_raffle_terminal");
   } catch (err) {
     logger.error(`Failed to connect to MongoDB: ${err.message}`);
     process.exit(1);
@@ -71,10 +80,19 @@ app.use((req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 5000;
+
 async function startServer() {
   await connectToDatabase();
+
+  const serverEnvironment = process.env.NODE_ENV || "development";
+  const serverURL =
+    serverEnvironment === "production" && process.env.HOSTNAME
+      ? `https://${process.env.HOSTNAME}`
+      : `http://localhost:${PORT}`;
+  
   httpServer.listen(PORT, () => {
-    logger.info(`Server is running on http://localhost:${PORT}`);
+    logger.info(`Server is running in ${serverEnvironment} mode at ${serverURL}`);
   });
 }
+
 startServer();

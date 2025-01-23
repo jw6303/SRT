@@ -5,8 +5,22 @@ module.exports = (server) => {
 
   const clients = new Map(); // Map to store connected clients and their subscribed raffle IDs
 
+  // Keep connections alive using ping-pong
+  const pingInterval = setInterval(() => {
+    wss.clients.forEach((client) => {
+      if (client.isAlive === false) return client.terminate();
+      client.isAlive = false;
+      client.ping();
+    });
+  }, 30000);
+
   wss.on("connection", (ws, req) => {
-    console.log("New WebSocket connection");
+    console.log(`New WebSocket connection from ${req.socket.remoteAddress}`);
+    ws.isAlive = true; // Mark the connection as alive
+
+    ws.on("pong", () => {
+      ws.isAlive = true; // Mark as alive on pong response
+    });
 
     ws.on("message", (message) => {
       try {
@@ -24,9 +38,6 @@ module.exports = (server) => {
             })
           );
         }
-
-        // Echo message for testing
-        ws.send(JSON.stringify({ message: `Echo: ${message}` }));
       } catch (error) {
         console.error("Failed to parse message:", message);
         ws.send(JSON.stringify({ error: "Invalid message format" }));
@@ -34,9 +45,19 @@ module.exports = (server) => {
     });
 
     ws.on("close", () => {
-      console.log("WebSocket closed");
+      console.log(`WebSocket connection closed for raffle ${clients.get(ws)}`);
       clients.delete(ws); // Remove client from the map
     });
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error.message);
+    };
+  });
+
+  // Cleanup on server close
+  wss.on("close", () => {
+    clearInterval(pingInterval);
+    console.log("WebSocket server closed");
   });
 
   // Function to broadcast updates to all clients subscribed to a specific raffle
@@ -46,7 +67,11 @@ module.exports = (server) => {
         client.readyState === WebSocket.OPEN &&
         clients.get(client) === raffleId
       ) {
-        client.send(JSON.stringify(data));
+        try {
+          client.send(JSON.stringify(data));
+        } catch (error) {
+          console.error(`Failed to send message to client: ${error.message}`);
+        }
       }
     });
   };
@@ -63,4 +88,6 @@ module.exports = (server) => {
   }, 10000);
 
   console.log("WebSocket server initialized");
+
+  return broadcastToRaffle; // Export the broadcast function for use elsewhere
 };
