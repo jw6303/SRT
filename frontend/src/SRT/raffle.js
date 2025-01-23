@@ -15,8 +15,8 @@ const Raffle = () => {
   const [balance, setBalance] = useState(null);
   const [activeTab, setActiveTab] = useState("Screener");
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const { connected, publicKey } = useWallet();
-  const { connection } = useConnection(); // Reuse connection from WalletContext
+  const { connected, publicKey, wallet } = useWallet(); // Access the wallet object
+  const { connection } = useConnection();
 
   // Theme state
   const [theme, setTheme] = useState("dark");
@@ -91,7 +91,6 @@ const Raffle = () => {
     localStorage.setItem("theme", theme); // Store theme in localStorage
   }, [theme]);
 
-  // Toggle theme function
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
@@ -118,7 +117,13 @@ const Raffle = () => {
             {connected ? (
               <div className="wallet-info">
                 <p className="syntax-green">
-                  Connected as:{" "}
+                Initialized:{" "}
+                  <span className="cli-status-value">
+                    {wallet?.adapter?.name || "Unknown Wallet"}
+                  </span>
+                </p>
+                <p className="syntax-green">
+                  Account:{" "}
                   <span className="cli-status-value">
                     {publicKey?.toString().slice(0, 4)}...
                   </span>
