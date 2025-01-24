@@ -1,43 +1,52 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { WebSocketProvider } from "./context/WebSocketContext";
-import ErrorPage from "./SRT/components/ErrorPage";
 import { HelmetProvider } from "react-helmet-async";
-import Raffle from "./SRT/raffle"; // Main Raffle Component
-import RaffleDetails from "./SRT/components/RaffleDetails"; // Raffle Details Component
-import SolChart from "./SRT/3D/solchart"; // SolChart Component
-import PrivacyPolicy from "./SRT/terms/pp"; // Privacy Policy Component
-import TermsAndConditions from "./SRT/terms/tc"; // Terms and Conditions Component
-import TestPage from "./SRT/components/test"; // Import the new TestPage component
+import { RaffleProvider } from "./SRT/Terminal/context/RaffleContext"; // Import RaffleProvider
+import ErrorPage from "./SRT/components/ErrorPage";
+import Raffle from "./SRT/raffle";
+import RaffleDetails from "./SRT/components/RaffleDetails";
+import SolChart from "./SRT/3D/solchart";
+import PrivacyPolicy from "./SRT/terms/pp";
+import TermsAndConditions from "./SRT/terms/tc";
+import TestPage from "./SRT/components/test";
+import Terminal from "./SRT/Terminal/Terminal";
 
 function App() {
   return (
     <WebSocketProvider>
       <HelmetProvider>
-        <Router>
-          <Routes>
-            {/* Home route */}
-            <Route path="/" element={<Raffle />} />
+        <RaffleProvider>
+          <Router>
+            <Routes>
+              {/* Home route */}
+              <Route path="/" element={<Raffle />} />
 
-            {/* Raffle details route */}
-            <Route path="/raffles/:raffleId" element={<RaffleDetails />} />
+              {/* Raffle details route */}
+              <Route path="/raffles/:raffleId" element={<RaffleDetails />} />
 
-            {/* SolChart route */}
-            <Route path="/solchart" element={<SolChart />} />
+              {/* Terminal route */}
+              <Route path="/terminal" element={<Terminal />} />
 
-            {/* Privacy Policy route */}
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              {/* SolChart route */}
+              <Route path="/solchart" element={<SolChart />} />
 
-            {/* Terms and Conditions route */}
-            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+              {/* Privacy Policy route */}
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
-            {/* Test page for testing styles */}
-            <Route path="/test" element={<TestPage />} />
+              {/* Terms and Conditions route */}
+              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
-            {/* Fallback for unknown routes */}
-            <Route path="*" element={<ErrorPage />} />
-          </Routes>
-        </Router>
+              {/* Test page for testing styles */}
+              <Route path="/test" element={<TestPage />} />
+
+
+
+              {/* Fallback for unknown routes */}
+              <Route path="*" element={<ErrorPage />} />
+            </Routes>
+          </Router>
+        </RaffleProvider>
       </HelmetProvider>
     </WebSocketProvider>
   );

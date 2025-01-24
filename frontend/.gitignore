@@ -23,4 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 
+# Ignore all environment files
 .env
+.env.*

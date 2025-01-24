@@ -1,7 +1,7 @@
 /* Base grid layout */
 .raffle-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Always 3 columns on desktop */
+  grid-template-columns: repeat(4, 1fr); /* Always 3 columns on desktop */
   gap: 20px; /* Even spacing between items */
   padding: 20px; /* Consistent grid padding */
   background: transparent; /* No background */

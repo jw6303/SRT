@@ -1,0 +1,43 @@
+.header {
+    display: flex;
+    align-items: center;
+    background-color: #121212;
+    padding: 16px 24px;
+    border-bottom: 1px solid #333;
+    color: #fff;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .toggle-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    margin-right: 16px;
+    cursor: pointer;
+  }
+  
+  .header-title {
+    font-size: 24px;
+    font-weight: bold;
+    flex: 1;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .header-btn {
+    background-color: #1db954;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .header-btn:hover {
+    background-color: #148f3d;
+  }
+  

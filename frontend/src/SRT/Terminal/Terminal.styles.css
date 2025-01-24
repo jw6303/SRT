@@ -1,0 +1,85 @@
+/* Wrapper */
+.terminal-wrapper {
+    display: flex;
+    height: 100vh;
+    background-color: #121212;
+    transition: all 0.3s ease; /* Smooth transition for sidebar */
+  }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 200px;
+    background-color: #1a1a1a;
+    height: 100vh;
+    color: white;
+    padding: 16px;
+    transition: width 0.3s ease;
+  }
+  
+  .sidebar.collapsed {
+    width: 60px;
+  }
+  
+  /* Sidebar Collapse Button */
+  .toggle-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-bottom: 16px;
+  }
+  
+  /* Main Content */
+  .terminal-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .terminal-container {
+    display: flex;
+    flex: 1;
+    background-color: #1a1a1a;
+  }
+  
+  /* Panels */
+  .panel-left {
+    flex: 1;
+    border-right: 1px solid #333;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  
+  .panel-middle {
+    flex: 2;
+    border-right: 1px solid #333;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  
+  .panel-right {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+  }
+  
+  /* Adjust Main Content on Sidebar Collapse */
+  .terminal-wrapper.collapsed .terminal-container .panel-left,
+  .terminal-wrapper.collapsed .terminal-container .panel-middle,
+  .terminal-wrapper.collapsed .terminal-container .panel-right {
+    transition: flex 0.3s ease;
+  }
+  
+  .terminal-wrapper.collapsed .panel-left {
+    flex: 1.2; /* Slightly smaller when sidebar is collapsed */
+  }
+  
+  .terminal-wrapper.collapsed .panel-middle {
+    flex: 2.6; /* Adjust the middle panel */
+  }
+  
+  .terminal-wrapper.collapsed .panel-right {
+    flex: 1.2; /* Slightly smaller */
+  }
+  

@@ -1,0 +1,55 @@
+.raffle-list {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .raffle-items {
+    list-style: none;
+    margin: 0;
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  
+  .raffle-item {
+    background-color: #1a1a1a;
+    color: white;
+    margin-bottom: 8px;
+    padding: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .raffle-item:hover {
+    background-color: #333333;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: #121212;
+  }
+  
+  .pagination button {
+    background-color: #1db954;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .pagination button:disabled {
+    background-color: #555555;
+    cursor: not-allowed;
+  }
+  
+  .pagination span {
+    color: white;
+    font-size: 14px;
+  }
+  

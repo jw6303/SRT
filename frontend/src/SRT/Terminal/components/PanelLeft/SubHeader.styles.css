@@ -1,0 +1,30 @@
+.sub-header {
+    background-color: #1a1a1a;
+    padding: 16px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .sub-header-title {
+    font-size: 18px;
+    color: white;
+    margin: 0;
+  }
+  
+  .sub-header-input {
+    background-color: #121212;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  
+  .sub-header-input:focus {
+    border-color: #1db954;
+  }
+  

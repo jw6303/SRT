@@ -1,0 +1,127 @@
+/* Grid Container */
+.raffle-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns by default */
+    gap: 20px; /* Space between grid items */
+    padding: 20px; /* Grid padding */
+    background: #000; /* CLI-style black background */
+    color: #ca3df5; /* Text color in CLI theme */
+  }
+  
+  /* Raffle Card */
+  .raffle-card {
+    background: #000000; /* Dark gray background for CLI style */
+    color: #d8dee4; /* Light text color */
+    padding: 15px; /* Inner padding */
+    border-radius: 8px; /* Rounded corners for cards */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Subtle shadow */
+    border: 1px solid #494f6d; /* Border for CLI contrast */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .raffle-card:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8); /* Stronger shadow */
+    border-color: #5d95a9; /* Border color change on hover */
+  }
+  
+  /* Prize Title */
+  .raffle-title {
+    font-size: 1.3rem; /* Slightly smaller title font */
+    font-family: "Courier New", monospace; /* CLI monospace font */
+    margin-bottom: 8px; /* Spacing below the title */
+    color: #f277b9; /* Title color in CLI theme */
+  }
+  
+  /* Raffle Image */
+  .raffle-image {
+    width: 100%; /* Full width */
+    border-radius: 6px; /* Slightly rounded corners */
+    margin-bottom: 10px; /* Spacing below the image */
+    border: 1px solid #383855; /* Border around the image */
+  }
+  
+  /* Entry Fee, Prize Type, and Participants */
+  .raffle-entry-fee,
+  .raffle-prize-type,
+  .raffle-participants {
+    font-size: 0.9rem; /* Slightly smaller font size */
+    font-family: "Courier New", monospace; /* CLI monospace font */
+    margin-bottom: 8px; /* Spacing between lines */
+  }
+  
+  .raffle-entry-cost,
+  .raffle-prize-type-value,
+  .raffle-participants-value {
+    font-weight: bold; /* Emphasized values */
+    color: #db14d5; /* Bright CLI color for highlights */
+  }
+  
+  /* View Details Button */
+  .view-details-btn {
+    display: inline-block;
+    margin-top: 10px; /* Space above the button */
+    padding: 8px 12px; /* Button padding */
+    background-color: #494f6d; /* Button background in CLI style */
+    color: #e2d7bb; /* Text color */
+    text-decoration: none; /* Remove underline */
+    font-size: 0.9rem; /* Button font size */
+    font-family: "Courier New", monospace; /* CLI monospace font */
+    border: 1px solid #5d95a9; /* Button border */
+    border-radius: 4px; /* Rounded corners */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .view-details-btn:hover {
+    background-color: #5d95a9; /* Slightly lighter button on hover */
+    color: #000; /* Dark text for contrast on hover */
+    transform: scale(1.05); /* Scale up slightly */
+  }
+  
+  .view-details-btn:active {
+    transform: scale(1); /* Reset scaling on click */
+  }
+  
+  /* Responsive Adjustments for Mobile */
+  @media (max-width: 1200px) {
+    .raffle-grid {
+      grid-template-columns: repeat(3, 1fr); /* 3 columns on medium screens */
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .raffle-grid {
+      grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+      gap: 15px; /* Reduce spacing */
+    }
+  
+    .raffle-card {
+      padding: 12px; /* Reduce padding for cards */
+    }
+  
+    .raffle-title {
+      font-size: 1.1rem; /* Reduce title font size */
+    }
+  
+    .view-details-btn {
+      padding: 6px 10px; /* Smaller button on mobile */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .raffle-grid {
+      grid-template-columns: 1fr; /* Single column on very small screens */
+      gap: 10px; /* Minimal spacing */
+    }
+  
+    .raffle-card {
+      padding: 10px; /* Minimal padding for mobile */
+    }
+  
+    .raffle-title {
+      font-size: 1rem; /* Smallest title font size */
+    }
+  }
+  
+
+  
