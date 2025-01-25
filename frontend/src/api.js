@@ -1,3 +1,6 @@
+import { translate } from '@vitalets/google-translate-api';
+
+
 // Determine the base URL for the backend dynamically
 const API_BASE_URL = process.env.REACT_APP_API_URL;
 
@@ -58,6 +61,7 @@ export const fetchActiveRaffles = async (options = {}) => {
     throw error;
   }
 };
+
 
 
 
@@ -466,5 +470,51 @@ export const fetchRaffleTransactions = async (raffleId) => {
   } catch (error) {
     console.error(`Error fetching transactions for raffle ${raffleId}:`, error);
     throw error; // Re-throw the error for the caller to handle
+  }
+};
+
+
+
+
+
+
+
+
+
+/**
+ * Translate text using the backend translation API
+ * @param {string} text - The text to translate
+ * @param {string} targetLanguage - The target language code (e.g., "es" for Spanish)
+ * @param {string} [sourceLanguage="auto"] - The source language code (optional, defaults to auto-detection)
+ * @returns {Promise<string>} - The translated text
+ */
+export const translateText = async (text, targetLanguage, sourceLanguage = "auto") => {
+  if (!text || !targetLanguage) {
+    throw new Error("Text and target language are required for translation.");
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/translate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text,
+        targetLanguage,
+        sourceLanguage,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorMessage = await response.text();
+      throw new Error(`Failed to fetch translation: ${errorMessage}`);
+    }
+
+    const data = await response.json();
+    return data.translatedText;
+  } catch (error) {
+    console.error("Error fetching translation:", error.message);
+    throw error;
   }
 };

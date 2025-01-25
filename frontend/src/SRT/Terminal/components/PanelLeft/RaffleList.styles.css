@@ -1,97 +1,102 @@
-.raffle-list {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  
-  .raffle-items {
-    list-style: none;
-    margin: 0;
-    padding: 16px;
-    overflow-y: auto;
-    flex: 1;
-  }
-  
-  .raffle-item {
-    background-color: #1a1a1a;
-    color: white;
-    margin-bottom: 8px;
-    padding: 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .raffle-item:hover {
-    background-color: #333333;
-  }
-  
-  .pagination {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 16px;
-    background-color: #121212;
-  }
-  
-  .pagination button {
-    background-color: #1db954;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 8px 12px;
-    cursor: pointer;
-  }
-  
-  .pagination button:disabled {
-    background-color: #555555;
-    cursor: not-allowed;
-  }
-  
-  .pagination span {
-    color: white;
-    font-size: 14px;
-  }
-  
-  .raffle-list-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 16px;
-    background-color: #1c1c1e;
-    color: #fff;
-    border-radius: 8px;
-  }
-  
-  .filters {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .filter-group {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    background-color: #2a2a2c;
-    border-radius: 4px;
-  }
-  
-  .filter-group label {
-    font-size: 14px;
-    font-weight: 500;
-  }
-  
-  .filter-group select {
-    padding: 6px;
-    font-size: 14px;
-    background-color: #333;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
+/* RaffleList.styles.css */
 
-  
+/* Tabs container */
+.tabs {
+  display: flex;
+  flex-wrap: wrap; /* Wrap tabs on smaller screens */
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background-color: #1a1a1a; /* Terminal background */
+  border: 2px solid #333; /* Outer border */
+  border-radius: 4px;
+}
+
+/* Individual tab */
+.tab {
+  padding: 0.25rem 0.5rem;
+  background-color: #000; /* Black background for retro style */
+  border: 1px solid #b700ff; /* Neon green border */
+  border-radius: 2px;
+  font-family: "Courier New", Courier, monospace; /* Retro monospaced font */
+  font-size: 0.8rem; /* Smaller font for Phantom's smaller screen */
+  color: #fbfbf7; /* Neon green text */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+/* Active tab */
+.tab.active {
+  background-color: #cfe8cf; /* Inverted for active state */
+  color: #000; /* Black text */
+  font-weight: bold;
+}
+
+/* Hover effect */
+.tab:hover {
+  background-color: #444; /* Slight highlight */
+  border-color: #ffcc00; /* Yellow hover effect */
+  color: #ffcc00;
+}
+
+/* Dropdown tab styling */
+.tab.dropdown {
+  position: relative;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%; /* Below the tab */
+  left: 0;
+  background-color: #000; /* Black for retro feel */
+  border: 1px solid #cfe8cf; /* Neon green border */
+  padding: 0.25rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  font-family: "Courier New", Courier, monospace; /* Consistent font */
+}
+
+/* Dropdown items */
+.dropdown-menu div {
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  color: #def4de; /* Default neon text color */
+}
+
+.dropdown-menu div.active,
+.dropdown-menu div:hover {
+  background-color: #cbee5a; /* Highlight */
+  color: #000; /* Inverse text */
+}
+
+/* Raffle list container */
+.raffles {
+  margin-top: 1rem;
+  background-color: #1a1a1a; /* Terminal background */
+  border: 2px solid #333;
+  border-radius: 4px;
+  padding: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto; /* Scrollable for smaller screens */
+}
+
+/* Individual raffle item */
+.raffle-item {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.8rem;
+  color: #e5ece5; /* Neon green for terminal look */
+  padding: 0.25rem;
+  border-bottom: 1px dashed #c1e8c1; /* Dashed lines for retro UI */
+  cursor: pointer;
+}
+
+.raffle-item:hover {
+  background-color: #444;
+  color: #ffcc00;
+}

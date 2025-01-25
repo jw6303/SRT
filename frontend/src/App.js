@@ -2,7 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { WebSocketProvider } from "./context/WebSocketContext";
 import { HelmetProvider } from "react-helmet-async";
-import { RaffleProvider } from "./SRT/Terminal/context/RaffleContext"; // Import RaffleProvider
+import { RaffleProvider } from "./SRT/Terminal/context/RaffleContext";
+import { TranslationProvider } from "./context/TranslationContext"; // Import TranslationProvider
 import ErrorPage from "./SRT/components/ErrorPage";
 import Raffle from "./SRT/raffle";
 import RaffleDetails from "./SRT/components/RaffleDetails";
@@ -16,37 +17,37 @@ function App() {
   return (
     <WebSocketProvider>
       <HelmetProvider>
-        <RaffleProvider>
-          <Router>
-            <Routes>
-              {/* Home route */}
-              <Route path="/" element={<Raffle />} />
+        <TranslationProvider> {/* Add TranslationProvider */}
+          <RaffleProvider>
+            <Router>
+              <Routes>
+                {/* Home route */}
+                <Route path="/" element={<Raffle />} />
 
-              {/* Raffle details route */}
-              <Route path="/raffles/:raffleId" element={<RaffleDetails />} />
+                {/* Raffle details route */}
+                <Route path="/raffles/:raffleId" element={<RaffleDetails />} />
 
-              {/* Terminal route */}
-              <Route path="/terminal" element={<Terminal />} />
+                {/* Terminal route */}
+                <Route path="/terminal" element={<Terminal />} />
 
-              {/* SolChart route */}
-              <Route path="/solchart" element={<SolChart />} />
+                {/* SolChart route */}
+                <Route path="/solchart" element={<SolChart />} />
 
-              {/* Privacy Policy route */}
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                {/* Privacy Policy route */}
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
-              {/* Terms and Conditions route */}
-              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                {/* Terms and Conditions route */}
+                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
-              {/* Test page for testing styles */}
-              <Route path="/test" element={<TestPage />} />
+                {/* Test page for testing styles */}
+                <Route path="/test" element={<TestPage />} />
 
-
-
-              {/* Fallback for unknown routes */}
-              <Route path="*" element={<ErrorPage />} />
-            </Routes>
-          </Router>
-        </RaffleProvider>
+                {/* Fallback for unknown routes */}
+                <Route path="*" element={<ErrorPage />} />
+              </Routes>
+            </Router>
+          </RaffleProvider>
+        </TranslationProvider>
       </HelmetProvider>
     </WebSocketProvider>
   );

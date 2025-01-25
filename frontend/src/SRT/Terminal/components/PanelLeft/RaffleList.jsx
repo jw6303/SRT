@@ -148,7 +148,7 @@ const RaffleList = () => {
           className={`tab dropdown ${openDropdown === "price" ? "open" : ""}`}
           onClick={() => setOpenDropdown((prev) => (prev === "price" ? null : "price"))}
         >
-          <FaFilter /> Price Tier
+          <FaFilter /> Risk Tolerance
           {openDropdown === "price" && (
             <div className="dropdown-menu">
               {Object.keys(priceTiers).map((tier) => (
