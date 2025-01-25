@@ -138,3 +138,15 @@
     padding: 0.3rem 0.6rem; /* Adjust padding */
   }
 }
+
+
+.active-filter {
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: #d4d4d4;
+  }
+  .active-filter span {
+    color: #61dafb; /* an accent color */
+    margin-left: 4px;
+  }
+  

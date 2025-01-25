@@ -1,44 +1,57 @@
+// cli.js
 import React, { useState } from "react";
+import { useLogs } from "../../../../context/LogContext";
 import "./cli.styles.css";
 
-const CliPanel = ({ logs }) => {
-  const [height, setHeight] = useState(200); // Initial height
-  const [isDragging, setIsDragging] = useState(false); // Dragging state
-  const [input, setInput] = useState(""); // Input state for CLI commands
-  
-  // NEW: Track which tab is active: "logs" or "stats"
-  const [activeTab, setActiveTab] = useState("logs");
+const CliPanel = () => {
+  // Start it off slightly smaller (e.g., 150px)
+  const [height, setHeight] = useState(50);
+  const [isDragging, setIsDragging] = useState(false);
+  const [input, setInput] = useState("");
+
+  // Logs from the LogContext
+  const { logs } = useLogs();
 
   const startDrag = (e) => {
     e.preventDefault();
     setIsDragging(true);
 
-    const startY = e.clientY;
+    // Record initial cursor position and current height
+    const initialY = e.clientY;
+    const initialHeight = height;
 
-    const handleMouseMove = (moveEvent) => {
-      const deltaY = startY - moveEvent.clientY; // Calculate drag distance
-      setHeight((prevHeight) =>
-        Math.min(Math.max(prevHeight + deltaY, 100), window.innerHeight / 2) // Clamp height
-      );
+    // Mouse-move handler
+    const onMouseMove = (moveEvt) => {
+      // Calculate how much we've moved since drag began
+      const offset = moveEvt.clientY - initialY;
+      // We want to shrink if user drags up, grow if drags down => so subtract offset
+      const newHeight = initialHeight - offset;
+
+      // Clamp between 80px and half the viewport
+      if (newHeight < 80) {
+        setHeight(80);
+      } else if (newHeight > window.innerHeight / 2) {
+        setHeight(window.innerHeight / 2);
+      } else {
+        setHeight(newHeight);
+      }
     };
 
-    const stopDrag = () => {
+    // Cleanup when mouse is released
+    const onMouseUp = () => {
       setIsDragging(false);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", stopDrag);
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", stopDrag);
-  };
-
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
+    // Add event listeners for the drag
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
   };
 
   const handleKeyDown = (e) => {
+    // (Optional) handle commands if needed
     if (e.key === "Enter") {
-      // Placeholder for log generation
       console.log(`Command executed: ${input}`);
       setInput("");
     }
@@ -46,67 +59,32 @@ const CliPanel = ({ logs }) => {
 
   return (
     <div className="cli-panel" style={{ height: `${height}px` }}>
-      {/* Drag Handle */}
+      {/* Drag handle */}
       <div
         className={`drag-handle ${isDragging ? "active" : ""}`}
         onMouseDown={startDrag}
         title="Drag to resize"
-      ></div>
+      />
 
-      {/* NEW: Tab Navigation */}
-      <div className="cli-tabs">
-        <button
-          className={activeTab === "logs" ? "tab-button active" : "tab-button"}
-          onClick={() => setActiveTab("logs")}
-        >
-          Activity Logs
-        </button>
-        <button
-          className={activeTab === "stats" ? "tab-button active" : "tab-button"}
-          onClick={() => setActiveTab("stats")}
-        >
-          Stats
-        </button>
+      {/* Logs Section */}
+      <div className="cli-logs">
+        <h3>Logs</h3>
+        {logs && logs.length > 0 ? (
+          <div className="log-container">
+            {logs.map((log, index) => (
+              <div key={index} className={`log-entry ${log.type}`}>
+                <span className="log-time">
+                  [{new Date(log.logTime).toLocaleTimeString()}]
+                </span>{" "}
+                <span className="log-message">{log.message}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>No logs available.</p>
+        )}
       </div>
 
-      {/* Conditionally show content based on activeTab */}
-      {activeTab === "logs" && (
-        <div className="cli-logs">
-          <h3>Logs</h3>
-          {logs && logs.length > 0 ? (
-            <div className="log-container">
-              {logs.map((log, index) => (
-                <div key={index} className={`log-entry ${log.type}`}>
-                  <span className="log-time">
-                    [{new Date(log.logTime).toLocaleTimeString()}]
-                  </span>{" "}
-                  <span className="log-message">{log.message}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p>No logs available.</p>
-          )}
-        </div>
-      )}
-
-      {activeTab === "stats" && (
-        <div className="cli-stats">
-          <h3>Stats</h3>
-          {/* Replace with any stats or data you want to display */}
-          <p>Here you can display some statistics about your system, usage, or any other data.</p>
-        </div>
-      )}
-
-      {/* Input Section */}
-      <input
-        type="text"
-        className="cli-input"
-        placeholder="Enter command..."
-        value={input}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-      />
     </div>
   );
 };

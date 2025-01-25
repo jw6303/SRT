@@ -3,29 +3,29 @@
    ========================================= */
    :root {
     /* Color Variables */
-    --terminal-bg-color: #1e1e1e;    /* Overall page background */
-    --sidebar-bg-color: #252526;     /* Sidebar background */
-    --panel-bg-color: #2c2c2c;       /* Panel background */
-    --border-color: #3c3c3c;         /* Border lines */
-    --text-color: #d4d4d4;           /* Main text color */
-    --accent-color: #61dafb;         /* Highlight color */
-    --hover-color: #4fa6d6;          /* Hover color for clickable items */
-    --scrollbar-track-color: #222;   /* Scrollbar track */
-    --scrollbar-thumb-color: #555;   /* Scrollbar thumb */
+    --terminal-bg-color: #1e1e1e;      /* Overall page background */
+    --sidebar-bg-color: #252526;       /* Sidebar background */
+    --panel-bg-color: #2c2c2c;         /* Panel background */
+    --border-color: #3c3c3c;           /* Border lines */
+    --text-color: #d4d4d4;             /* Main text color */
+    --accent-color: #61dafb;           /* Highlight color */
+    --hover-color: #4fa6d6;            /* Hover color for clickable items */
+    --scrollbar-track-color: #222;     /* Scrollbar track */
+    --scrollbar-thumb-color: #555;     /* Scrollbar thumb */
   
-    /* Font & Sizing */
+    /* Font & Sizing (Reduced) */
     --cli-font-family: 'Fira Code', monospace;
-    --cli-font-size: 14px;
-    --cli-line-height: 1.6;
+    --cli-font-size: 12px;            /* Was 14px, now smaller */
+    --cli-line-height: 1.4;           /* Was 1.6, now tighter */
   
-    /* Spacing & Layout */
-    --sidebar-width: 220px;
-    --sidebar-width-collapsed: 60px;
-    --panel-padding: 16px;
+    /* Spacing & Layout (Reduced) */
+    --sidebar-width: 180px;           /* Was 220px, now narrower */
+    --sidebar-width-collapsed: 50px;  /* Was 60px, also smaller */
+    --panel-padding: 10px;            /* Was 16px, less padding */
     --transition-speed: 0.3s;
   }
   
-  /* Reset styles for a clean slate */
+  /* Reset styles */
   body, html {
     margin: 0;
     padding: 0;
@@ -58,7 +58,6 @@
     color: var(--accent-color);
     transition: color var(--transition-speed) ease;
   }
-  
   button:hover {
     color: var(--hover-color);
   }
@@ -88,9 +87,9 @@
   }
   
   .toggle-btn {
-    font-size: 20px;
+    font-size: 16px; /* Slightly smaller toggle icon */
     cursor: pointer;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
   }
   
   .terminal-main {
@@ -104,7 +103,18 @@
     display: flex;
     flex: 1;
     background-color: var(--panel-bg-color);
-    overflow: hidden; /* Panels should scroll individually */
+    overflow: hidden; /* Panels scroll individually */
+  }
+  
+  /* Example: Thinner Header */
+  .header {
+    min-height: 48px; /* Reduced header height (was ~60px typical) */
+    display: flex;
+    align-items: center;
+    padding: 0 var(--panel-padding);
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--panel-bg-color);
+    box-sizing: border-box;
   }
   
   /* =========================================
@@ -119,11 +129,12 @@
     background-color: var(--panel-bg-color);
     transition: flex var(--transition-speed) ease;
     border-right: 1px solid var(--border-color);
+    font-size: 0.95em; /* Even smaller text if needed inside panels */
   }
   
   /* Panel Layout Adjustments */
   .panel-left {
-    flex: 1; /* Adjust based on preference */
+    flex: 1; /* You can tweak if you want narrower or wider */
   }
   .panel-middle {
     flex: 2;
@@ -148,7 +159,7 @@
   .panel-left::-webkit-scrollbar,
   .panel-middle::-webkit-scrollbar,
   .panel-right::-webkit-scrollbar {
-    width: 8px;
+    width: 6px; /* Slightly thinner scrollbar */
   }
   
   .panel-left::-webkit-scrollbar-track,
@@ -171,6 +182,7 @@
     background-color: rgba(97, 218, 251, 0.1);
   }
   
+  /* Adjust for smaller screens (especially Phantom’s in-app browser) */
   @media (max-width: 768px) {
     .terminal-container {
       flex-direction: column;
@@ -187,6 +199,21 @@
   
     .panel-right {
       border-bottom: none;
+    }
+  }
+  
+  /* Even narrower for very small (e.g. Phantom mobile) */
+  @media (max-width: 500px) {
+    :root {
+      --cli-font-size: 11px;
+      --cli-line-height: 1.3;
+      --panel-padding: 8px;
+      --sidebar-width: 150px;
+      --sidebar-width-collapsed: 45px;
+    }
+  
+    .header {
+      min-height: 40px;
     }
   }
   

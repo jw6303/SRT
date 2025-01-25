@@ -1,4 +1,45 @@
 .cli-panel {
+    background-color: #121212;
+    color: #e5e5e5;
+    border-top: 1px solid #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    height: 200px; /* Fixed height for the bottom panel */
+    overflow: hidden; /* Prevent overflow */
+  }
+  
+  .cli-logs {
+    flex: 1;
+    overflow-y: auto; /* Scrollable logs section */
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    padding: 5px;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+  }
+  
+  .cli-log {
+    margin-bottom: 5px;
+  }
+  
+  .cli-input {
+    margin-top: 10px;
+    padding: 10px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    background-color: #1a1a1a;
+    color: #e5e5e5;
+    border: 1px solid #333;
+    border-radius: 6px;
+    outline: none;
+  }
+  
+  
+
+  .cli-panel {
     display: flex;
     flex-direction: column;
     background-color: #121212;
