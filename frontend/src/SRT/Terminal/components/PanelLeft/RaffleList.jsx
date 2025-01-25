@@ -35,7 +35,14 @@ const RaffleList = () => {
     return raffle.entryFee >= min && raffle.entryFee <= max;
   };
 
-  // Filter Counts
+  const determineChainType = (raffle) => {
+    // This assumes `prizeDetails.type` dictates the chain type:
+    // `onChain` for blockchain prizes, and `physical` for off-chain.
+    const prizeType = raffle.prizeDetails?.type;
+    return prizeType === "onChain" ? "onChain" : "offChain";
+  };
+
+  // Calculate Filter Counts
   const calculateFilterCounts = () => {
     return {
       all: raffles.length,
@@ -52,8 +59,8 @@ const RaffleList = () => {
         aggressive: raffles.filter((raffle) => isPriceTier(raffle, "aggressive")).length,
       },
       chainType: {
-        onChain: raffles.filter((raffle) => raffle.status?.isOnChain).length,
-        offChain: raffles.filter((raffle) => raffle.status?.isOnChain === false).length,
+        onChain: raffles.filter((raffle) => determineChainType(raffle) === "onChain").length,
+        offChain: raffles.filter((raffle) => determineChainType(raffle) === "offChain").length,
       },
     };
   };
@@ -81,8 +88,7 @@ const RaffleList = () => {
         filtered = raffles.filter((raffle) => isPriceTier(raffle, tier));
       } else if (activeFilter.startsWith("chain")) {
         const type = activeFilter.split(":")[1];
-        if (type === "onChain") filtered = raffles.filter((raffle) => raffle.status?.isOnChain);
-        if (type === "offChain") filtered = raffles.filter((raffle) => raffle.status?.isOnChain === false);
+        filtered = raffles.filter((raffle) => determineChainType(raffle) === type);
       }
 
       setFilteredRaffles(filtered);
@@ -119,6 +125,67 @@ const RaffleList = () => {
         >
           <FaListAlt /> New Raffles ({filterCounts.new})
         </div>
+        <div
+          className={`tab dropdown ${openDropdown === "endingSoon" ? "open" : ""}`}
+          onClick={() => setOpenDropdown((prev) => (prev === "endingSoon" ? null : "endingSoon"))}
+        >
+          <FaClock /> Ending Soon
+          {openDropdown === "endingSoon" && (
+            <div className="dropdown-menu">
+              {["1h", "6h", "24h", "72h"].map((timeFrame) => (
+                <div
+                  key={timeFrame}
+                  className={activeFilter === `endingSoon:${timeFrame}` ? "active" : ""}
+                  onClick={() => setActiveFilter(`endingSoon:${timeFrame}`)}
+                >
+                  {timeFrame.toUpperCase()} ({filterCounts.endingSoon[timeFrame]})
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div
+          className={`tab dropdown ${openDropdown === "price" ? "open" : ""}`}
+          onClick={() => setOpenDropdown((prev) => (prev === "price" ? null : "price"))}
+        >
+          <FaFilter /> Price Tier
+          {openDropdown === "price" && (
+            <div className="dropdown-menu">
+              {Object.keys(priceTiers).map((tier) => (
+                <div
+                  key={tier}
+                  className={activeFilter === `price:${tier}` ? "active" : ""}
+                  onClick={() => setActiveFilter(`price:${tier}`)}
+                >
+                  {tier.charAt(0).toUpperCase() + tier.slice(1)} (
+                  {filterCounts.priceTiers[tier]})
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div
+          className={`tab dropdown ${openDropdown === "chain" ? "open" : ""}`}
+          onClick={() => setOpenDropdown((prev) => (prev === "chain" ? null : "chain"))}
+        >
+          <FaEthereum /> Chain Type
+          {openDropdown === "chain" && (
+            <div className="dropdown-menu">
+              <div
+                className={activeFilter === "chain:onChain" ? "active" : ""}
+                onClick={() => setActiveFilter("chain:onChain")}
+              >
+                On-Chain ({filterCounts.chainType.onChain})
+              </div>
+              <div
+                className={activeFilter === "chain:offChain" ? "active" : ""}
+                onClick={() => setActiveFilter("chain:offChain")}
+              >
+                Off-Chain ({filterCounts.chainType.offChain})
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Filtered Raffles List */}
@@ -138,19 +205,11 @@ const RaffleList = () => {
                 Tickets Sold: {raffle.participants?.ticketsSold} /{" "}
                 {raffle.participants?.max}
               </p>
-              <p>On-Chain Status: {raffle.status?.isOnChain ? "Yes" : "No"}</p>
-              <p>Type: {raffle.prizeDetails?.type || "Unknown"}</p>
-              <p>Fulfillment: {raffle.status?.fulfillment || "Unknown"}</p>
+              <p>On-Chain Status: {determineChainType(raffle) === "onChain" ? "Yes" : "No"}</p>
             </li>
           ))
         )}
       </ul>
-
-      {/* Debug: Show All Raffle Details */}
-      <div className="debug">
-        <h4>Debug Mode: All Raffle Data</h4>
-        <pre>{JSON.stringify(raffles, null, 2)}</pre>
-      </div>
     </div>
   );
 };

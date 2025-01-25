@@ -60,17 +60,6 @@ const RaffleDetails = () => {
       {/* Chain Status */}
       <p>Chain Type: {chainType}</p>
 
-      {/* Question Section */}
-      <p>
-        Question: {question.text || "N/A"}{" "}
-        {question.options && (
-          <ul>
-            {question.options.map((option, index) => (
-              <li key={index}>{option}</li>
-            ))}
-          </ul>
-        )}
-      </p>
 
       {/* Prize Image */}
       {imageUrl && (
