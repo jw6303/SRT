@@ -24,26 +24,43 @@ const RaffleDetails = () => {
   const { title = "Unknown Prize", type = "N/A", details = "No details available.", imageUrl } =
     prizeDetails;
 
+  // Determine chain type
+  const chainType = prizeDetails.type === "physical" ? "Off-Chain" : "On-Chain";
+
   return (
     <div className="raffle-details">
       <h2>{raffleName}</h2>
+
+      {/* Prize Information */}
       <p>
         Prize: {title} ({type})
       </p>
       <p>Details: {details}</p>
+
+      {/* Entry Fee and Participants */}
       <p>Entry Fee: {entryFee.toFixed(2)} SOL</p>
       <p>
         Tickets Sold: {participants.ticketsSold || 0}/{participants.max || "N/A"}
       </p>
       <p>Minimum Participants Required: {participants.min || "N/A"}</p>
+
+      {/* Analytics */}
       <p>Total Tickets: {analytics.totalTickets || "N/A"}</p>
       <p>Total Entries: {analytics.totalEntries || "N/A"}</p>
       <p>Total Refunds: {analytics.totalRefunds || "N/A"}</p>
+
+      {/* Time Information */}
       <p>Start Time: {time.start ? new Date(time.start).toLocaleString() : "N/A"}</p>
       <p>End Time: {time.end ? new Date(time.end).toLocaleString() : "N/A"}</p>
+
+      {/* Raffle Status */}
       <p>Status: {status.current || "Unknown"}</p>
       <p>Fulfillment: {status.fulfillment || "Unknown"}</p>
-      <p>On-Chain Status: {status.isOnChain ? "Yes" : "No"}</p>
+
+      {/* Chain Status */}
+      <p>Chain Type: {chainType}</p>
+
+      {/* Question Section */}
       <p>
         Question: {question.text || "N/A"}{" "}
         {question.options && (
@@ -54,6 +71,8 @@ const RaffleDetails = () => {
           </ul>
         )}
       </p>
+
+      {/* Prize Image */}
       {imageUrl && (
         <img
           src={imageUrl}

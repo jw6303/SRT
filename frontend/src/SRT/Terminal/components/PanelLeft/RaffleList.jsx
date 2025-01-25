@@ -119,67 +119,6 @@ const RaffleList = () => {
         >
           <FaListAlt /> New Raffles ({filterCounts.new})
         </div>
-        <div
-          className={`tab dropdown ${openDropdown === "endingSoon" ? "open" : ""}`}
-          onClick={() => setOpenDropdown((prev) => (prev === "endingSoon" ? null : "endingSoon"))}
-        >
-          <FaClock /> Ending Soon
-          {openDropdown === "endingSoon" && (
-            <div className="dropdown-menu">
-              {["1h", "6h", "24h", "72h"].map((timeFrame) => (
-                <div
-                  key={timeFrame}
-                  className={activeFilter === `endingSoon:${timeFrame}` ? "active" : ""}
-                  onClick={() => setActiveFilter(`endingSoon:${timeFrame}`)}
-                >
-                  {timeFrame.toUpperCase()} ({filterCounts.endingSoon[timeFrame]})
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div
-          className={`tab dropdown ${openDropdown === "price" ? "open" : ""}`}
-          onClick={() => setOpenDropdown((prev) => (prev === "price" ? null : "price"))}
-        >
-          <FaFilter /> Price Tier
-          {openDropdown === "price" && (
-            <div className="dropdown-menu">
-              {Object.keys(priceTiers).map((tier) => (
-                <div
-                  key={tier}
-                  className={activeFilter === `price:${tier}` ? "active" : ""}
-                  onClick={() => setActiveFilter(`price:${tier}`)}
-                >
-                  {tier.charAt(0).toUpperCase() + tier.slice(1)} (
-                  {filterCounts.priceTiers[tier]})
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div
-          className={`tab dropdown ${openDropdown === "chain" ? "open" : ""}`}
-          onClick={() => setOpenDropdown((prev) => (prev === "chain" ? null : "chain"))}
-        >
-          <FaEthereum /> Chain Type
-          {openDropdown === "chain" && (
-            <div className="dropdown-menu">
-              <div
-                className={activeFilter === "chain:onChain" ? "active" : ""}
-                onClick={() => setActiveFilter("chain:onChain")}
-              >
-                On-Chain ({filterCounts.chainType.onChain})
-              </div>
-              <div
-                className={activeFilter === "chain:offChain" ? "active" : ""}
-                onClick={() => setActiveFilter("chain:offChain")}
-              >
-                Off-Chain ({filterCounts.chainType.offChain})
-              </div>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Filtered Raffles List */}
@@ -199,10 +138,19 @@ const RaffleList = () => {
                 Tickets Sold: {raffle.participants?.ticketsSold} /{" "}
                 {raffle.participants?.max}
               </p>
+              <p>On-Chain Status: {raffle.status?.isOnChain ? "Yes" : "No"}</p>
+              <p>Type: {raffle.prizeDetails?.type || "Unknown"}</p>
+              <p>Fulfillment: {raffle.status?.fulfillment || "Unknown"}</p>
             </li>
           ))
         )}
       </ul>
+
+      {/* Debug: Show All Raffle Details */}
+      <div className="debug">
+        <h4>Debug Mode: All Raffle Data</h4>
+        <pre>{JSON.stringify(raffles, null, 2)}</pre>
+      </div>
     </div>
   );
 };
