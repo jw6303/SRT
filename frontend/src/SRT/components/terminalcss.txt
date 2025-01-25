@@ -1,0 +1,354 @@
+
+
+/* Global Body Styling */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-y: auto;
+  box-sizing: border-box;
+  font-family: "Courier New", monospace;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transform-origin: top left; /* Ensures scaling starts from the top left */
+  zoom: 0.95; /* Apply zoom effect to scale down the entire content */
+}
+
+/* Wrapper for scaling */
+.body-wrapper {
+  transform: scale(0.67); /* Scale content to 67% of original size */
+  transform-origin: top left; /* Ensure scaling is relative to the top left corner */
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal overflow */
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Adjust scaling for mobile view */
+@media (max-width: 768px) {
+  .body-wrapper {
+    transform: scale(0.9); /* Slightly larger scaling for mobile devices */
+  }
+}
+
+
+/* CLI Themed Global Styles */
+:root {
+  --background-color: #020202; /* Dark background */
+  --text-color: #f8f8f2; /* Light text */
+  --primary-accent: #50fa7b; /* Green CLI text */
+  --highlight-text: #ff79c6; /* Pink highlight text */
+  --button-color: #6272a4; /* Blue button */
+  --hover-bg: #44475a; /* Darker background on hover */
+  --divider-cyan: #8be9fd; /* Cyan for dividers */
+  --primary-bg: #21222c; /* Background for entries */
+  --secondary-text: #bd93f9; /* Purple secondary text */
+  --highlight-text: #ff79c6; /* Highlighted text */
+}
+
+/* Light Theme */
+[data-theme="light"] {
+  --background-color: #21212b; /* Lighter background */
+  --text-color: #2e2e2e; /* Dark text */
+  --primary-accent: #569cd6; /* Blue CLI text */
+  --highlight-text: #ff79c6; /* Pink highlight */
+  --button-color: #f1fa8c; /* Yellow button */
+  --hover-bg: #44475a; /* Darker background */
+  --divider-cyan: #8be9fd; /* Cyan for dividers */
+  --primary-bg: #ffffff; /* White background for entries */
+  --secondary-text: #bd93f9; /* Purple secondary text */
+  --highlight-text: #ff79c6; /* Highlighted text */
+}
+
+/* Neon Theme */
+[data-theme="neon"] {
+  --background-color: #1fb6b6; /* Dark background with neon vibes */
+  --text-color: #00ff00; /* Neon green text */
+  --primary-accent: #ff00ff; /* Neon purple */
+  --highlight-text: #00ffff; /* Cyan highlight */
+  --button-color: #ff0080; /* Neon pink button */
+  --hover-bg: #333333; /* Darker background on hover */
+  --divider-cyan: #ffff00; /* Neon yellow for dividers */
+  --primary-bg: #333333; /* Background for entries */
+  --secondary-text: #00ff00; /* Neon green secondary text */
+  --highlight-text: #ff0080; /* Highlighted neon pink text */
+}
+
+/* Progress Bar Background */
+.cli-themed-progress-bar .pill-bar-background {
+  background-color: var(--progress-bar-bg); /* Use theme-specific background */
+}
+
+/* General Styles */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  overflow-y: auto;
+  box-sizing: border-box;
+  font-family: "Courier New", monospace;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+/* Wrapper for content scaling */
+.body-wrapper {
+  transform: none; /* No scaling here */
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+/* Remove scaling for general use */
+body {
+  transform: none; /* No scaling effect */
+}
+
+/* Content inside the wrapper */
+.raffle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0; /* No extra padding */
+  min-height: 100vh; /* Full height */
+  width: 100%; /* Full width */
+  box-sizing: border-box; /* Ensure no extra space from borders/padding */
+}
+
+/* Adjusting the scaling for mobile view */
+@media (max-width: 768px) {
+  .body-wrapper {
+    transform: scale(0.9); /* Slightly larger scaling for smaller screens */
+  }
+
+  .raffle-container {
+    font-size: 0.85rem;
+    padding: 12px;
+  }
+}
+
+/* Button Styling */
+button {
+  background-color: var(--button-color);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  font-family: "Courier New", monospace; /* Terminal-style font */
+  text-transform: uppercase;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  opacity: 0.8;
+  background-color: var(--highlight-text);
+}
+
+/* Link Styling (Clickable CLI Items) */
+a {
+  color: var(--primary-accent);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--highlight-text);
+  text-decoration: underline;
+}
+
+/* CLI-Themed Header */
+.terminal-header {
+  font-size: 1.8rem;
+  font-family: "Courier New", monospace;
+  color: var(--primary-accent);
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* General Section Styling */
+.section {
+  padding: 20px;
+  margin: 20px;
+  background-color: var(--primary-bg);
+  border-radius: 5px;
+  border: 2px solid var(--divider-cyan);
+  box-shadow: 0 0 10px rgba(0, 211, 255, 0.3);
+}
+
+/* Terminal-like Buttons */
+button, .filter-btn, .details-link, .view-toggle button {
+  background-color: var(--primary-bg);
+  color: var(--primary-accent);
+  border: 1px solid var(--divider-cyan);
+  padding: 10px 20px;
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+}
+
+/* Active Button State */
+button.active, .filter-btn.active {
+  background-color: var(--highlight-text);
+  color: var(--background-color);
+  border-color: var(--highlight-text);
+}
+
+/* Hover State */
+button:hover, .filter-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--highlight-text);
+}
+
+/* Progress Bar */
+.progress-bars-container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Progress Bar Container */
+.pill-progress-bar-wrapper, .linear-progress-bar-wrapper {
+  width: 100%;
+}
+
+/* CLI-Themed Divider */
+.cli-divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  text-align: center;
+  color: var(--divider-cyan);
+  font-family: "Courier New", monospace;
+  font-size: 1rem;
+}
+
+/* View Toggle Container */
+.view-toggle {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+/* Dynamic Padding for Entries */
+.raffle-entry p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* CLI-Themed Divider Enhancements */
+.cli-divider span {
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 10px 0;
+}
+
+/* General Responsive */
+@media (max-width: 768px) {
+  .section {
+    margin: 10px;
+  }
+
+  .filter-row {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .filter-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .raffle-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .raffle-entry {
+    font-size: 0.85rem;
+    padding: 10px;
+  }
+
+  .pill-progress-bar-wrapper, .linear-progress-bar-wrapper {
+    width: 100%;
+  }
+
+  .progress-bars-container {
+    gap: 5px;
+  }
+}
+
+
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px; /* Set the width of the scrollbar */
+  height: 8px; /* Set the height of horizontal scrollbar */
+}
+
+/* Handle of the Scrollbar */
+::-webkit-scrollbar-thumb {
+  background-color: var(--primary-accent); /* Color of the scrollbar thumb */
+  border-radius: 8px; /* Rounded edges for the thumb */
+  border: 2px solid var(--primary-bg); /* Border to create some contrast */
+  box-shadow: 0 0 5px var(--highlight-text); /* Subtle glowing effect */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Handle Hover Effects */
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--highlight-text); /* Change thumb color on hover */
+  box-shadow: 0 0 10px var(--highlight-text); /* Increase glow on hover */
+}
+
+/* Track of the Scrollbar */
+::-webkit-scrollbar-track {
+  background: var(--primary-bg); /* Track background color */
+  border-radius: 8px; /* Rounded corners for the track */
+  border: 2px solid var(--divider-cyan); /* Border for contrast */
+}
+
+/* For Horizontal Scrollbar */
+::-webkit-scrollbar-horizontal {
+  height: 8px;
+}
+
+/* For Vertical Scrollbar */
+::-webkit-scrollbar-vertical {
+  width: 8px;
+}
+
+/* Light Theme Scrollbar */
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background-color: var(--primary-accent); /* Light theme thumb color */
+  box-shadow: 0 0 5px var(--primary-accent); /* Light theme glow */
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--highlight-text); /* Hover effect for light theme */
+}
+
+/* Neon Theme Scrollbar */
+[data-theme="neon"] ::-webkit-scrollbar-thumb {
+  background-color: var(--primary-accent); /* Neon theme thumb color */
+  box-shadow: 0 0 5px var(--primary-accent); /* Neon glow */
+}
+
+[data-theme="neon"] ::-webkit-scrollbar-thumb:hover {
+  background-color: var(--highlight-text); /* Hover effect for neon theme */
+}
+
+
+

@@ -1,43 +1,107 @@
-.header {
-    display: flex;
-    align-items: center;
-    background-color: #121212;
-    padding: 16px 24px;
-    border-bottom: 1px solid #333;
-    color: #fff;
-    transition: margin-left 0.3s ease;
+:root {
+    /* Default dark theme (monotone greys and whites) */
+    --terminal-bg-color: #1e1e1e;
+    --sidebar-bg-color: #252526;
+    --panel-bg-color: #2c2c2c;
+    --border-color: #3c3c3c;
+    --text-color: #d4d4d4;
+    --accent-color: #61dafb;
+    --hover-color: #4fa6d6;
+  
+    /* Font and spacing */
+    --cli-font-family: 'Fira Code', monospace;
+    --cli-font-size: 14px;
+    --cli-line-height: 1.6;
+  
+    --transition-speed: 0.3s;
   }
   
-  .toggle-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 20px;
-    margin-right: 16px;
-    cursor: pointer;
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--sidebar-bg-color);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-family: var(--cli-font-family);
   }
   
   .header-title {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: bold;
-    flex: 1;
+    margin: 0;
   }
   
   .header-actions {
     display: flex;
-    gap: 12px;
+    align-items: center;
+    gap: 1rem;
   }
   
-  .header-btn {
-    background-color: #1db954;
-    border: none;
-    color: white;
-    padding: 8px 12px;
+  select {
+    padding: 0.5rem;
+    font-family: inherit;
+    font-size: 1rem;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    cursor: pointer;
+    background-color: var(--panel-bg-color);
+    color: var(--text-color);
+    outline: none;
   }
   
-  .header-btn:hover {
-    background-color: #148f3d;
+  select:focus {
+    border-color: var(--accent-color);
+  }
+  
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+  }
+  
+  .toggle-label {
+    display: inline-block;
+    position: relative;
+    width: 50px;
+    height: 24px;
+  }
+  
+  .toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .toggle-slider:hover {
+    background-color: var(--hover-color);
+  }
+  
+  .toggle-icon {
+    color: var(--text-color);
+    font-size: 16px;
+    transition: color var(--transition-speed);
+  }
+  
+  .toggle-input:checked + .toggle-slider {
+    background-color: var(--accent-color);
+  }
+  
+  .toggle-input:checked + .toggle-slider .toggle-icon {
+    color: #ffffff;
   }
   

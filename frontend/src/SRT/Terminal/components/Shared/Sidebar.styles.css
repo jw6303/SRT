@@ -1,194 +1,121 @@
-/* General Sidebar Styles */
+/* --- Sidebar General Styles --- */
 .sidebar {
     width: 240px;
     height: 100vh;
-    background-color: #111;
-    color: #eee;
+    background-color: #1c1c1c; /* Terminal black */
+    color: #dcdcdc; /* Light grey text */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: width 0.3s ease;
+    transition: width 0.3s ease-in-out; /* Smooth collapsing */
+    border-right: 2px solid #333; /* Subtle border for structure */
   }
   
   .sidebar.collapsed {
-    width: 60px;
+    width: 60px; /* Narrow width for collapsed state */
+    overflow: hidden; /* Hide extra content */
   }
   
-  .sidebar .toggle-btn {
-    background: none;
-    border: none;
-    color: #6bcdfd;
+  /* --- Header with Toggle Button --- */
+  .cli-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    position: relative; /* For tooltip positioning */
+  }
+  
+  .toggle-btn {
+    background: #333; /* Dark grey button */
+    border: 2px solid #444; /* Subtle border */
+    color: #6bcdfd; /* Light blue for the icon */
     font-size: 1.5rem;
-    margin: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Circular button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
   }
   
-  .sidebar .toggle-btn:hover {
-    color: #f9c74f;
+  .toggle-btn:hover {
+    background-color: #444;
+    color: #f9c74f; /* Yellow for hover feedback */
+    border-color: #f9c74f;
   }
   
-  /* Navigation Items */
+  .tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 8px);
+    transform: translateY(-50%);
+    background-color: #222; /* Dark tooltip background */
+    color: #fff; /* White text */
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+  
+  .toggle-btn:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  /* --- Navigation Section --- */
   .sidebar-nav {
     list-style: none;
     padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
   
   .nav-item {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     padding: 10px 20px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   
   .nav-item:hover {
-    background-color: #333;
+    background-color: #292929; /* Slightly lighter for hover effect */
   }
   
   .nav-icon {
     font-size: 1.5rem;
-    margin-right: 10px;
+    color: #dcdcdc; /* Icon color matching text */
   }
   
   .nav-text {
     font-size: 1rem;
+    margin-left: 10px;
+    color: #dcdcdc;
   }
   
-  /* Footer Section */
+  .sidebar.collapsed .nav-text {
+    display: none; /* Hide text in collapsed state */
+  }
+  
+  /* --- Footer Section --- */
   .sidebar-footer {
     padding: 10px;
-    border-top: 1px solid #444;
     text-align: center;
-  }
-  
-  .footer-links {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 10px;
-  }
-  
-  .footer-links li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-  }
-  
-  .footer-links a {
-    color: #6bcdfd;
-    text-decoration: none;
-    margin-left: 8px;
     font-size: 0.9rem;
+    color: #666; /* Subtle footer text */
   }
   
-  .footer-links a:hover {
-    color: #f9c74f;
-  }
-  
-  .footer-icon {
-    font-size: 1.2rem;
-    color: #6bcdfd;
-  }
-  
-  .social-icons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
-  
-  .social-icons a {
-    color: #6bcdfd;
-    font-size: 1.5rem;
-    transition: color 0.3s;
-  }
-  
-  .social-icons a:hover {
-    color: #f9c74f;
-  }
-  
-
-
-  /* Collapse Button */
-.toggle-btn {
-    background: none;
-    border: none;
-    color: #00ff00; /* CLI green */
-    font-family: monospace;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 10px;
-  }
-  
-  .cli-collapse {
-    color: #00ff00; /* CLI green */
-    font-family: monospace;
-  }
-  
-  .cli-collapse.active {
-    color: #00ff00;
-  }
-  
-  .blinker {
-    animation: blink 1s step-start infinite;
-  }
-  
-  @keyframes blink {
-    50% {
-      opacity: 0;
-    }
-  }
-  
-  /* CLI User Prompt */
-  .cli-prompt {
-    color: #00ff00;
-    font-family: monospace;
-    margin: 10px 0;
-    padding-left: 10px;
-    border-left: 2px solid #00ff00;
-  }
-  
-  /* Sidebar Nav */
-  .sidebar-nav {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .nav-item {
-    display: flex;
-    align-items: center;
-    margin: 10px 0;
-  }
-  
-  .nav-icon {
-    margin-right: 10px;
-  }
-  
-  .nav-text {
-    color: #00ff00;
-    font-family: monospace;
-  }
-  
-  /* Footer Links */
-  .footer-links li {
-    display: flex;
-    align-items: center;
-    margin: 5px 0;
-  }
-  
-  .footer-icon {
-    margin-right: 5px;
-    color: #00ff00;
-  }
-  
-  .footer-links a {
-    text-decoration: none;
-    color: #00ff00;
-  }
-  
-  .social-icons a {
-    margin-right: 10px;
-    color: #00ff00;
+  .footer-text {
+    font-family: "Courier New", monospace;
+    color: #888; /* Muted grey for terminal feel */
+    font-size: 0.8rem;
   }
   

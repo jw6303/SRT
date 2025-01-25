@@ -5,8 +5,8 @@ import {
   FiBell,
   FiFileText,
   FiDatabase,
-  FiTwitter,
-  FiGithub,
+  FiChevronLeft,
+  FiChevronRight,
 } from "react-icons/fi";
 import "./Sidebar.styles.css";
 
@@ -18,19 +18,27 @@ const Sidebar = () => {
   };
 
   return (
-<div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
-  {/* CLI Prompt + Collapse Button */}
-  <div className="cli-header">
-    <span className="cli-prompt">userIDxxxx@PC:~Solana Raffle Terminal $</span>
-    <span
-      className={`cli-collapse ${isCollapsed ? "" : "active"}`}
-      onClick={toggleSidebar}
-    >
-      {isCollapsed ? "/*} >" : "ACTIVE/*} >"}<span className={!isCollapsed ? "blinker" : ""}>_</span>
-    </span>
-  </div>
+    <div className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
+      {/* Header with Toggle Button */}
+      <div className="cli-header">
+        <button
+          className="toggle-btn"
+          onClick={toggleSidebar}
+          aria-expanded={!isCollapsed}
+          aria-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+        >
+          {isCollapsed ? (
+            <FiChevronRight className="toggle-icon" />
+          ) : (
+            <FiChevronLeft className="toggle-icon" />
+          )}
+          <span className="tooltip">
+            {isCollapsed ? "Expand" : "Collapse"}
+          </span>
+        </button>
+      </div>
 
-  {/* Navigation Items */}
+      {/* Navigation Section */}
       <ul className="sidebar-nav">
         <li className="nav-item">
           <FiPrinter className="nav-icon" />
@@ -52,7 +60,7 @@ const Sidebar = () => {
             </li>
             <li className="nav-item">
               <FiDatabase className="nav-icon" />
-              <span className="nav-text">Transaction History</span>
+              <span className="nav-text">Transactions</span>
             </li>
           </>
         )}
@@ -60,38 +68,9 @@ const Sidebar = () => {
 
       {/* Footer Section */}
       <div className="sidebar-footer">
-        {!isCollapsed && (
-          <>
-            <ul className="footer-links">
-              <li>
-                <FiFileText className="footer-icon" />
-                <a href="/privacy-policy" title="Privacy Policy">[Privacy]</a>
-              </li>
-              <li>
-                <FiFileText className="footer-icon" />
-                <a href="/terms-conditions" title="Terms & Conditions">[Terms]</a>
-              </li>
-            </ul>
-            <div className="social-icons">
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Twitter"
-              >
-                <FiTwitter />
-              </a>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="GitHub"
-              >
-                <FiGithub />
-              </a>
-            </div>
-          </>
-        )}
+        <p className="footer-text">
+          {!isCollapsed && "CLI Terminal Sidebar"}
+        </p>
       </div>
     </div>
   );

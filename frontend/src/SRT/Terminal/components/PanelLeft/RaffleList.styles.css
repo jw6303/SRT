@@ -1,4 +1,4 @@
-/* RaffleList.styles.css */
+/* --- General Styling --- */
 
 /* Tabs container */
 .tabs {
@@ -7,41 +7,44 @@
   justify-content: flex-start;
   gap: 0.5rem;
   padding: 0.5rem;
-  background-color: #1a1a1a; /* Terminal background */
-  border: 2px solid #333; /* Outer border */
-  border-radius: 4px;
+  background-color: #121212; /* Dark terminal background */
+  border: 1px solid #2a2a2a; /* Subtle border for structure */
+  border-radius: 6px;
 }
 
 /* Individual tab */
 .tab {
-  padding: 0.25rem 0.5rem;
-  background-color: #000; /* Black background for retro style */
-  border: 1px solid #b700ff; /* Neon green border */
-  border-radius: 2px;
-  font-family: "Courier New", Courier, monospace; /* Retro monospaced font */
-  font-size: 0.8rem; /* Smaller font for Phantom's smaller screen */
-  color: #fbfbf7; /* Neon green text */
+  padding: 0.4rem 0.8rem;
+  background-color: #1a1a1a; /* Deep grey for tabs */
+  border: 1px solid #2a2a2a; /* Subtle tab border */
+  border-radius: 4px;
+  font-family: "JetBrains Mono", monospace; /* Modern CLI font */
+  font-size: 0.9rem; /* Slightly larger for readability */
+  color: #e5e5e5; /* Neutral white for text */
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.5rem;
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
 }
 
 /* Active tab */
 .tab.active {
-  background-color: #cfe8cf; /* Inverted for active state */
-  color: #000; /* Black text */
+  background-color: #333333; /* Slightly lighter grey for active tab */
+  color: #ffffff; /* Brighter white for active text */
   font-weight: bold;
+  border-color: #555555; /* Highlighted active border */
 }
 
 /* Hover effect */
 .tab:hover {
-  background-color: #444; /* Slight highlight */
-  border-color: #ffcc00; /* Yellow hover effect */
-  color: #ffcc00;
+  background-color: #292929; /* Slightly lighter background */
+  border-color: #666666; /* Subtle hover border */
+  color: #ffffff; /* Neutral white for hover text */
 }
+
+/* --- Dropdown Styling --- */
 
 /* Dropdown tab styling */
 .tab.dropdown {
@@ -51,52 +54,87 @@
 /* Dropdown menu */
 .dropdown-menu {
   position: absolute;
-  top: 100%; /* Below the tab */
+  top: calc(100% + 0.2rem); /* Spacing below the tab */
   left: 0;
-  background-color: #000; /* Black for retro feel */
-  border: 1px solid #cfe8cf; /* Neon green border */
-  padding: 0.25rem;
+  background-color: #1a1a1a; /* Match tab background */
+  border: 1px solid #2a2a2a; /* Subtle dropdown border */
+  padding: 0.25rem 0;
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  font-family: "Courier New", Courier, monospace; /* Consistent font */
+  font-family: "JetBrains Mono", monospace; /* Consistent font */
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); /* Subtle dropdown shadow */
 }
 
 /* Dropdown items */
 .dropdown-menu div {
-  padding: 0.2rem 0.4rem;
+  padding: 0.4rem 0.8rem;
   cursor: pointer;
-  color: #def4de; /* Default neon text color */
+  color: #d5d5d5; /* Neutral grey for dropdown items */
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .dropdown-menu div.active,
 .dropdown-menu div:hover {
-  background-color: #cbee5a; /* Highlight */
-  color: #000; /* Inverse text */
+  background-color: #333333; /* Highlight hover background */
+  color: #ffffff; /* Inverted hover text */
 }
+
+/* --- Raffle List Styling --- */
 
 /* Raffle list container */
 .raffles {
   margin-top: 1rem;
-  background-color: #1a1a1a; /* Terminal background */
-  border: 2px solid #333;
-  border-radius: 4px;
-  padding: 0.5rem;
-  max-height: 200px;
-  overflow-y: auto; /* Scrollable for smaller screens */
+  background-color: #121212; /* Match terminal background */
+  border: 1px solid #2a2a2a; /* Subtle border */
+  border-radius: 6px;
+  padding: 0.8rem;
+  max-height: 300px; /* Larger height for usability */
+  overflow-y: auto; /* Scrollable for longer lists */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); /* Subtle shadow for depth */
 }
 
 /* Individual raffle item */
 .raffle-item {
-  font-family: "Courier New", Courier, monospace;
-  font-size: 0.8rem;
-  color: #e5ece5; /* Neon green for terminal look */
-  padding: 0.25rem;
-  border-bottom: 1px dashed #c1e8c1; /* Dashed lines for retro UI */
+  font-family: "JetBrains Mono", monospace; /* Modern CLI font */
+  font-size: 0.85rem; /* Comfortable text size */
+  color: #d9d9d9; /* Neutral grey for text */
+  padding: 0.5rem;
+  border-bottom: 1px dashed #2e2e2e; /* Subtle dashed separator */
   cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .raffle-item:hover {
-  background-color: #444;
-  color: #ffcc00;
+  background-color: #292929; /* Slightly lighter hover background */
+  color: #ffffff; /* Bright white hover text */
+}
+
+/* Last item should not have a border */
+.raffle-item:last-child {
+  border-bottom: none;
+}
+
+/* --- Responsive Design --- */
+
+/* Small screen adjustments */
+@media (max-width: 768px) {
+  .tabs {
+    justify-content: center; /* Center tabs on smaller screens */
+  }
+
+  .raffles {
+    max-height: 200px; /* Smaller scrollable area for compact screens */
+  }
+
+  .tab {
+    font-size: 0.8rem; /* Slightly smaller tabs */
+    padding: 0.3rem 0.6rem; /* Adjust padding */
+  }
+
+  .dropdown-menu div {
+    font-size: 0.8rem; /* Smaller dropdown items */
+    padding: 0.3rem 0.6rem; /* Adjust padding */
+  }
 }

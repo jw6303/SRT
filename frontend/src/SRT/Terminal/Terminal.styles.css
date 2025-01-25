@@ -1,85 +1,192 @@
-/* Wrapper */
-.terminal-wrapper {
-    display: flex;
-    height: 100vh;
-    background-color: #121212;
-    transition: all 0.3s ease; /* Smooth transition for sidebar */
+/* =========================================
+   1) Global Variables & Reset
+   ========================================= */
+   :root {
+    /* Color Variables */
+    --terminal-bg-color: #1e1e1e;    /* Overall page background */
+    --sidebar-bg-color: #252526;     /* Sidebar background */
+    --panel-bg-color: #2c2c2c;       /* Panel background */
+    --border-color: #3c3c3c;         /* Border lines */
+    --text-color: #d4d4d4;           /* Main text color */
+    --accent-color: #61dafb;         /* Highlight color */
+    --hover-color: #4fa6d6;          /* Hover color for clickable items */
+    --scrollbar-track-color: #222;   /* Scrollbar track */
+    --scrollbar-thumb-color: #555;   /* Scrollbar thumb */
+  
+    /* Font & Sizing */
+    --cli-font-family: 'Fira Code', monospace;
+    --cli-font-size: 14px;
+    --cli-line-height: 1.6;
+  
+    /* Spacing & Layout */
+    --sidebar-width: 220px;
+    --sidebar-width-collapsed: 60px;
+    --panel-padding: 16px;
+    --transition-speed: 0.3s;
   }
   
-  /* Sidebar */
-  .sidebar {
-    width: 200px;
-    background-color: #1a1a1a;
-    height: 100vh;
-    color: white;
-    padding: 16px;
-    transition: width 0.3s ease;
+  /* Reset styles for a clean slate */
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--terminal-bg-color);
+    color: var(--text-color);
+    font-family: var(--cli-font-family);
+    font-size: var(--cli-font-size);
+    line-height: var(--cli-line-height);
+    overflow: hidden; /* Prevent page-wide scrolling */
   }
   
-  .sidebar.collapsed {
-    width: 60px;
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
   
-  /* Sidebar Collapse Button */
-  .toggle-btn {
+  h1, h2, h3, h4 {
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
     background: none;
     border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    margin-bottom: 16px;
+    color: var(--accent-color);
+    transition: color var(--transition-speed) ease;
   }
   
-  /* Main Content */
+  button:hover {
+    color: var(--hover-color);
+  }
+  
+  /* =========================================
+     2) Terminal Wrapper & Layout
+     ========================================= */
+  .terminal-wrapper {
+    display: flex;
+    height: 100vh;
+    transition: all var(--transition-speed) ease;
+    background-color: var(--terminal-bg-color);
+  }
+  
+  .sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-bg-color);
+    color: var(--text-color);
+    padding: var(--panel-padding);
+    box-sizing: border-box;
+    transition: width var(--transition-speed) ease;
+  }
+  
+  /* Collapsed Sidebar */
+  .sidebar.collapsed {
+    width: var(--sidebar-width-collapsed);
+  }
+  
+  .toggle-btn {
+    font-size: 20px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+  }
+  
   .terminal-main {
     flex: 1;
     display: flex;
     flex-direction: column;
+    background-color: var(--panel-bg-color);
   }
   
   .terminal-container {
     display: flex;
     flex: 1;
-    background-color: #1a1a1a;
+    background-color: var(--panel-bg-color);
+    overflow: hidden; /* Panels should scroll individually */
   }
   
-  /* Panels */
-  .panel-left {
-    flex: 1;
-    border-right: 1px solid #333;
-    padding: 16px;
+  /* =========================================
+     3) Panels
+     ========================================= */
+  .panel-left,
+  .panel-middle,
+  .panel-right {
+    padding: var(--panel-padding);
+    box-sizing: border-box;
     overflow-y: auto;
+    background-color: var(--panel-bg-color);
+    transition: flex var(--transition-speed) ease;
+    border-right: 1px solid var(--border-color);
   }
   
+  /* Panel Layout Adjustments */
+  .panel-left {
+    flex: 1; /* Adjust based on preference */
+  }
   .panel-middle {
     flex: 2;
-    border-right: 1px solid #333;
-    padding: 16px;
-    overflow-y: auto;
   }
-  
   .panel-right {
     flex: 1;
-    padding: 16px;
-    overflow-y: auto;
+    border-right: none;
   }
   
-  /* Adjust Main Content on Sidebar Collapse */
-  .terminal-wrapper.collapsed .terminal-container .panel-left,
-  .terminal-wrapper.collapsed .terminal-container .panel-middle,
-  .terminal-wrapper.collapsed .terminal-container .panel-right {
-    transition: flex 0.3s ease;
-  }
-  
+  /* Collapsed Sidebar Panel Adjustment */
   .terminal-wrapper.collapsed .panel-left {
-    flex: 1.2; /* Slightly smaller when sidebar is collapsed */
+    flex: 1.2;
   }
-  
   .terminal-wrapper.collapsed .panel-middle {
-    flex: 2.6; /* Adjust the middle panel */
+    flex: 2.6;
+  }
+  .terminal-wrapper.collapsed .panel-right {
+    flex: 1.2;
   }
   
-  .terminal-wrapper.collapsed .panel-right {
-    flex: 1.2; /* Slightly smaller */
+  /* Scrollbar Styling */
+  .panel-left::-webkit-scrollbar,
+  .panel-middle::-webkit-scrollbar,
+  .panel-right::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .panel-left::-webkit-scrollbar-track,
+  .panel-middle::-webkit-scrollbar-track,
+  .panel-right::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track-color);
+  }
+  
+  .panel-left::-webkit-scrollbar-thumb,
+  .panel-middle::-webkit-scrollbar-thumb,
+  .panel-right::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 4px;
+  }
+  
+  /* =========================================
+     4) Utility Classes & Media Queries
+     ========================================= */
+  .clickable:hover {
+    background-color: rgba(97, 218, 251, 0.1);
+  }
+  
+  @media (max-width: 768px) {
+    .terminal-container {
+      flex-direction: column;
+    }
+  
+    .panel-left,
+    .panel-middle,
+    .panel-right {
+      border-right: none;
+      border-bottom: 1px solid var(--border-color);
+      flex: initial;
+      height: 33%; /* Stack panels vertically */
+    }
+  
+    .panel-right {
+      border-bottom: none;
+    }
   }
   
