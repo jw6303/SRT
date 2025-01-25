@@ -1,0 +1,61 @@
+.raffle-details {
+    padding: 20px;
+    background-color: #1a1a1a; /* Dark background */
+    color: #e5e5e5; /* Light text */
+    border-radius: 8px;
+    border: 1px solid #2a2a2a; /* Subtle border */
+    font-family: "JetBrains Mono", monospace; /* Monospace font for CLI feel */
+    max-width: 800px;
+    margin: 0 auto; /* Centered */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+  }
+  
+  .raffle-details h2 {
+    font-size: 1.5rem;
+    color: #61dafb; /* Highlighted color */
+    margin-bottom: 20px;
+    text-align: center; /* Centered title */
+  }
+  
+  .raffle-details p {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    line-height: 1.6;
+    color: #cccccc; /* Slightly muted text */
+  }
+  
+  .raffle-details p strong {
+    color: #ffffff; /* Brighten strong text */
+  }
+  
+  .raffle-details img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 20px auto 0;
+    border-radius: 8px;
+    border: 1px solid #333333; /* Border for images */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Image shadow */
+  }
+  
+  .raffle-details p span {
+    font-weight: bold;
+    color: #61dafb; /* Highlighted span text */
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .raffle-details {
+      padding: 16px;
+      max-width: 100%; /* Full width for smaller screens */
+    }
+  
+    .raffle-details h2 {
+      font-size: 1.25rem;
+    }
+  
+    .raffle-details p {
+      font-size: 0.9rem;
+    }
+  }
+  

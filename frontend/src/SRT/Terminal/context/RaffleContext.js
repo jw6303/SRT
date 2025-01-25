@@ -4,6 +4,9 @@ import { fetchActiveRaffles, fetchRaffleDetails } from "../../../api"; // Adjust
 const RaffleContext = createContext();
 
 export const RaffleProvider = ({ children }) => {
+  // ---------------------------
+  // Existing states
+  // ---------------------------
   // State for all raffles
   const [raffles, setRaffles] = useState([]);
   const [filteredRaffles, setFilteredRaffles] = useState([]); // Raffles after applying filters
@@ -24,6 +27,31 @@ export const RaffleProvider = ({ children }) => {
     newRaffles: false,
   });
 
+  // ---------------------------
+  // NEW: Logging system
+  // ---------------------------
+  const [logs, setLogs] = useState([]);
+
+  /**
+   * Add a log entry to the logs array
+   * @param {string} type - "info", "success", "error", etc.
+   * @param {string} message - The text of the log message
+   */
+  const addLog = (type, message) => {
+    setLogs((prevLogs) => [
+      ...prevLogs,
+      {
+        type,
+        message,
+        logTime: new Date().toISOString(),
+      },
+    ]);
+  };
+
+  // ---------------------------
+  // Existing functions
+  // ---------------------------
+
   /**
    * Fetch all raffles with optional filters and pagination
    * @param {Object} options - Filtering and pagination options
@@ -33,12 +61,18 @@ export const RaffleProvider = ({ children }) => {
     setError(null);
 
     try {
+      addLog("info", "Loading raffles from API...");
       const { raffles, meta } = await fetchActiveRaffles(options); // Fetch raffles from API
+
       setRaffles(raffles);
       setFilteredRaffles(raffles); // Initially, show all raffles
       setMeta(meta); // Update pagination metadata
+
+      addLog("success", "Raffles loaded successfully.");
     } catch (err) {
-      setError(err.message || "Failed to load raffles.");
+      const errMsg = err.message || "Failed to load raffles.";
+      setError(errMsg);
+      addLog("error", `Error loading raffles: ${errMsg}`);
     } finally {
       setLoading(false);
     }
@@ -50,7 +84,9 @@ export const RaffleProvider = ({ children }) => {
    */
   const loadRaffleDetails = async (id) => {
     if (!id) {
-      setError("Raffle ID is required.");
+      const errMsg = "Raffle ID is required.";
+      setError(errMsg);
+      addLog("error", errMsg);
       return;
     }
 
@@ -58,10 +94,15 @@ export const RaffleProvider = ({ children }) => {
     setError(null);
 
     try {
+      addLog("info", `Loading raffle details for ID: ${id}`);
       const { data } = await fetchRaffleDetails(id); // Fetch details for a specific raffle
       setSelectedRaffle(data); // Update selected raffle state
+
+      addLog("success", `Raffle details loaded (ID: ${id}).`);
     } catch (err) {
-      setError(err.message || "Failed to load raffle details.");
+      const errMsg = err.message || "Failed to load raffle details.";
+      setError(errMsg);
+      addLog("error", `Error loading details (ID: ${id}): ${errMsg}`);
     } finally {
       setLoading(false);
     }
@@ -72,6 +113,7 @@ export const RaffleProvider = ({ children }) => {
    */
   const resetSelectedRaffle = () => {
     setSelectedRaffle(null);
+    addLog("info", "Selected raffle has been reset.");
   };
 
   /**
@@ -87,23 +129,32 @@ export const RaffleProvider = ({ children }) => {
 
     // Filter by capacity
     if (filters.capacity === "full") {
-      filtered = filtered.filter((raffle) => raffle.participants.ticketsSold === raffle.participants.max);
+      filtered = filtered.filter(
+        (raffle) => raffle.participants.ticketsSold === raffle.participants.max
+      );
     }
     if (filters.capacity === "partial") {
-      filtered = filtered.filter((raffle) => raffle.participants.ticketsSold < raffle.participants.max);
+      filtered = filtered.filter(
+        (raffle) => raffle.participants.ticketsSold < raffle.participants.max
+      );
     }
     if (filters.capacity === "low") {
       filtered = filtered.filter(
-        (raffle) => raffle.participants.ticketsSold / raffle.participants.max < 0.5
+        (raffle) =>
+          raffle.participants.ticketsSold / raffle.participants.max < 0.5
       );
     }
 
     // Filter by threshold
     if (filters.threshold === "met") {
-      filtered = filtered.filter((raffle) => raffle.participants.ticketsSold >= raffle.participants.min);
+      filtered = filtered.filter(
+        (raffle) => raffle.participants.ticketsSold >= raffle.participants.min
+      );
     }
     if (filters.threshold === "notMet") {
-      filtered = filtered.filter((raffle) => raffle.participants.ticketsSold < raffle.participants.min);
+      filtered = filtered.filter(
+        (raffle) => raffle.participants.ticketsSold < raffle.participants.min
+      );
     }
 
     // New raffles
@@ -133,7 +184,8 @@ export const RaffleProvider = ({ children }) => {
   return (
     <RaffleContext.Provider
       value={{
-        raffles: filteredRaffles, // Use filtered raffles in components
+        // Expose the existing states and methods
+        raffles: filteredRaffles,
         meta,
         selectedRaffle,
         loading,
@@ -141,7 +193,11 @@ export const RaffleProvider = ({ children }) => {
         loadRaffles,
         loadRaffleDetails,
         resetSelectedRaffle,
-        setFilters, // Expose setFilters for components
+        setFilters,
+
+        // NEW: Expose logs and addLog
+        logs,
+        addLog,
       }}
     >
       {children}

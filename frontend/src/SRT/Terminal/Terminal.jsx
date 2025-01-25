@@ -5,6 +5,7 @@ import FullWidthPanel from "./components/Shared/FullWidthPanel";
 import PanelLeft from "./components/PanelLeft/RaffleList";
 import PanelMiddle from "./components/PanelMiddle/RaffleDetails";
 import PanelRight from "./components/PanelRight/BuyLogic";
+import CliPanel from "./components/PanelBottom/cli"; // Import the new CLI panel
 import "./Terminal.styles.css";
 
 const Terminal = () => {
@@ -37,6 +38,11 @@ const Terminal = () => {
           <div className="panel-right">
             <PanelRight />
           </div>
+        </div>
+
+        {/* Bottom Panel */}
+        <div className="panel-bottom">
+          <CliPanel />
         </div>
       </div>
     </div>

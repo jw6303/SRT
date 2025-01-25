@@ -1,0 +1,70 @@
+.cli-panel {
+    display: flex;
+    flex-direction: column;
+    background-color: #121212;
+    color: #e5e5e5;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    overflow: hidden;
+    min-height: 120px;
+    max-height: 50vh; /* Maximum height is 50% of viewport */
+    resize: none; /* Disable default browser resize */
+    transition: height 0.2s ease; /* Smooth resizing transition */
+    position: relative; /* For drag handle */
+  }
+  
+  .drag-handle {
+    height: 5px;
+    background-color: #333;
+    cursor: ns-resize; /* Resize cursor */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    transition: background-color 0.2s ease;
+  }
+  
+  .drag-handle.active,
+  .drag-handle:hover {
+    background-color: #555; /* Highlight during drag */
+  }
+  
+  .cli-logs {
+    flex: 1;
+    padding: 10px;
+    background-color: #1a1a1a;
+    overflow-y: auto; /* Enable vertical scrolling */
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    border-bottom: 1px solid #333;
+  }
+  
+  .cli-log {
+    margin-bottom: 5px;
+    white-space: nowrap; /* Prevent logs from wrapping */
+    text-overflow: ellipsis; /* Ellipsis for long logs */
+    overflow: hidden;
+  }
+  
+  .cli-input {
+    padding: 10px;
+    background-color: #1a1a1a;
+    color: #e5e5e5;
+    border: none;
+    border-top: 1px solid #333;
+    outline: none;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85rem;
+  }
+  
+  .cli-input:focus {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  .cli-input::placeholder {
+    color: #888;
+  }
+  
