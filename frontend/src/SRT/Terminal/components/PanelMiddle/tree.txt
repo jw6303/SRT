@@ -1,0 +1,111 @@
+import React from "react";
+import { useRaffle } from "../../context/RaffleContext";
+import "./RaffleDetails.styles.css";
+
+// Recursive function to render a tree structure dynamically
+const renderTree = (data, depth = 0) => {
+  if (!data || typeof data !== "object") {
+    // Render leaf nodes (values)
+    return (
+      <span className="tree-value">
+        {data === null || data === undefined ? "N/A" : data.toString()}
+      </span>
+    );
+  }
+
+  return (
+    <ul className="tree-branch">
+      {Object.keys(data).map((key) => (
+        <li key={`${depth}-${key}`}>
+          <span className="tree-key">
+            {key}:{" "}
+          </span>
+          {renderTree(data[key], depth + 1)}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+const RaffleDetails = () => {
+  const { selectedRaffle, loading } = useRaffle();
+
+  if (loading) return <p className="cli-text">Loading details...</p>;
+  if (!selectedRaffle) return <p className="cli-text">Select a raffle to view details.</p>;
+
+  return (
+    <div className="raffle-details">
+      <h2 className="raffle-title">Raffle Details</h2>
+      <pre className="tree-structure">{renderTree(selectedRaffle)}</pre>
+    </div>
+  );
+};
+
+export default RaffleDetails;
+
+
+
+
+
+
+
+
+/**********************************************
+ * Tree Structure Styling
+ **********************************************/
+ .tree-structure {
+    font-family: var(--cli-font-family);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    background-color: var(--background-panel);
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    white-space: pre-wrap; /* Preserve spacing and line breaks */
+    overflow-y: auto;
+    max-height: 400px; /* Limit height with scrollability */
+  }
+  
+  /* Styling for tree branches */
+  .tree-branch {
+    list-style: none;
+    padding-left: 20px; /* Indent for tree hierarchy */
+    margin: 4px 0;
+    border-left: 1px dashed var(--border-color); /* Dashed lines for hierarchy */
+  }
+  
+  /* Tree keys and values */
+  .tree-key {
+    font-weight: bold;
+    color: var(--text-highlight); /* Highlight keys */
+  }
+  
+  .tree-value {
+    color: var(--text-muted); /* Subdued color for values */
+  }
+  
+  /* Hover effect for tree nodes */
+  .tree-branch > li:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    padding: 2px 4px;
+  }
+  
+  /**********************************************
+   * Responsive Adjustments
+   **********************************************/
+  @media (max-width: 768px) {
+    .tree-structure {
+      font-size: 0.8rem;
+      max-height: 300px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .tree-structure {
+      font-size: 0.75rem;
+      max-height: 250px;
+      padding: 12px;
+    }
+  }
+  

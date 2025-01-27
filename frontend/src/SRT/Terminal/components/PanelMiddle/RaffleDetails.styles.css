@@ -1,210 +1,154 @@
 /**********************************************
- * Root Variables for Styling
+ * Raffle Details - Scaled Down for Long Content
  **********************************************/
- :root {
-    /* Fonts */
-    --font-primary: "Courier New", Courier, monospace; /* Monospace for CLI look */
-    --font-size-large: 1.2rem; /* Subtitles */
-    --font-size-medium: 1rem; /* Rendered Text */
-    --font-size-small: 0.9rem; /* Details and descriptions */
-    --font-size-extra-small: 0.75rem; /* For captions and small text */
-  
-    /* Colors */
-    --text-primary: #00ffcc; /* Main Text Color */
-    --text-secondary: #ffffff; /* Subtitles */
-    --text-highlight: #ff79c6; /* Highlighted values */
-    --text-muted: #bbbbbb; /* Muted descriptions */
-  
-    /* Backgrounds */
-    --background-panel: #1e1e1e; /* Panel background */
-    --background-highlight: #282828; /* Highlight background */
-  
-    /* Borders */
-    --border-color: #444;
-  
-    /* Images */
-    --image-max-width: 100px; /* Default max image width */
-    --image-max-height: auto; /* Allow dynamic height for proportional scaling */
-    --image-border-radius: 4px; /* Subtle rounding */
-  }
-  
-  /**********************************************
-   * General Panel Layout
-   **********************************************/
-  .raffle-details {
-    display: grid;
-    grid-template-columns: 2fr 1fr; /* Text takes more space than the image */
-    gap: 16px;
-    padding: 16px;
+ .raffle-details {
+    display: flex;
+    flex-direction: column;
+    padding: 10px; /* Further reduced padding */
     background-color: var(--background-panel);
     color: var(--text-secondary);
     font-family: var(--font-primary);
-    align-items: start; /* Align text and image at the top */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    height: 100%; /* Fill available panel height */
+    overflow-y: auto; /* Allow scrolling for very long content */
+    box-sizing: border-box;
+  }
+  
+  /* Raffle Title */
+  .raffle-title {
+    font-size: 1rem; /* Further reduce size */
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 10px; /* Compact spacing */
   }
   
   /**********************************************
-   * Titles and Text
+   * Highlight Section (Prize, Entry Fee, Details)
    **********************************************/
-  .section-title {
-    font-size: var(--font-size-large);
-    font-weight: bold;
-    text-transform: uppercase;
-    color: var(--text-primary);
-    margin-bottom: 8px;
+  .highlight-section {
+    margin-bottom: 16px; /* Adjust spacing */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two-column layout for Prize and Entry Fee */
+    gap: 6px; /* Reduced gap */
   }
   
-  .prize-title,
-  .entry-fee,
-  .prize-type,
-  .time {
-    font-size: var(--font-size-medium);
+  .highlight-key {
     font-weight: bold;
     color: var(--text-highlight);
   }
   
-  .prize-details {
-    font-size: var(--font-size-small);
-    font-weight: normal;
-    color: var(--text-muted);
-    background-color: var(--background-highlight);
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    overflow-wrap: break-word; /* Prevent long text overflow */
-    max-height: 150px; /* Constrain details block height */
-    overflow-y: auto; /* Add scrollbar if content exceeds height */
+  .highlight-section p {
+    font-size: 0.85rem; /* Smaller font size */
+    line-height: 1.3; /* Tighten line height */
+    margin: 0;
   }
   
   /**********************************************
-   * Image Styling
+   * Tree-Like Sections (Participation, Timing, Status)
    **********************************************/
-   .image-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%; /* Let the container grow */
-    max-width: 100%; /* Avoid overflow */
+  .tree-branch {
+    margin-bottom: 12px; /* Tighter spacing */
+    padding-left: 10px; /* Reduced indentation */
+    border-left: 1px dashed var(--border-color); /* Tree hierarchy line */
+    position: relative;
   }
   
-  .image-container img {
-    max-width: 50px; /* Enforce small size */
-    max-height: 40px; /* Proportionally scale down */
-    width: 100%; /* Allow it to scale dynamically */
-    height: auto; /* Maintain aspect ratio */
-    object-fit: cover; /* Ensure the image covers the area */
-    border-radius: 4px; /* Rounded corners */
-    border: 1px solid var(--border-color); /* Subtle border */
+  .tree-branch ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
   
+  .tree-branch ul > li {
+    margin-bottom: 4px; /* Tighter spacing */
+    padding-left: 10px; /* Align with tree line */
+    position: relative;
+  }
   
-  .image-caption {
-    font-size: var(--font-size-extra-small);
+  .tree-branch ul > li::before {
+    content: "";
+    position: absolute;
+    left: -10px; /* Adjust line alignment */
+    top: 10px;
+    width: 8px; /* Reduced horizontal line length */
+    height: 1px;
+    background-color: var(--border-color);
+  }
+  
+  .tree-branch ul > li::after {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: -6px;
+    bottom: -6px;
+    width: 1px;
+    background-color: var(--border-color);
+  }
+  
+  .tree-branch ul > li:last-child::after {
+    display: none; /* Remove vertical line for last child */
+  }
+  
+  /* Section Titles */
+  .section-title {
+    font-size: 0.9rem; /* Smaller font size */
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 6px; /* Compact spacing */
+  }
+  
+  .tree-key {
+    font-weight: bold;
+    color: var(--text-highlight);
+    margin-right: 6px;
+  }
+  
+  .tree-value {
     color: var(--text-muted);
-    text-align: center;
-    margin-top: 4px;
-    word-break: break-word; /* Break long words */
+    font-size: 0.75rem; /* Smaller size for values */
   }
   
   /**********************************************
-   * Responsive: Mobile View Adjustments
+   * Hover Effects
+   **********************************************/
+  .tree-branch ul > li:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    padding: 2px;
+    transition: background-color 0.2s ease;
+  }
+  
+  /**********************************************
+   * Responsive Adjustments
    **********************************************/
   @media (max-width: 768px) {
-    .raffle-details {
-      grid-template-columns: 1fr; /* Stack text and image vertically */
-      gap: 12px;
-    }
-  
-    .image-container img {
-      max-width: 80%; /* Scale dynamically to container */
-      height: auto; /* Maintain aspect ratio */
-    }
-  
-    .prize-details {
-      max-height: 100px; /* Constrain height further */
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .raffle-details {
-      padding: 12px; /* Tighten padding */
-      gap: 8px; /* Reduce gap */
-    }
-  
-    .section-title {
-      font-size: var(--font-size-medium); /* Adjust title size */
-    }
-  
-    .prize-title,
-    .entry-fee,
-    .prize-type,
-    .time {
-      font-size: var(--font-size-small); /* Smaller text for compact view */
-    }
-  
-    .prize-details {
-      font-size: var(--font-size-extra-small); /* Compact details */
-      padding: 8px; /* Smaller padding */
-      max-height: 80px; /* Constrain height more */
-    }
-  
-    .image-container img {
-      max-width: 70%; /* Scale further for small screens */
-      height: auto;
-    }
-  }
-  
-  /**********************************************
-   * Ultra-Compact Layout: Extra Small Screens
-   **********************************************/
-  @media (max-width: 320px) {
     .raffle-details {
       padding: 8px;
-      gap: 6px;
     }
   
-    .section-title {
-      font-size: var(--font-size-small); /* Shrink titles further */
+    .raffle-title {
+      font-size: 0.9rem;
     }
   
-    .prize-details {
-      font-size: var(--font-size-extra-small);
-      padding: 4px;
-      max-height: 60px;
-    }
-  
-    .image-container img {
-      max-width: 50%; /* Minimal image size */
-      height: auto;
-    }
-  }
-  
-
-  /* Targeting the prize image directly */
-.details-right img {
-    display: block; /* Ensure it behaves like a block-level element */
-    width: 80px; /* Explicit width */
-    height: auto; /* Maintain aspect ratio */
-    max-width: 100%; /* Prevent overflow */
-    object-fit: cover; /* Adjust the image to fit within its container */
-    border-radius: 4px; /* Rounded edges */
-    border: 1px solid var(--border-color); /* Add a subtle border */
-    margin: 0 auto; /* Center the image horizontally */
-  }
-  
-  /* For mobile views, further scale down */
-  @media (max-width: 768px) {
-    .details-right img {
-      width: 60px;
-      max-width: 100%;
-      height: auto;
+    .highlight-section p,
+    .tree-branch li {
+      font-size: 0.8rem; /* Scale down for smaller screens */
     }
   }
   
   @media (max-width: 480px) {
-    .details-right img {
-      width: 50px;
-      max-width: 100%;
-      height: auto;
+    .raffle-details {
+      padding: 6px;
+    }
+  
+    .raffle-title {
+      font-size: 0.8rem; /* Smaller title */
+    }
+  
+    .highlight-section p,
+    .tree-branch li {
+      font-size: 0.75rem;
     }
   }
   

@@ -1,0 +1,187 @@
+import React from "react";
+import { useRaffle } from "../../context/RaffleContext";
+import "./RaffleDetails.styles.css";
+
+// Helper function to format dates
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
+const RaffleDetails = () => {
+  const { selectedRaffle, loading } = useRaffle();
+
+  if (loading) return <p className="cli-text">Loading details...</p>;
+  if (!selectedRaffle) return <p className="cli-text">Select a raffle to view details.</p>;
+
+  const {
+    raffleName,
+    entryFee,
+    prizeDetails = {},
+    participants = {},
+    time = {},
+    status = {},
+    isOnChain,
+  } = selectedRaffle;
+
+  return (
+    <div className="raffle-details">
+      <h2 className="raffle-title">Raffle Details</h2>
+
+      {/* Prize, Entry Fee, and Details */}
+      <div className="highlight-section">
+        <p>
+          <span className="highlight-key">Prize:</span> {prizeDetails.title}
+        </p>
+        <p>
+          <span className="highlight-key">Entry Fee:</span> {entryFee} SOL
+        </p>
+        <p>
+          <span className="highlight-key">Details:</span> {prizeDetails.details}
+        </p>
+      </div>
+
+      {/* Participation Section */}
+      <div className="tree-branch">
+        <h3 className="section-title">Participation</h3>
+        <ul>
+          <li>
+            <span className="tree-key">Max Tickets:</span> {participants.max}
+          </li>
+          <li>
+            <span className="tree-key">Min Tickets:</span> {participants.min}
+          </li>
+          <li>
+            <span className="tree-key">Tickets Sold:</span> {participants.ticketsSold}
+          </li>
+        </ul>
+      </div>
+
+      {/* Timing Section */}
+      <div className="tree-branch">
+        <h3 className="section-title">Timing</h3>
+        <ul>
+          <li>
+            <span className="tree-key">Start:</span> {formatDate(time.start)}
+          </li>
+          <li>
+            <span className="tree-key">End:</span> {formatDate(time.end)}
+          </li>
+        </ul>
+      </div>
+
+      {/* Status Section */}
+      <div className="tree-branch">
+        <h3 className="section-title">Status</h3>
+        <ul>
+          <li>
+            <span className="tree-key">Current:</span> {status.current}
+          </li>
+          <li>
+            <span className="tree-key">Fulfillment:</span> {status.fulfillment}
+          </li>
+        </ul>
+      </div>
+
+      {/* Raffle Type */}
+      <p>
+        <span className="tree-key">Raffle Type:</span> {isOnChain ? "On-Chain" : "Off-Chain"}
+      </p>
+    </div>
+  );
+};
+
+export default RaffleDetails;
+
+
+/**********************************************
+ * Raffle Details - Enhanced Style
+ **********************************************/
+ .raffle-details {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background-color: var(--background-panel);
+    color: var(--text-secondary);
+    font-family: var(--font-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+  }
+  
+  .raffle-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 16px;
+  }
+  
+  /**********************************************
+   * Highlight Section - Prize, Entry Fee, Details
+   **********************************************/
+  .highlight-section {
+    margin-bottom: 24px;
+  }
+  
+  .highlight-key {
+    font-weight: bold;
+    color: var(--text-highlight);
+    margin-right: 8px;
+  }
+  
+  .highlight-section p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 8px;
+  }
+  
+  /**********************************************
+   * Tree-Like Sections (Participation, Timing, Status)
+   **********************************************/
+  .tree-branch {
+    margin-bottom: 16px;
+  }
+  
+  .tree-branch h3 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+  
+  .tree-key {
+    font-weight: bold;
+    color: var(--text-highlight);
+    margin-right: 8px;
+  }
+  
+  .tree-branch li {
+    margin-bottom: 6px;
+  }
+  
+  /**********************************************
+   * Responsive Adjustments
+   **********************************************/
+  @media (max-width: 768px) {
+    .highlight-section p,
+    .tree-branch li {
+      font-size: 0.95rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .raffle-title {
+      font-size: 1.2rem;
+    }
+  
+    .highlight-section p,
+    .tree-branch li {
+      font-size: 0.9rem;
+    }
+  }
+  
+

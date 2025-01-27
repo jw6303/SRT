@@ -2,126 +2,182 @@ import React, { useState, useEffect } from "react";
 import { useRaffle } from "../../context/RaffleContext";
 import "./RaffleDetails.styles.css";
 
-// Enhanced Custom Hook for Typing Effect
-const useTypewriter = (text, speed = 50, pauseAfterTyping = 500) => {
-  const [displayedText, setDisplayedText] = useState("");
+// Helper function to format dates
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
-  useEffect(() => {
-    let i = 0;
-    const typeInterval = setInterval(() => {
-      if (i < text.length) {
-        setDisplayedText((prev) => prev + text[i]);
-        i++;
-      } else {
-        clearInterval(typeInterval);
-        setTimeout(() => {
-          setDisplayedText(text); // Ensure full text is displayed
-        }, pauseAfterTyping);
-      }
-    }, speed);
+// Countdown calculation helper
+const calculateCountdown = (endDate) => {
+  const now = new Date().getTime();
+  const end = new Date(endDate).getTime();
+  const timeLeft = end - now;
 
-    return () => clearInterval(typeInterval);
-  }, [text, speed, pauseAfterTyping]);
+  if (timeLeft <= 0) return null;
 
-  return displayedText;
+  const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+  return { days, hours, minutes, seconds };
 };
 
 const RaffleDetails = () => {
   const { selectedRaffle, loading } = useRaffle();
 
-  // Placeholder text
-  const raffleName = selectedRaffle?.raffleName || "Loading Raffle...";
-  const title = selectedRaffle?.prizeDetails?.title || "Loading Prize...";
-  const entryFee = selectedRaffle?.entryFee?.toFixed(2) || "0.00 SOL";
-  const details = selectedRaffle?.prizeDetails?.details || "Loading details...";
-  const imageUrl = selectedRaffle?.prizeDetails?.imageUrl || "placeholder.jpg";
+  // State to manage collapsed sections
+  const [collapsedSections, setCollapsedSections] = useState({});
 
-  // Typing effects
-  const typedRaffleName = useTypewriter(raffleName, 40);
-  const typedPrizeTitle = useTypewriter(title, 50);
-  const typedEntryFee = useTypewriter(`${entryFee} SOL`, 30);
-  const typedDetails = useTypewriter(details, 25);
+  // State for countdown timer
+  const [countdown, setCountdown] = useState(null);
+
+  // Toggle collapse for sections
+  const toggleCollapse = (section) => {
+    setCollapsedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+  // Update countdown timer
+  useEffect(() => {
+    if (selectedRaffle?.time?.end) {
+      setCountdown(calculateCountdown(selectedRaffle.time.end));
+
+      const timer = setInterval(() => {
+        setCountdown(calculateCountdown(selectedRaffle.time.end));
+      }, 1000);
+
+      return () => clearInterval(timer); // Cleanup timer on unmount
+    }
+  }, [selectedRaffle]);
 
   if (loading) return <p className="cli-text">Loading details...</p>;
   if (!selectedRaffle) return <p className="cli-text">Select a raffle to view details.</p>;
 
-  const { participants = {}, time = {}, status = {}, prizeDetails = {} } = selectedRaffle;
-
-  const chainType = prizeDetails.type === "physical" ? "Off-Chain" : "On-Chain";
+  const {
+    raffleName,
+    entryFee,
+    prizeDetails = {},
+    participants = {},
+    time = {},
+    status = {},
+    isOnChain,
+  } = selectedRaffle;
 
   return (
     <div className="raffle-details">
-      {/* Left Side: Text Details */}
-      <div className="details-left">
-        <h2 className="raffle-title">{typedRaffleName}</h2>
+      <h2 className="raffle-title">Raffle Details</h2>
 
-        <div className="section">
-          <h3 className="section-title">Prize</h3>
-          <p className="prize-title">
-            {typedPrizeTitle} <span className="prize-type">({prizeDetails.type || "N/A"})</span>
-          </p>
-          <div className="description-panel">
-            <p className="prize-details">{typedDetails}</p>
-          </div>
-        </div>
-
-        <div className="section">
-          <h3 className="section-title">Entry Fee</h3>
-          <p className="entry-fee">{typedEntryFee}</p>
-        </div>
-
-        <div className="section">
-          <h3 className="section-title">Participants</h3>
-          <p>
-            Tickets Sold:{" "}
-            <span className="highlight">
-              {participants.ticketsSold || 0}/{participants.max || "N/A"}
-            </span>
-          </p>
-          <p>
-            Minimum Participants:{" "}
-            <span className="highlight">{participants.min || "N/A"}</span>
-          </p>
-        </div>
-
-        <div className="section">
-          <h3 className="section-title">Timing</h3>
-          <p>
-            Start Time:{" "}
-            <span className="time">
-              {time.start ? new Date(time.start).toLocaleString() : "N/A"}
-            </span>
-          </p>
-          <p>
-            End Time:{" "}
-            <span className="time">
-              {time.end ? new Date(time.end).toLocaleString() : "N/A"}
-            </span>
-          </p>
-        </div>
-
-        <div className="section">
-          <h3 className="section-title">Status</h3>
-          <p>
-            Current Status:{" "}
-            <span className="status">{status.current || "Unknown"}</span>
-          </p>
-          <p>
-            Fulfillment:{" "}
-            <span className="fulfillment">{status.fulfillment || "Unknown"}</span>
-          </p>
-          <p>Chain Type: {chainType}</p>
-        </div>
+      {/* Prize Section */}
+      <div className="tree-branch">
+        <h3
+          className={`section-title ${collapsedSections["prize"] ? "collapsed" : ""}`}
+          onClick={() => toggleCollapse("prize")}
+        >
+          Prize {collapsedSections["prize"] ? "▶" : "▼"}
+        </h3>
+        {!collapsedSections["prize"] && (
+          <ul>
+            <li>
+              <span className="tree-key">Prize:</span> {prizeDetails.title}
+            </li>
+            <li>
+              <span className="tree-key">Entry Fee:</span> {entryFee} SOL
+            </li>
+            <li>
+              <span className="tree-key">Details:</span> {prizeDetails.details}
+            </li>
+          </ul>
+        )}
       </div>
 
-      {/* Right Side: Prize Image */}
-      <div className="details-right">
-        <img
-          src={imageUrl}
-          alt={`Prize for ${raffleName}`}
-          className="raffle-prize-image"
-        />
+      {/* Participation Section */}
+      <div className="tree-branch">
+        <h3
+          className={`section-title ${collapsedSections["participation"] ? "collapsed" : ""}`}
+          onClick={() => toggleCollapse("participation")}
+        >
+          Participation {collapsedSections["participation"] ? "▶" : "▼"}
+        </h3>
+        {!collapsedSections["participation"] && (
+          <ul>
+            <li>
+              <span className="tree-key">Max Tickets:</span> {participants.max}
+            </li>
+            <li>
+              <span className="tree-key">Min Tickets:</span> {participants.min}
+            </li>
+            <li>
+              <span className="tree-key">Tickets Sold:</span> {participants.ticketsSold}
+            </li>
+          </ul>
+        )}
       </div>
+
+      {/* Timing Section */}
+      <div className="tree-branch">
+        <h3
+          className={`section-title ${collapsedSections["timing"] ? "collapsed" : ""}`}
+          onClick={() => toggleCollapse("timing")}
+        >
+          Timing {collapsedSections["timing"] ? "▶" : "▼"}
+        </h3>
+        {!collapsedSections["timing"] && (
+          <ul>
+            <li>
+              <span className="tree-key">Start:</span> {formatDate(time.start)}
+            </li>
+            <li>
+              <span className="tree-key">End:</span> {formatDate(time.end)}
+            </li>
+            {countdown ? (
+              <li>
+                <span className="tree-key">Countdown:</span>
+                <span className="countdown">
+                  {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
+                </span>
+              </li>
+            ) : (
+              <li>
+                <span className="tree-key">Countdown:</span> <span className="countdown">Expired</span>
+              </li>
+            )}
+          </ul>
+        )}
+      </div>
+
+      {/* Status Section */}
+      <div className="tree-branch">
+        <h3
+          className={`section-title ${collapsedSections["status"] ? "collapsed" : ""}`}
+          onClick={() => toggleCollapse("status")}
+        >
+          Status {collapsedSections["status"] ? "▶" : "▼"}
+        </h3>
+        {!collapsedSections["status"] && (
+          <ul>
+            <li>
+              <span className="tree-key">Current:</span> {status.current}
+            </li>
+            <li>
+              <span className="tree-key">Fulfillment:</span> {status.fulfillment}
+            </li>
+          </ul>
+        )}
+      </div>
+
+      {/* Raffle Type */}
+      <p>
+        <span className="tree-key">Raffle Type:</span> {isOnChain ? "On-Chain" : "Off-Chain"}
+      </p>
     </div>
   );
 };

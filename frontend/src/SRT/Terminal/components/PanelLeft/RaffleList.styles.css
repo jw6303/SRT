@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 /****************************************************
  * RaffleList.styles.css
  * Solana-themed, tighter spacing, CLI-inspired
@@ -20,24 +12,28 @@
     font-family: var(--cli-font-family);
     font-size: var(--cli-font-size);
     padding: var(--panel-padding);
+    height: 100%; /* Ensure it fills the parent container */
+    box-sizing: border-box;
   }
   
-  /* Heading with a subtle CLI vibe */
+  /* Filters Heading */
   .filters-heading {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--accent-color);
-    margin: 0 0 8px 0;
+    margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-weight: bold;
   }
   
   /****************************************************
-   * 2) Icon Bar & Tabs
+   * Tabs Section
    ****************************************************/
-  .icon-bar {
+  .tabs {
     display: flex;
-    align-items: center;
-    margin-bottom: 8px; /* minimal spacing below the icon row */
+    flex-wrap: wrap; /* Allow wrapping if tabs overflow */
+    gap: 4px;
+    margin-bottom: 8px;
   }
   
   .tab {
@@ -48,20 +44,11 @@
     user-select: none;
     border: 1px solid transparent;
     transition: background-color 0.2s, border-color 0.2s;
-    padding: 4px 6px;
-    margin-right: 4px;
+    padding: 4px 8px;
+    font-size: 0.8rem; /* Smaller font for compact tabs */
     color: var(--text-color);
   }
   
-  .icon-only {
-    font-size: 16px;
-    width: 28px;
-    height: 28px;
-    text-align: center;
-    position: relative; /* for tooltip positioning */
-  }
-  
-  /* Hover & Active States */
   .tab:hover {
     background-color: rgba(255, 255, 255, 0.05);
     border-color: var(--border-color);
@@ -73,151 +60,85 @@
   }
   
   /****************************************************
-   * 3) Tooltip styling (CLI-like)
-   ****************************************************/
-  .tooltipped {
-    position: relative;
-  }
-  
-  /* Show custom tooltip with data-tooltip attribute */
-  .tooltipped:hover::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    left: 50%;
-    bottom: 120%; /* place above the icon */
-    transform: translateX(-50%);
-    background: #1e1e1e;
-    color: #ddd;
-    padding: 4px 6px;
-    border: 1px solid #3c3c3c;
-    font-size: 0.75rem;
-    white-space: nowrap;
-    opacity: 1;
-    border-radius: 3px;
-    z-index: 999;
-  }
-  
-  /* Small arrow below the tooltip */
-  .tooltipped:hover::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 100%;
-    transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: #3c3c3c;
-    z-index: 1000;
-  }
-  
-  /****************************************************
-   * 4) Dropdown menus (Advanced Filters)
-   ****************************************************/
-  .dropdown.icon-only {
-    position: relative;
-  }
-  
-  .dropdown-menu.combined-filters {
-    position: absolute;
-    top: 36px; /* just below the icon row */
-    right: 0;
-    z-index: 1000;
-    background-color: var(--panel-bg-color);
-    border: 1px solid var(--border-color);
-    padding: 8px;
-    min-width: 220px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-  }
-  
-  .dropdown-menu.combined-filters .dropdown-section {
-    margin-bottom: 12px;
-  }
-  
-  .dropdown-section-title {
-    display: flex;
-    align-items: center;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--accent-color);
-    margin-bottom: 4px;
-  }
-  
-  .dropdown-section-title svg {
-    margin-right: 4px;
-    font-size: 0.9rem;
-  }
-  
-  /* Options inside the dropdown */
-  .dropdown-section > div {
-    padding: 3px 4px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: background-color 0.2s;
-    margin-bottom: 2px;
-    color: var(--text-color);
-  }
-  
-  .dropdown-section > div:hover {
-    background-color: rgba(255, 255, 255, 0.06);
-    border-color: var(--border-color);
-  }
-  
-  .dropdown-section > div.active {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: var(--accent-color);
-  }
-  
-  /****************************************************
-   * 5) Raffles List
+   * Raffle Items List
    ****************************************************/
   .raffles {
     list-style: none;
     margin: 0;
     padding: 0;
-    max-height: 60vh;
-    overflow-y: auto; /* scroll if too many raffles */
+    max-height: 65vh; /* Define a consistent height */
+    overflow-y: auto; /* Scroll if items exceed the height */
     border: 1px solid var(--border-color);
-    margin-top: 8px;
-    padding: 6px;
+    padding: 8px; /* Consistent inner spacing */
     box-sizing: border-box;
   }
   
-  /* Scrollbar styling */
-  .raffles::-webkit-scrollbar {
-    width: 8px;
-  }
-  .raffles::-webkit-scrollbar-track {
-    background-color: var(--scrollbar-track-color);
-  }
-  .raffles::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb-color);
-    border-radius: 4px;
-  }
-  
-  /* Each raffle item */
   .raffle-item {
-    padding: 6px;
-    border: 1px solid transparent;
-    margin-bottom: 6px;
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 8px;
+    background-color: rgba(255, 255, 255, 0.03);
     transition: background-color 0.2s, border-color 0.2s;
+    cursor: pointer;
   }
   
   .raffle-item:hover {
     background-color: rgba(255, 255, 255, 0.05);
-    border-color: var(--border-color);
+    border-color: var(--accent-color);
   }
   
   .raffle-item h3 {
     margin: 0 0 4px 0;
     color: var(--accent-color);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
   }
   
   .raffle-item p {
-    margin: 0 0 2px 0;
-    font-size: 0.8rem;
+    margin: 0;
+    font-size: 0.75rem;
     color: var(--text-muted-color);
+    line-height: 1.4; /* Improve readability */
+  }
+  
+  /****************************************************
+   * Responsive Adjustments
+   ****************************************************/
+  @media (max-width: 768px) {
+    .raffles {
+      max-height: 50vh; /* Reduce height for smaller screens */
+    }
+  
+    .raffle-item {
+      padding: 6px; /* Tighter spacing */
+    }
+  
+    .raffle-item h3 {
+      font-size: 0.85rem; /* Slightly smaller text */
+    }
+  
+    .raffle-item p {
+      font-size: 0.7rem; /* Adjust font for readability */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .raffles {
+      max-height: 40vh; /* Further reduce height for compact screens */
+    }
+  
+    .raffle-item {
+      padding: 4px; /* Compact spacing */
+    }
+  
+    .raffle-item h3 {
+      font-size: 0.8rem; /* Shrink header text */
+    }
+  
+    .raffle-item p {
+      font-size: 0.65rem; /* Compact paragraph text */
+    }
   }
   

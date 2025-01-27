@@ -151,16 +151,16 @@
 }
 
 .panel-middle {
-  flex: 2; /* Base size is 2 units */
-  max-width: 600px; /* Allow the middle panel to grow larger */
-  min-width: 200px; /* Prevent shrinking too much */
+  flex: 3; /* Increase to 3 units to allow more space */
+  max-width: 800px; /* Allow the middle panel to grow larger */
+  min-width: 300px; /* Ensure it doesn't shrink too much */
 }
 
 .panel-right {
-  flex: 1; /* Base size is 1 unit */
-  max-width: 300px; /* Set a max width */
+  flex: 1; /* Base size remains 1 unit */
+  max-width: 250px; /* Slightly reduce max width to give middle panel more space */
   min-width: 150px; /* Prevent excessive shrinking */
-  border-right: none;
+  border-right: none; /* No border for the right panel */
 }
 
 /* Ensure content fits within panels */
@@ -171,6 +171,7 @@
   word-wrap: break-word; /* Fallback for older browsers */
   word-break: break-word; /* Break long words */
 }
+
 
 /* Scrollbar Styling - Match Theme */
 .panel-left::-webkit-scrollbar,
