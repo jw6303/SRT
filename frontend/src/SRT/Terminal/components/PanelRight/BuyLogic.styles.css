@@ -117,3 +117,123 @@
     cursor: not-allowed;
   }
   
+
+
+  /**********************************************
+ * Buy Logic Styles
+ **********************************************/
+.buy-logic {
+    font-family: var(--font-primary);
+    color: var(--text-secondary);
+    padding: 16px;
+    background-color: var(--background-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+  }
+  
+  .question-section,
+  .ticket-purchase,
+  .shipping-section {
+    margin-bottom: 16px;
+  }
+  
+  .answer-option {
+    display: block;
+    margin: 8px 0;
+    cursor: pointer;
+  }
+  
+  .shipping-section h4 {
+    color: var(--text-highlight);
+    margin-bottom: 8px;
+  }
+  
+  .shipping-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+  }
+  
+  .shipping-field span {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  button {
+    background-color: var(--accent-color);
+    color: var(--text-primary);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  button:disabled {
+    background-color: var(--border-color);
+    cursor: not-allowed;
+  }
+  
+
+  .buy-logic {
+    font-family: monospace;
+    color: var(--text-secondary);
+    background-color: var(--background-panel);
+    padding: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+  }
+  
+  .section-title {
+    font-weight: bold;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    cursor: pointer;
+  }
+  
+  .tree-branch {
+    list-style: none;
+    padding-left: 20px;
+    margin: 8px 0;
+    border-left: 1px dashed var(--border-color);
+  }
+  
+  .tree-key {
+    font-weight: bold;
+    color: var(--text-highlight);
+  }
+  
+  .tree-input {
+    margin-left: 10px;
+    padding: 4px;
+    font-family: monospace;
+    color: var(--text-primary);
+    background: var(--input-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    width: 50px;
+  }
+  
+  .buy-button {
+    padding: 8px 12px;
+    font-family: monospace;
+    color: var(--text-primary);
+    background-color: var(--accent-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .buy-button:hover {
+    background-color: var(--accent-color-hover);
+  }
+  
+  .collapsible {
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-highlight);
+  }
+  
+  .tree-nested {
+    margin-left: 20px;
+  }
+  
