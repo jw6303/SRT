@@ -1,111 +1,115 @@
+/* CLI Panel */
 .cli-panel {
-    background-color: #121212;
-    color: #e5e5e5;
-    border-top: 1px solid #2a2a2a;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    height: 200px; /* Fixed height for the bottom panel */
-    overflow: hidden; /* Prevent overflow */
-  }
-  
-  .cli-logs {
-    flex: 1;
-    overflow-y: auto; /* Scrollable logs section */
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    padding: 5px;
-    background-color: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 6px;
-  }
-  
-  .cli-log {
-    margin-bottom: 5px;
-  }
-  
-  .cli-input {
-    margin-top: 10px;
-    padding: 10px;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.85rem;
-    background-color: #1a1a1a;
-    color: #e5e5e5;
-    border: 1px solid #333;
-    border-radius: 6px;
-    outline: none;
-  }
-  
-  
-
-  .cli-panel {
-    display: flex;
-    flex-direction: column;
-    background-color: #121212;
-    color: #e5e5e5;
-    border: 1px solid #2a2a2a;
-    border-radius: 6px;
+    position: relative;
+    background: #121212;
+    color: #d0d0d0;
+    border-top: 1px solid #292929;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-    min-height: 120px;
-    max-height: 50vh; /* Maximum height is 50% of viewport */
-    resize: none; /* Disable default browser resize */
-    transition: height 0.2s ease; /* Smooth resizing transition */
-    position: relative; /* For drag handle */
+    display: flex;
+    flex-direction: column;
+    resize: vertical;
+    min-height: 80px;
+    max-height: 50vh;
   }
   
+  /* Drag Handle */
   .drag-handle {
-    height: 5px;
-    background-color: #333;
-    cursor: ns-resize; /* Resize cursor */
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
+    height: 6px;
+    cursor: ns-resize;
+    background: #292929;
     z-index: 10;
-    transition: background-color 0.2s ease;
+    transition: background 0.2s ease;
   }
   
-  .drag-handle.active,
-  .drag-handle:hover {
-    background-color: #555; /* Highlight during drag */
+  .drag-handle.active {
+    background: #00ffcc;
   }
   
+  /* Logs Section */
   .cli-logs {
     flex: 1;
-    padding: 10px;
-    background-color: #1a1a1a;
-    overflow-y: auto; /* Enable vertical scrolling */
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    border-bottom: 1px solid #333;
-  }
-  
-  .cli-log {
-    margin-bottom: 5px;
-    white-space: nowrap; /* Prevent logs from wrapping */
-    text-overflow: ellipsis; /* Ellipsis for long logs */
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
     overflow: hidden;
   }
   
-  .cli-input {
-    padding: 10px;
-    background-color: #1a1a1a;
-    color: #e5e5e5;
-    border: none;
-    border-top: 1px solid #333;
-    outline: none;
-    font-family: "JetBrains Mono", monospace;
+  .cli-logs h3 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #00ffcc;
+    text-transform: uppercase;
+    border-bottom: 1px solid #292929;
+    padding-bottom: 4px;
+  }
+  
+  /* Log Container */
+  .log-container {
+    flex: 1;
+    overflow-y: hidden; /* Default: hidden to hide the scroll */
+    scrollbar-width: thin;
+    scrollbar-color: #444444 #121212;
+    transition: overflow-y 0.3s ease;
+  }
+  
+  .log-container.scroll-visible {
+    overflow-y: auto; /* Scroll appears when necessary */
+  }
+  
+  /* WebKit Scrollbar */
+  .log-container::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .log-container::-webkit-scrollbar-thumb {
+    background-color: #444444;
+    border-radius: 4px;
+  }
+  
+  .log-container::-webkit-scrollbar-track {
+    background: #121212;
+  }
+  
+  /* Log Entry */
+  .log-entry {
+    display: flex;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 0.9rem;
+    color: #d0d0d0;
+  }
+  
+  .log-entry.info {
+    color: #00ffcc;
+  }
+  
+  .log-entry.warn {
+    color: #ffcc00;
+  }
+  
+  .log-entry.error {
+    color: #ff4d4f;
+  }
+  
+  .log-time {
+    font-family: monospace;
+    color: #6c757d;
+  }
+  
+  .log-message {
+    word-wrap: break-word;
+    flex: 1;
+  }
+  
+  .cli-logs p {
+    margin: 0;
+    text-align: center;
+    color: #6c757d;
     font-size: 0.85rem;
-  }
-  
-  .cli-input:focus {
-    background-color: #333;
-    color: #fff;
-  }
-  
-  .cli-input::placeholder {
-    color: #888;
   }
   

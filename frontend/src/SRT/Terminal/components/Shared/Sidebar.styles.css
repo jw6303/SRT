@@ -1,121 +1,145 @@
-/* --- Sidebar General Styles --- */
+/**********************************************
+ * Sidebar Wrapper (Handles Visibility)
+ **********************************************/
+.sidebar-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-wrapper:not(.visible) {
+  transform: translateX(-60px); /* Hidden sidebar */
+}
+
+/**********************************************
+ * Sidebar Content
+ **********************************************/
 .sidebar {
-    width: 240px;
-    height: 100vh;
-    background-color: #1c1c1c; /* Terminal black */
-    color: #dcdcdc; /* Light grey text */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: width 0.3s ease-in-out; /* Smooth collapsing */
-    border-right: 2px solid #333; /* Subtle border for structure */
-  }
-  
-  .sidebar.collapsed {
-    width: 60px; /* Narrow width for collapsed state */
-    overflow: hidden; /* Hide extra content */
-  }
-  
-  /* --- Header with Toggle Button --- */
-  .cli-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px 0;
-    position: relative; /* For tooltip positioning */
-  }
-  
-  .toggle-btn {
-    background: #333; /* Dark grey button */
-    border: 2px solid #444; /* Subtle border */
-    color: #6bcdfd; /* Light blue for the icon */
-    font-size: 1.5rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%; /* Circular button */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-  }
-  
-  .toggle-btn:hover {
-    background-color: #444;
-    color: #f9c74f; /* Yellow for hover feedback */
-    border-color: #f9c74f;
-  }
-  
-  .tooltip {
-    visibility: hidden;
-    opacity: 0;
-    position: absolute;
-    top: 50%;
-    left: calc(100% + 8px);
-    transform: translateY(-50%);
-    background-color: #222; /* Dark tooltip background */
-    color: #fff; /* White text */
-    font-size: 0.8rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-  }
-  
-  .toggle-btn:hover .tooltip {
-    visibility: visible;
-    opacity: 1;
-  }
-  
-  /* --- Navigation Section --- */
-  .sidebar-nav {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .nav-item {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  .nav-item:hover {
-    background-color: #292929; /* Slightly lighter for hover effect */
-  }
-  
-  .nav-icon {
-    font-size: 1.5rem;
-    color: #dcdcdc; /* Icon color matching text */
-  }
-  
-  .nav-text {
-    font-size: 1rem;
-    margin-left: 10px;
-    color: #dcdcdc;
-  }
-  
-  .sidebar.collapsed .nav-text {
-    display: none; /* Hide text in collapsed state */
-  }
-  
-  /* --- Footer Section --- */
-  .sidebar-footer {
-    padding: 10px;
-    text-align: center;
-    font-size: 0.9rem;
-    color: #666; /* Subtle footer text */
-  }
-  
-  .footer-text {
-    font-family: "Courier New", monospace;
-    color: #888; /* Muted grey for terminal feel */
-    font-size: 0.8rem;
-  }
-  
+  width: 250px;
+  height: 100%;
+  background: #121212;
+  color: #d0d0d0;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar.collapsed {
+  width: 60px; /* Icon-only mode */
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: #1e1e1e;
+}
+
+.toggle-btn,
+.collapse-btn {
+  background: none;
+  border: none;
+  color: #00ffcc;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.sidebar-section {
+  padding: 16px;
+}
+
+.section-title {
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.nav-item:hover {
+  background: #1e1e1e;
+}
+
+.nav-icon {
+  font-size: 1.25rem;
+}
+
+.nav-text {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar.collapsed .nav-text {
+  opacity: 0;
+  transform: translateX(-20px);
+  pointer-events: none;
+}
+
+/**********************************************
+ * Draggable Handle
+ **********************************************/
+.drag-handle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 20px;
+  height: 60px;
+  background: #00ffcc;
+  color: #121212;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  z-index: 1001;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  transform: translateY(-50%);
+}
+
+.drag-handle:hover {
+  background: #00e6b8;
+}
+
+/**********************************************
+ * Footer Icons
+ **********************************************/
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px;
+  background: #1e1e1e;
+  display: flex;
+  justify-content: space-evenly;
+  border-top: 1px solid #2a2a2a;
+}
+
+.footer-icons li {
+  font-size: 1.5rem;
+  color: #6c757d;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.footer-icons li:hover {
+  color: #00ffcc;
+}
+

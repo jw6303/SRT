@@ -1,61 +1,210 @@
-.raffle-details {
-    padding: 20px;
-    background-color: #1a1a1a; /* Dark background */
-    color: #e5e5e5; /* Light text */
-    border-radius: 8px;
-    border: 1px solid #2a2a2a; /* Subtle border */
-    font-family: "JetBrains Mono", monospace; /* Monospace font for CLI feel */
-    max-width: 800px;
-    margin: 0 auto; /* Centered */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+/**********************************************
+ * Root Variables for Styling
+ **********************************************/
+ :root {
+    /* Fonts */
+    --font-primary: "Courier New", Courier, monospace; /* Monospace for CLI look */
+    --font-size-large: 1.2rem; /* Subtitles */
+    --font-size-medium: 1rem; /* Rendered Text */
+    --font-size-small: 0.9rem; /* Details and descriptions */
+    --font-size-extra-small: 0.75rem; /* For captions and small text */
+  
+    /* Colors */
+    --text-primary: #00ffcc; /* Main Text Color */
+    --text-secondary: #ffffff; /* Subtitles */
+    --text-highlight: #ff79c6; /* Highlighted values */
+    --text-muted: #bbbbbb; /* Muted descriptions */
+  
+    /* Backgrounds */
+    --background-panel: #1e1e1e; /* Panel background */
+    --background-highlight: #282828; /* Highlight background */
+  
+    /* Borders */
+    --border-color: #444;
+  
+    /* Images */
+    --image-max-width: 100px; /* Default max image width */
+    --image-max-height: auto; /* Allow dynamic height for proportional scaling */
+    --image-border-radius: 4px; /* Subtle rounding */
   }
   
-  .raffle-details h2 {
-    font-size: 1.5rem;
-    color: #61dafb; /* Highlighted color */
-    margin-bottom: 20px;
-    text-align: center; /* Centered title */
+  /**********************************************
+   * General Panel Layout
+   **********************************************/
+  .raffle-details {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Text takes more space than the image */
+    gap: 16px;
+    padding: 16px;
+    background-color: var(--background-panel);
+    color: var(--text-secondary);
+    font-family: var(--font-primary);
+    align-items: start; /* Align text and image at the top */
   }
   
-  .raffle-details p {
-    font-size: 0.95rem;
-    margin-bottom: 12px;
-    line-height: 1.6;
-    color: #cccccc; /* Slightly muted text */
-  }
-  
-  .raffle-details p strong {
-    color: #ffffff; /* Brighten strong text */
-  }
-  
-  .raffle-details img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    margin: 20px auto 0;
-    border-radius: 8px;
-    border: 1px solid #333333; /* Border for images */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); /* Image shadow */
-  }
-  
-  .raffle-details p span {
+  /**********************************************
+   * Titles and Text
+   **********************************************/
+  .section-title {
+    font-size: var(--font-size-large);
     font-weight: bold;
-    color: #61dafb; /* Highlighted span text */
+    text-transform: uppercase;
+    color: var(--text-primary);
+    margin-bottom: 8px;
   }
   
-  /* Responsive Design */
+  .prize-title,
+  .entry-fee,
+  .prize-type,
+  .time {
+    font-size: var(--font-size-medium);
+    font-weight: bold;
+    color: var(--text-highlight);
+  }
+  
+  .prize-details {
+    font-size: var(--font-size-small);
+    font-weight: normal;
+    color: var(--text-muted);
+    background-color: var(--background-highlight);
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow-wrap: break-word; /* Prevent long text overflow */
+    max-height: 150px; /* Constrain details block height */
+    overflow-y: auto; /* Add scrollbar if content exceeds height */
+  }
+  
+  /**********************************************
+   * Image Styling
+   **********************************************/
+   .image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Let the container grow */
+    max-width: 100%; /* Avoid overflow */
+  }
+  
+  .image-container img {
+    max-width: 50px; /* Enforce small size */
+    max-height: 40px; /* Proportionally scale down */
+    width: 100%; /* Allow it to scale dynamically */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: cover; /* Ensure the image covers the area */
+    border-radius: 4px; /* Rounded corners */
+    border: 1px solid var(--border-color); /* Subtle border */
+  }
+  
+  
+  .image-caption {
+    font-size: var(--font-size-extra-small);
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 4px;
+    word-break: break-word; /* Break long words */
+  }
+  
+  /**********************************************
+   * Responsive: Mobile View Adjustments
+   **********************************************/
   @media (max-width: 768px) {
     .raffle-details {
-      padding: 16px;
-      max-width: 100%; /* Full width for smaller screens */
+      grid-template-columns: 1fr; /* Stack text and image vertically */
+      gap: 12px;
     }
   
-    .raffle-details h2 {
-      font-size: 1.25rem;
+    .image-container img {
+      max-width: 80%; /* Scale dynamically to container */
+      height: auto; /* Maintain aspect ratio */
     }
   
-    .raffle-details p {
-      font-size: 0.9rem;
+    .prize-details {
+      max-height: 100px; /* Constrain height further */
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .raffle-details {
+      padding: 12px; /* Tighten padding */
+      gap: 8px; /* Reduce gap */
+    }
+  
+    .section-title {
+      font-size: var(--font-size-medium); /* Adjust title size */
+    }
+  
+    .prize-title,
+    .entry-fee,
+    .prize-type,
+    .time {
+      font-size: var(--font-size-small); /* Smaller text for compact view */
+    }
+  
+    .prize-details {
+      font-size: var(--font-size-extra-small); /* Compact details */
+      padding: 8px; /* Smaller padding */
+      max-height: 80px; /* Constrain height more */
+    }
+  
+    .image-container img {
+      max-width: 70%; /* Scale further for small screens */
+      height: auto;
+    }
+  }
+  
+  /**********************************************
+   * Ultra-Compact Layout: Extra Small Screens
+   **********************************************/
+  @media (max-width: 320px) {
+    .raffle-details {
+      padding: 8px;
+      gap: 6px;
+    }
+  
+    .section-title {
+      font-size: var(--font-size-small); /* Shrink titles further */
+    }
+  
+    .prize-details {
+      font-size: var(--font-size-extra-small);
+      padding: 4px;
+      max-height: 60px;
+    }
+  
+    .image-container img {
+      max-width: 50%; /* Minimal image size */
+      height: auto;
+    }
+  }
+  
+
+  /* Targeting the prize image directly */
+.details-right img {
+    display: block; /* Ensure it behaves like a block-level element */
+    width: 80px; /* Explicit width */
+    height: auto; /* Maintain aspect ratio */
+    max-width: 100%; /* Prevent overflow */
+    object-fit: cover; /* Adjust the image to fit within its container */
+    border-radius: 4px; /* Rounded edges */
+    border: 1px solid var(--border-color); /* Add a subtle border */
+    margin: 0 auto; /* Center the image horizontally */
+  }
+  
+  /* For mobile views, further scale down */
+  @media (max-width: 768px) {
+    .details-right img {
+      width: 60px;
+      max-width: 100%;
+      height: auto;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .details-right img {
+      width: 50px;
+      max-width: 100%;
+      height: auto;
     }
   }
   

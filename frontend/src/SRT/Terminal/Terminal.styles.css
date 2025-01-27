@@ -2,28 +2,38 @@
    1) Global Variables & Reset
    ========================================= */
    :root {
-    /* Color Variables */
-    --terminal-bg-color: #1e1e1e;      /* Overall page background */
-    --sidebar-bg-color: #252526;       /* Sidebar background */
-    --panel-bg-color: #2c2c2c;         /* Panel background */
-    --border-color: #3c3c3c;           /* Border lines */
-    --text-color: #d4d4d4;             /* Main text color */
-    --accent-color: #61dafb;           /* Highlight color */
-    --hover-color: #4fa6d6;            /* Hover color for clickable items */
-    --scrollbar-track-color: #222;     /* Scrollbar track */
-    --scrollbar-thumb-color: #555;     /* Scrollbar thumb */
+    /* Color Variables (Solana-Branded) */
+    --terminal-bg-color: #121212;        /* Overall page background */
+    --sidebar-bg-color: #1e1e1e;         /* Sidebar background */
+    --panel-bg-color: #2c2c2c;           /* Panel background */
+    --border-color: #3c3c3c;             /* Border lines */
+    --text-color: #ffffff;               /* Main text color */
+    --text-muted-color: #cccccc;         /* Slightly dimmer text */
+    
+    /* Solana Accent & Log Colors */
+    --accent-color: #9945FF;            /* Primary Solana purple for highlights */
+    --info-color: #14F195;              /* Teal (another Solana brand color) for info logs */
+    --warning-color: #FFC500;           /* Bright yellow for warnings */
+    --error-color: #F94D5C;             /* Pinkish-red for errors */
+    --success-color: #00D26A;           /* Green for success states */
+    
+    /* Hover & Scrollbars */
+    --hover-color: #b373ff;             /* Lighter purple hover for links/buttons */
+    --scrollbar-track-color: #222;      /* Scrollbar track */
+    --scrollbar-thumb-color: #555;      /* Scrollbar thumb */
   
-    /* Font & Sizing (Reduced) */
+    /* Font & Sizing (Tighter) */
     --cli-font-family: 'Fira Code', monospace;
-    --cli-font-size: 12px;            /* Was 14px, now smaller */
-    --cli-line-height: 1.4;           /* Was 1.6, now tighter */
-  
-    /* Spacing & Layout (Reduced) */
-    --sidebar-width: 180px;           /* Was 220px, now narrower */
-    --sidebar-width-collapsed: 50px;  /* Was 60px, also smaller */
-    --panel-padding: 10px;            /* Was 16px, less padding */
+    --cli-font-size: 12px;              /* Smaller font for a tighter UI */
+    --cli-line-height: 1.3;             /* Reduced line-height for compact look */
+    
+    /* Layout & Transitions */
+    --sidebar-width: 180px;
+    --sidebar-width-collapsed: 50px;
+    --panel-padding: 8px;               /* Reduced padding for a denser layout */
     --transition-speed: 0.3s;
   }
+  
   
   /* Reset styles */
   body, html {
@@ -87,7 +97,7 @@
   }
   
   .toggle-btn {
-    font-size: 16px; /* Slightly smaller toggle icon */
+    font-size: 14px; /* Slightly smaller toggle icon */
     cursor: pointer;
     margin-bottom: 0.5rem;
   }
@@ -106,9 +116,9 @@
     overflow: hidden; /* Panels scroll individually */
   }
   
-  /* Example: Thinner Header */
+  /* Header */
   .header {
-    min-height: 48px; /* Reduced header height (was ~60px typical) */
+    min-height: 48px;
     display: flex;
     align-items: center;
     padding: 0 var(--panel-padding);
@@ -117,103 +127,214 @@
     box-sizing: border-box;
   }
   
-  /* =========================================
-     3) Panels
-     ========================================= */
+/* =========================================
+   3) Panels - Improved Flexibility
+========================================= */
+.panel-left,
+.panel-middle,
+.panel-right {
+  padding: var(--panel-padding);
+  box-sizing: border-box;
+  background-color: var(--panel-bg-color);
+  overflow-y: auto; /* Ensure scrollability for overflow */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  transition: flex var(--transition-speed) ease, max-height var(--transition-speed) ease;
+  border-right: 1px solid var(--border-color);
+  min-height: 0; /* Prevent collapse issues in flex containers */
+}
+
+/* Panel Layout Adjustments */
+.panel-left {
+  flex: 1; /* Base size is 1 unit */
+  max-width: 300px; /* Set a max width for better scaling */
+  min-width: 150px; /* Prevent excessive shrinking */
+}
+
+.panel-middle {
+  flex: 2; /* Base size is 2 units */
+  max-width: 600px; /* Allow the middle panel to grow larger */
+  min-width: 200px; /* Prevent shrinking too much */
+}
+
+.panel-right {
+  flex: 1; /* Base size is 1 unit */
+  max-width: 300px; /* Set a max width */
+  min-width: 150px; /* Prevent excessive shrinking */
+  border-right: none;
+}
+
+/* Ensure content fits within panels */
+.panel-left,
+.panel-middle,
+.panel-right > * {
+  overflow-wrap: break-word; /* Force-wrap long text */
+  word-wrap: break-word; /* Fallback for older browsers */
+  word-break: break-word; /* Break long words */
+}
+
+/* Scrollbar Styling - Match Theme */
+.panel-left::-webkit-scrollbar,
+.panel-middle::-webkit-scrollbar,
+.panel-right::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel-left::-webkit-scrollbar-track,
+.panel-middle::-webkit-scrollbar-track,
+.panel-right::-webkit-scrollbar-track {
+  background-color: var(--scrollbar-track-color);
+}
+
+.panel-left::-webkit-scrollbar-thumb,
+.panel-middle::-webkit-scrollbar-thumb,
+.panel-right::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-color);
+  border-radius: 4px;
+}
+
+/* Hover Effect for Panels */
+.panel-left:hover,
+.panel-middle:hover,
+.panel-right:hover {
+  background-color: rgba(255, 255, 255, 0.05); /* Subtle highlight on hover */
+}
+
+/* Responsive Adjustments for Panels */
+@media (max-width: 768px) {
   .panel-left,
   .panel-middle,
   .panel-right {
-    padding: var(--panel-padding);
-    box-sizing: border-box;
-    overflow-y: auto;
-    background-color: var(--panel-bg-color);
-    transition: flex var(--transition-speed) ease;
-    border-right: 1px solid var(--border-color);
-    font-size: 0.95em; /* Even smaller text if needed inside panels */
+    flex: 1; /* Make all panels equal in width */
+    max-width: none; /* Remove max-width constraints */
+    min-width: 0; /* Allow panels to shrink */
   }
-  
-  /* Panel Layout Adjustments */
-  .panel-left {
-    flex: 1; /* You can tweak if you want narrower or wider */
+  .panel-layout {
+    flex-direction: column; /* Stack panels vertically */
+    gap: 8px; /* Add some spacing between stacked panels */
   }
-  .panel-middle {
-    flex: 2;
-  }
-  .panel-right {
-    flex: 1;
-    border-right: none;
-  }
-  
-  /* Collapsed Sidebar Panel Adjustment */
-  .terminal-wrapper.collapsed .panel-left {
-    flex: 1.2;
-  }
-  .terminal-wrapper.collapsed .panel-middle {
-    flex: 2.6;
-  }
-  .terminal-wrapper.collapsed .panel-right {
-    flex: 1.2;
-  }
-  
-  /* Scrollbar Styling */
-  .panel-left::-webkit-scrollbar,
-  .panel-middle::-webkit-scrollbar,
-  .panel-right::-webkit-scrollbar {
-    width: 6px; /* Slightly thinner scrollbar */
-  }
-  
-  .panel-left::-webkit-scrollbar-track,
-  .panel-middle::-webkit-scrollbar-track,
-  .panel-right::-webkit-scrollbar-track {
-    background-color: var(--scrollbar-track-color);
-  }
-  
-  .panel-left::-webkit-scrollbar-thumb,
-  .panel-middle::-webkit-scrollbar-thumb,
-  .panel-right::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb-color);
-    border-radius: 4px;
-  }
+}
   
   /* =========================================
-     4) Utility Classes & Media Queries
+     4) Log Styles
      ========================================= */
-  .clickable:hover {
-    background-color: rgba(97, 218, 251, 0.1);
+  .log-entry.info {
+    color: var(--info-color);
   }
   
-  /* Adjust for smaller screens (especially Phantom’s in-app browser) */
-  @media (max-width: 768px) {
+  .log-entry.warning {
+    color: var(--warning-color);
+  }
+  
+  .log-entry.error {
+    color: var(--error-color);
+  }
+  
+  .log-entry.success {
+    color: var(--success-color);
+  }
+  
+  .log-time {
+    color: var(--text-muted-color);
+    font-size: 0.75rem;
+    margin-right: 4px;
+    opacity: 0.8;
+  }
+  
+  
+
+
+
+  /* =========================================
+   Drawer Styles (Mobile)
+========================================= */
+.drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 70%; /* Limit drawer height */
+    background: var(--panel-bg-color);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
+    transform: translateY(100%); /* Hidden by default */
+    transition: transform var(--transition-speed) ease;
+    overflow-y: auto;
+  }
+  
+  .drawer.open {
+    transform: translateY(0); /* Slide up when open */
+  }
+  
+  .drawer-header {
+    padding: var(--panel-padding);
+    background: var(--sidebar-bg-color);
+    border-bottom: 1px solid var(--border-color);
+    text-align: right;
+  }
+  
+  .drawer-content {
+    padding: var(--panel-padding);
+  }
+  
+
+
+/****************************************************
+ * Mobile-Specific Layout
+ ****************************************************/
+ @media (max-width: 768px) {
+    /* Main Terminal Layout */
     .terminal-container {
-      flex-direction: column;
+      display: flex;
+      flex-direction: column; /* Stack elements vertically */
+      height: calc(100vh - var(--cli-panel-height)); /* Adjust for CLI visibility */
+      overflow: hidden; /* Prevent scrolling of main container */
     }
   
-    .panel-left,
-    .panel-middle,
+    /* Raffle List and Details Side-by-Side */
+    .panel-layout {
+      display: flex;
+      flex-direction: row; /* Arrange horizontally */
+      flex: 1;
+      gap: 8px; /* Small gap between panels */
+      height: 50%; /* Half of the available height */
+      box-sizing: border-box;
+    }
+  
+    .panel-left {
+      flex: 1;
+      overflow-y: auto; /* Allow scrolling for longer content */
+      max-width: 50%; /* Ensure it doesn’t take over the layout */
+    }
+  
+    .panel-middle {
+      flex: 1;
+      overflow-y: auto;
+      max-width: 50%;
+    }
+  
+    /* Buy Logic Panel Below */
     .panel-right {
-      border-right: none;
-      border-bottom: 1px solid var(--border-color);
-      flex: initial;
-      height: 33%; /* Stack panels vertically */
+      flex: none;
+      height: 25%; /* Quarter of the available height */
+      overflow-y: auto;
     }
   
-    .panel-right {
-      border-bottom: none;
-    }
-  }
-  
-  /* Even narrower for very small (e.g. Phantom mobile) */
-  @media (max-width: 500px) {
-    :root {
-      --cli-font-size: 11px;
-      --cli-line-height: 1.3;
-      --panel-padding: 8px;
-      --sidebar-width: 150px;
-      --sidebar-width-collapsed: 45px;
+    /* CLI Panel Always Visible at Bottom */
+    .panel-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: var(--cli-panel-height); /* Define a consistent CLI height */
+      background-color: var(--panel-bg-color);
+      border-top: 1px solid var(--border-color);
+      overflow-y: auto;
+      z-index: 1000; /* Ensure it stays above other elements */
     }
   
-    .header {
-      min-height: 40px;
+    .cli-logs {
+      font-size: 0.75rem; /* Scale down font for smaller screens */
+      padding: 8px; /* Minimal padding */
     }
   }
   

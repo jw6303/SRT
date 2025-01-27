@@ -1,74 +1,127 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRaffle } from "../../context/RaffleContext";
 import "./RaffleDetails.styles.css";
+
+// Enhanced Custom Hook for Typing Effect
+const useTypewriter = (text, speed = 50, pauseAfterTyping = 500) => {
+  const [displayedText, setDisplayedText] = useState("");
+
+  useEffect(() => {
+    let i = 0;
+    const typeInterval = setInterval(() => {
+      if (i < text.length) {
+        setDisplayedText((prev) => prev + text[i]);
+        i++;
+      } else {
+        clearInterval(typeInterval);
+        setTimeout(() => {
+          setDisplayedText(text); // Ensure full text is displayed
+        }, pauseAfterTyping);
+      }
+    }, speed);
+
+    return () => clearInterval(typeInterval);
+  }, [text, speed, pauseAfterTyping]);
+
+  return displayedText;
+};
 
 const RaffleDetails = () => {
   const { selectedRaffle, loading } = useRaffle();
 
-  // Handle loading and empty state
-  if (loading) return <p>Loading details...</p>;
-  if (!selectedRaffle) return <p>Select a raffle to view details.</p>;
+  // Placeholder text
+  const raffleName = selectedRaffle?.raffleName || "Loading Raffle...";
+  const title = selectedRaffle?.prizeDetails?.title || "Loading Prize...";
+  const entryFee = selectedRaffle?.entryFee?.toFixed(2) || "0.00 SOL";
+  const details = selectedRaffle?.prizeDetails?.details || "Loading details...";
+  const imageUrl = selectedRaffle?.prizeDetails?.imageUrl || "placeholder.jpg";
 
-  // Destructure the raffle object
-  const {
-    raffleName = "N/A",
-    prizeDetails = {},
-    entryFee = 0,
-    participants = {},
-    time = {},
-    status = {},
-    question = {},
-    analytics = {},
-  } = selectedRaffle;
+  // Typing effects
+  const typedRaffleName = useTypewriter(raffleName, 40);
+  const typedPrizeTitle = useTypewriter(title, 50);
+  const typedEntryFee = useTypewriter(`${entryFee} SOL`, 30);
+  const typedDetails = useTypewriter(details, 25);
 
-  const { title = "Unknown Prize", type = "N/A", details = "No details available.", imageUrl } =
-    prizeDetails;
+  if (loading) return <p className="cli-text">Loading details...</p>;
+  if (!selectedRaffle) return <p className="cli-text">Select a raffle to view details.</p>;
 
-  // Determine chain type
+  const { participants = {}, time = {}, status = {}, prizeDetails = {} } = selectedRaffle;
+
   const chainType = prizeDetails.type === "physical" ? "Off-Chain" : "On-Chain";
 
   return (
     <div className="raffle-details">
-      <h2>{raffleName}</h2>
+      {/* Left Side: Text Details */}
+      <div className="details-left">
+        <h2 className="raffle-title">{typedRaffleName}</h2>
 
-      {/* Prize Information */}
-      <p>
-        Prize: {title} ({type})
-      </p>
-      <p>Details: {details}</p>
+        <div className="section">
+          <h3 className="section-title">Prize</h3>
+          <p className="prize-title">
+            {typedPrizeTitle} <span className="prize-type">({prizeDetails.type || "N/A"})</span>
+          </p>
+          <div className="description-panel">
+            <p className="prize-details">{typedDetails}</p>
+          </div>
+        </div>
 
-      {/* Entry Fee and Participants */}
-      <p>Entry Fee: {entryFee.toFixed(2)} SOL</p>
-      <p>
-        Tickets Sold: {participants.ticketsSold || 0}/{participants.max || "N/A"}
-      </p>
-      <p>Minimum Participants Required: {participants.min || "N/A"}</p>
+        <div className="section">
+          <h3 className="section-title">Entry Fee</h3>
+          <p className="entry-fee">{typedEntryFee}</p>
+        </div>
 
-      {/* Analytics */}
-      <p>Total Tickets: {analytics.totalTickets || "N/A"}</p>
-      <p>Total Entries: {analytics.totalEntries || "N/A"}</p>
-      <p>Total Refunds: {analytics.totalRefunds || "N/A"}</p>
+        <div className="section">
+          <h3 className="section-title">Participants</h3>
+          <p>
+            Tickets Sold:{" "}
+            <span className="highlight">
+              {participants.ticketsSold || 0}/{participants.max || "N/A"}
+            </span>
+          </p>
+          <p>
+            Minimum Participants:{" "}
+            <span className="highlight">{participants.min || "N/A"}</span>
+          </p>
+        </div>
 
-      {/* Time Information */}
-      <p>Start Time: {time.start ? new Date(time.start).toLocaleString() : "N/A"}</p>
-      <p>End Time: {time.end ? new Date(time.end).toLocaleString() : "N/A"}</p>
+        <div className="section">
+          <h3 className="section-title">Timing</h3>
+          <p>
+            Start Time:{" "}
+            <span className="time">
+              {time.start ? new Date(time.start).toLocaleString() : "N/A"}
+            </span>
+          </p>
+          <p>
+            End Time:{" "}
+            <span className="time">
+              {time.end ? new Date(time.end).toLocaleString() : "N/A"}
+            </span>
+          </p>
+        </div>
 
-      {/* Raffle Status */}
-      <p>Status: {status.current || "Unknown"}</p>
-      <p>Fulfillment: {status.fulfillment || "Unknown"}</p>
+        <div className="section">
+          <h3 className="section-title">Status</h3>
+          <p>
+            Current Status:{" "}
+            <span className="status">{status.current || "Unknown"}</span>
+          </p>
+          <p>
+            Fulfillment:{" "}
+            <span className="fulfillment">{status.fulfillment || "Unknown"}</span>
+          </p>
+          <p>Chain Type: {chainType}</p>
+        </div>
+      </div>
 
-      {/* Chain Status */}
-      <p>Chain Type: {chainType}</p>
-
-
-      {/* Prize Image */}
-      {imageUrl && (
+      {/* Right Side: Prize Image */}
+      <div className="details-right">
         <img
           src={imageUrl}
           alt={`Prize for ${raffleName}`}
           className="raffle-prize-image"
         />
-      )}
+      </div>
     </div>
   );
 };

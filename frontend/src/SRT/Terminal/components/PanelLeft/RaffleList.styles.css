@@ -1,152 +1,223 @@
-/* --- General Styling --- */
 
-/* Tabs container */
-.tabs {
-  display: flex;
-  flex-wrap: wrap; /* Wrap tabs on smaller screens */
-  justify-content: flex-start;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background-color: #121212; /* Dark terminal background */
-  border: 1px solid #2a2a2a; /* Subtle border for structure */
-  border-radius: 6px;
-}
 
-/* Individual tab */
-.tab {
-  padding: 0.4rem 0.8rem;
-  background-color: #1a1a1a; /* Deep grey for tabs */
-  border: 1px solid #2a2a2a; /* Subtle tab border */
-  border-radius: 4px;
-  font-family: "JetBrains Mono", monospace; /* Modern CLI font */
-  font-size: 0.9rem; /* Slightly larger for readability */
-  color: #e5e5e5; /* Neutral white for text */
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
-}
 
-/* Active tab */
-.tab.active {
-  background-color: #333333; /* Slightly lighter grey for active tab */
-  color: #ffffff; /* Brighter white for active text */
-  font-weight: bold;
-  border-color: #555555; /* Highlighted active border */
-}
 
-/* Hover effect */
-.tab:hover {
-  background-color: #292929; /* Slightly lighter background */
-  border-color: #666666; /* Subtle hover border */
-  color: #ffffff; /* Neutral white for hover text */
-}
 
-/* --- Dropdown Styling --- */
 
-/* Dropdown tab styling */
-.tab.dropdown {
-  position: relative;
-}
 
-/* Dropdown menu */
-.dropdown-menu {
-  position: absolute;
-  top: calc(100% + 0.2rem); /* Spacing below the tab */
-  left: 0;
-  background-color: #1a1a1a; /* Match tab background */
-  border: 1px solid #2a2a2a; /* Subtle dropdown border */
-  padding: 0.25rem 0;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  font-family: "JetBrains Mono", monospace; /* Consistent font */
-  border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6); /* Subtle dropdown shadow */
-}
 
-/* Dropdown items */
-.dropdown-menu div {
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  color: #d5d5d5; /* Neutral grey for dropdown items */
-  transition: background-color 0.3s, color 0.3s;
-}
+/****************************************************
+ * RaffleList.styles.css
+ * Solana-themed, tighter spacing, CLI-inspired
+ ****************************************************/
 
-.dropdown-menu div.active,
-.dropdown-menu div:hover {
-  background-color: #333333; /* Highlight hover background */
-  color: #ffffff; /* Inverted hover text */
-}
-
-/* --- Raffle List Styling --- */
-
-/* Raffle list container */
-.raffles {
-  margin-top: 1rem;
-  background-color: #121212; /* Match terminal background */
-  border: 1px solid #2a2a2a; /* Subtle border */
-  border-radius: 6px;
-  padding: 0.8rem;
-  max-height: 300px; /* Larger height for usability */
-  overflow-y: auto; /* Scrollable for longer lists */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); /* Subtle shadow for depth */
-}
-
-/* Individual raffle item */
-.raffle-item {
-  font-family: "JetBrains Mono", monospace; /* Modern CLI font */
-  font-size: 0.85rem; /* Comfortable text size */
-  color: #d9d9d9; /* Neutral grey for text */
-  padding: 0.5rem;
-  border-bottom: 1px dashed #2e2e2e; /* Subtle dashed separator */
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.raffle-item:hover {
-  background-color: #292929; /* Slightly lighter hover background */
-  color: #ffffff; /* Bright white hover text */
-}
-
-/* Last item should not have a border */
-.raffle-item:last-child {
-  border-bottom: none;
-}
-
-/* --- Responsive Design --- */
-
-/* Small screen adjustments */
-@media (max-width: 768px) {
-  .tabs {
-    justify-content: center; /* Center tabs on smaller screens */
+/* 1) Container for everything in the RaffleList */
+.raffle-list {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--panel-bg-color);
+    color: var(--text-color);
+    font-family: var(--cli-font-family);
+    font-size: var(--cli-font-size);
+    padding: var(--panel-padding);
   }
-
-  .raffles {
-    max-height: 200px; /* Smaller scrollable area for compact screens */
+  
+  /* Heading with a subtle CLI vibe */
+  .filters-heading {
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
-
+  
+  /****************************************************
+   * 2) Icon Bar & Tabs
+   ****************************************************/
+  .icon-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px; /* minimal spacing below the icon row */
+  }
+  
   .tab {
-    font-size: 0.8rem; /* Slightly smaller tabs */
-    padding: 0.3rem 0.6rem; /* Adjust padding */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+    padding: 4px 6px;
+    margin-right: 4px;
+    color: var(--text-color);
   }
-
-  .dropdown-menu div {
-    font-size: 0.8rem; /* Smaller dropdown items */
-    padding: 0.3rem 0.6rem; /* Adjust padding */
+  
+  .icon-only {
+    font-size: 16px;
+    width: 28px;
+    height: 28px;
+    text-align: center;
+    position: relative; /* for tooltip positioning */
   }
-}
-
-
-.active-filter {
-    margin-bottom: 1rem;
-    font-size: 0.85rem;
-    color: #d4d4d4;
+  
+  /* Hover & Active States */
+  .tab:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color);
   }
-  .active-filter span {
-    color: #61dafb; /* an accent color */
-    margin-left: 4px;
+  
+  .tab.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-color);
+  }
+  
+  /****************************************************
+   * 3) Tooltip styling (CLI-like)
+   ****************************************************/
+  .tooltipped {
+    position: relative;
+  }
+  
+  /* Show custom tooltip with data-tooltip attribute */
+  .tooltipped:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: 120%; /* place above the icon */
+    transform: translateX(-50%);
+    background: #1e1e1e;
+    color: #ddd;
+    padding: 4px 6px;
+    border: 1px solid #3c3c3c;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 1;
+    border-radius: 3px;
+    z-index: 999;
+  }
+  
+  /* Small arrow below the tooltip */
+  .tooltipped:hover::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #3c3c3c;
+    z-index: 1000;
+  }
+  
+  /****************************************************
+   * 4) Dropdown menus (Advanced Filters)
+   ****************************************************/
+  .dropdown.icon-only {
+    position: relative;
+  }
+  
+  .dropdown-menu.combined-filters {
+    position: absolute;
+    top: 36px; /* just below the icon row */
+    right: 0;
+    z-index: 1000;
+    background-color: var(--panel-bg-color);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    min-width: 220px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  }
+  
+  .dropdown-menu.combined-filters .dropdown-section {
+    margin-bottom: 12px;
+  }
+  
+  .dropdown-section-title {
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    margin-bottom: 4px;
+  }
+  
+  .dropdown-section-title svg {
+    margin-right: 4px;
+    font-size: 0.9rem;
+  }
+  
+  /* Options inside the dropdown */
+  .dropdown-section > div {
+    padding: 3px 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.2s;
+    margin-bottom: 2px;
+    color: var(--text-color);
+  }
+  
+  .dropdown-section > div:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: var(--border-color);
+  }
+  
+  .dropdown-section > div.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-color);
+  }
+  
+  /****************************************************
+   * 5) Raffles List
+   ****************************************************/
+  .raffles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 60vh;
+    overflow-y: auto; /* scroll if too many raffles */
+    border: 1px solid var(--border-color);
+    margin-top: 8px;
+    padding: 6px;
+    box-sizing: border-box;
+  }
+  
+  /* Scrollbar styling */
+  .raffles::-webkit-scrollbar {
+    width: 8px;
+  }
+  .raffles::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track-color);
+  }
+  .raffles::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 4px;
+  }
+  
+  /* Each raffle item */
+  .raffle-item {
+    padding: 6px;
+    border: 1px solid transparent;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+  
+  .raffle-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: var(--border-color);
+  }
+  
+  .raffle-item h3 {
+    margin: 0 0 4px 0;
+    color: var(--accent-color);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  
+  .raffle-item p {
+    margin: 0 0 2px 0;
+    font-size: 0.8rem;
+    color: var(--text-muted-color);
   }
   

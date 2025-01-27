@@ -1,107 +1,80 @@
-:root {
-    /* Default dark theme (monotone greys and whites) */
-    --terminal-bg-color: #1e1e1e;
-    --sidebar-bg-color: #252526;
-    --panel-bg-color: #2c2c2c;
-    --border-color: #3c3c3c;
-    --text-color: #d4d4d4;
-    --accent-color: #61dafb;
-    --hover-color: #4fa6d6;
-  
-    /* Font and spacing */
-    --cli-font-family: 'Fira Code', monospace;
-    --cli-font-size: 14px;
-    --cli-line-height: 1.6;
-  
-    --transition-speed: 0.3s;
-  }
-  
-  .header {
+/*****************************************************
+ * Header.styles.css
+ * A bar across the top for app title, language, theme
+ *****************************************************/
+ .header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    background-color: var(--sidebar-bg-color);
+    justify-content: space-between;
+    background-color: var(--panel-bg-color);
     border-bottom: 1px solid var(--border-color);
-    color: var(--text-color);
+    padding: 8px 12px;
     font-family: var(--cli-font-family);
+    font-size: var(--cli-font-size);
+    color: var(--text-color);
   }
   
   .header-title {
-    font-size: 1.5rem;
-    font-weight: bold;
     margin: 0;
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    font-weight: 600;
   }
   
   .header-actions {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 12px;
   }
   
-  select {
-    padding: 0.5rem;
-    font-family: inherit;
-    font-size: 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--panel-bg-color);
+  /* Language dropdown */
+  .header-actions select {
+    background-color: #1e1e1e;
     color: var(--text-color);
-    outline: none;
+    border: 1px solid var(--border-color);
+    padding: 4px 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
   }
   
-  select:focus {
-    border-color: var(--accent-color);
-  }
-  
+  /**********************************************
+   * Theme Toggle
+   **********************************************/
   .theme-toggle {
-    display: flex;
-    align-items: center;
+    position: relative;
   }
   
   .toggle-label {
     display: inline-block;
+    cursor: pointer;
+    width: 40px;
+    height: 20px;
     position: relative;
-    width: 50px;
-    height: 24px;
   }
   
-  .toggle-input {
-    opacity: 0;
-    width: 0;
-    height: 0;
+  .toggle-label input {
+    display: none;
   }
   
   .toggle-slider {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--border-color);
+    background-color: #444;
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    cursor: pointer;
-    transition: background-color var(--transition-speed);
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.2s;
   }
   
-  .toggle-slider:hover {
-    background-color: var(--hover-color);
+  .toggle-label input:checked + .toggle-slider {
+    background-color: #ddd; /* Light for the "sun" state */
   }
   
   .toggle-icon {
-    color: var(--text-color);
-    font-size: 16px;
-    transition: color var(--transition-speed);
-  }
-  
-  .toggle-input:checked + .toggle-slider {
-    background-color: var(--accent-color);
-  }
-  
-  .toggle-input:checked + .toggle-slider .toggle-icon {
-    color: #ffffff;
+    color: var(--accent-color);
+    font-size: 14px;
   }
   

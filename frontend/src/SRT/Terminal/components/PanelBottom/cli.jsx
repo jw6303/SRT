@@ -1,33 +1,39 @@
-// cli.js
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useLogs } from "../../../../context/LogContext";
 import "./cli.styles.css";
 
 const CliPanel = () => {
-  // Start it off slightly smaller (e.g., 150px)
-  const [height, setHeight] = useState(50);
+  const [height, setHeight] = useState(120);
   const [isDragging, setIsDragging] = useState(false);
-  const [input, setInput] = useState("");
+  const [isScrollVisible, setIsScrollVisible] = useState(false); // New state for scroll visibility
 
-  // Logs from the LogContext
   const { logs } = useLogs();
 
+  const logContainerRef = useRef(null);
+
+  // Automatically scroll to bottom when logs update
+  useEffect(() => {
+    if (logContainerRef.current) {
+      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+
+      // Check if scroll bar is necessary
+      const { scrollHeight, clientHeight } = logContainerRef.current;
+      setIsScrollVisible(scrollHeight > clientHeight);
+    }
+  }, [logs, height]); // Include height dependency for dynamic resize
+
+  // Drag to resize logic
   const startDrag = (e) => {
     e.preventDefault();
     setIsDragging(true);
 
-    // Record initial cursor position and current height
     const initialY = e.clientY;
     const initialHeight = height;
 
-    // Mouse-move handler
     const onMouseMove = (moveEvt) => {
-      // Calculate how much we've moved since drag began
       const offset = moveEvt.clientY - initialY;
-      // We want to shrink if user drags up, grow if drags down => so subtract offset
       const newHeight = initialHeight - offset;
 
-      // Clamp between 80px and half the viewport
       if (newHeight < 80) {
         setHeight(80);
       } else if (newHeight > window.innerHeight / 2) {
@@ -37,29 +43,19 @@ const CliPanel = () => {
       }
     };
 
-    // Cleanup when mouse is released
     const onMouseUp = () => {
       setIsDragging(false);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
 
-    // Add event listeners for the drag
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
   };
 
-  const handleKeyDown = (e) => {
-    // (Optional) handle commands if needed
-    if (e.key === "Enter") {
-      console.log(`Command executed: ${input}`);
-      setInput("");
-    }
-  };
-
   return (
     <div className="cli-panel" style={{ height: `${height}px` }}>
-      {/* Drag handle */}
+      {/* Drag Handle */}
       <div
         className={`drag-handle ${isDragging ? "active" : ""}`}
         onMouseDown={startDrag}
@@ -70,7 +66,10 @@ const CliPanel = () => {
       <div className="cli-logs">
         <h3>Logs</h3>
         {logs && logs.length > 0 ? (
-          <div className="log-container">
+          <div
+            className={`log-container ${isScrollVisible ? "scroll-visible" : ""}`}
+            ref={logContainerRef}
+          >
             {logs.map((log, index) => (
               <div key={index} className={`log-entry ${log.type}`}>
                 <span className="log-time">
@@ -84,7 +83,6 @@ const CliPanel = () => {
           <p>No logs available.</p>
         )}
       </div>
-
     </div>
   );
 };

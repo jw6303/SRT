@@ -1,137 +1,119 @@
+/**********************************************
+ * BuyLogic.styles.css
+ * Solana-themed, tighter spacing, CLI-inspired
+ **********************************************/
+
+/* Container for the Buy Logic panel */
 .buy-logic {
-    padding: 15px;
-    background-color: #121212;
-    color: #e5e5e5;
-    border-radius: 6px;
-    border: 1px solid #2a2a2a;
-    max-width: 500px; /* Reduced width */
-    margin: 0 auto;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.9rem; /* Smaller font size */
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Reduced spacing between sections */
-    height: 100%; /* Ensure the panel occupies its fixed height */
-    box-sizing: border-box;
-}
-
-.log-box {
-    background-color: #1a1a1a;
-    border: 1px solid #333333;
-    border-radius: 4px;
-    padding: 8px; /* Reduced padding */
-    max-height: 120px; /* Reduced height */
-    overflow-y: auto; /* Enable scrolling only inside the log box */
-    margin-bottom: 10px;
-    font-size: 0.75rem; /* Smaller font size for compactness */
-    line-height: 1.2; /* Tighter line spacing */
-}
-
-.log-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px; /* Compact spacing between log entries */
-}
-
-.log-entry {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.75rem; /* Smaller font for log entries */
-    color: #e5e5e5;
-}
-
-.log-entry.info {
-    color: #61dafb;
-}
-
-.log-entry.warning {
-    color: #f9c74f;
-}
-
-.log-entry.error {
-    color: #e63946;
-}
-
-.log-entry.success {
-    color: #2ecc71;
-}
-
-.log-time {
-    flex: 0 0 50px; /* Fixed width for time column */
-    text-align: left;
-    color: #777;
-    font-size: 0.7rem; /* Smaller time font */
-}
-
-.log-message {
-    flex: 1; /* Flexible width for the message */
-    text-align: left;
-    word-wrap: break-word; /* Break long log messages */
-}
-
-h3,
-h4 {
-    color: #61dafb;
-    font-size: 1rem; /* Slightly smaller header size */
-    margin: 0 0 5px 0; /* Tighter margin */
-}
-
-.question-section,
-.ticket-purchase {
-    display: flex;
-    flex-direction: column;
-    gap: 5px; /* Compact layout */
-}
-
-.answer-option {
-    display: flex;
-    align-items: center;
-    gap: 5px; /* Compact spacing between radio and label */
+    background-color: var(--panel-bg-color);
+    border: 1px solid var(--border-color);
+    padding: var(--panel-padding);
+    margin: 0; /* or some minimal margin if needed */
+    color: var(--text-color);
+    font-family: var(--cli-font-family);
+    font-size: var(--cli-font-size);
+    line-height: var(--cli-line-height);
+  }
+  
+  .buy-logic h3 {
+    margin: 0 0 8px 0;
+    color: var(--accent-color);
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  
+  .buy-logic p {
+    margin: 4px 0;
+    color: var(--text-muted-color);
     font-size: 0.85rem;
-}
-
-.ticket-purchase label {
-    font-size: 0.8rem; /* Smaller label font size */
-    margin-bottom: 5px;
-}
-
-.ticket-purchase input {
-    padding: 4px 8px; /* Reduced input padding */
-    font-size: 0.8rem; /* Smaller input font size */
-    border: 1px solid #333333;
-    border-radius: 4px;
-    background-color: #222222;
-    color: #e5e5e5;
-    width: 50px; /* Fixed width to ensure consistent layout */
-}
-
-button {
-    padding: 8px 15px; /* Reduced button size */
-    background-color: #444;
-    color: #e5e5e5;
-    border: none;
-    border-radius: 4px;
+  }
+  
+  /* If no raffle is selected */
+  .no-raffle {
+    font-size: 0.9rem;
+    color: var(--error-color);
+    margin: 0;
+  }
+  
+  /**********************************************
+   * Question Section
+   **********************************************/
+  .question-section {
+    margin-top: 8px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+    padding: 8px;
+  }
+  
+  .question-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    color: var(--accent-color);
+  }
+  
+  .answer-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+  }
+  
+  .answer-option input[type="radio"] {
+    margin-right: 6px;
     cursor: pointer;
-    transition: background-color 0.3s;
-    font-size: 0.85rem;
-}
-
-button:hover {
-    background-color: #61dafb;
-    color: #000;
-}
-
-button:disabled {
-    background-color: #333333;
-    color: #777777;
-    cursor: not-allowed;
-}
-
-.fixed-height {
-    height: 100%; /* Ensure the panel occupies all available space */
-    overflow: hidden; /* Prevent any overflow */
+  }
+  
+  /**********************************************
+   * Ticket Purchase
+   **********************************************/
+  .ticket-purchase {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px; /* space between label & button */
+    margin-top: 12px;
+  }
+  
+  .ticket-purchase label {
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Align content without stretching */
-}
+    font-size: 0.85rem;
+    color: var(--text-color);
+  }
+  
+  .ticket-purchase input[type="number"] {
+    width: 60px;
+    margin-top: 4px;
+    padding: 4px;
+    background-color: #1e1e1e;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: inherit;
+    outline: none;
+    text-align: center;
+  }
+  
+  .ticket-purchase button {
+    padding: 6px 12px;
+    background-color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+    color: #ffffff;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    font-family: inherit;
+  }
+  
+  .ticket-purchase button:hover {
+    background-color: #b373ff; /* a lighter purple for hover */
+    border-color: #b373ff;
+  }
+  
+  .ticket-purchase button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  

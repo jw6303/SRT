@@ -1,27 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useRaffle } from "../../context/RaffleContext";
-import { useLogs } from "../../../../context/LogContext"; 
-import {
-  FaListAlt,
-  FaStar,
-  FaCog,
-  FaLink,
-  FaClock,
-  FaShieldAlt,
-} from "react-icons/fa"; // Additional icons
+import { useLogs } from "../../../../context/LogContext"; // Make sure this path matches your file structure
+import { FaClock, FaFilter, FaEthereum, FaListAlt } from "react-icons/fa";
 import "./RaffleList.styles.css";
 
 const RaffleList = () => {
   const { raffles, loadRaffleDetails } = useRaffle();
-  const { addLog } = useLogs();
-
   const [filteredRaffles, setFilteredRaffles] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false); // Track mobile state
+
+  // Access the logging function from LogContext
+  const { addLog } = useLogs(); 
 
   const now = new Date();
 
-  // Price tiers
+// State for managing the drawer visibility (mobile-specific)
+
+// Function to toggle the drawer state
+const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
+
+  // Price tiers for filtering
   const priceTiers = {
     conservative: { min: 0.01, max: 0.03 },
     moderate: { min: 0.04, max: 0.1 },
@@ -46,6 +47,8 @@ const RaffleList = () => {
   };
 
   const determineChainType = (raffle) => {
+    // Assumes `prizeDetails.type` indicates chain type:
+    // "onChain" for blockchain prizes, "physical" for off-chain.
     const prizeType = raffle.prizeDetails?.type;
     return prizeType === "onChain" ? "onChain" : "offChain";
   };
@@ -81,41 +84,49 @@ const RaffleList = () => {
 
   // Apply Filters
   useEffect(() => {
-    let filtered = [];
-    if (activeFilter === "all") {
-      filtered = raffles;
-    } else if (activeFilter === "new") {
-      filtered = raffles.filter(isNewRaffle);
-    } else if (activeFilter.startsWith("endingSoon")) {
-      const hours = parseInt(activeFilter.split(":")[1], 10);
-      filtered = raffles.filter((r) => isEndingSoon(r, hours));
-    } else if (activeFilter.startsWith("price")) {
-      const tier = activeFilter.split(":")[1];
-      filtered = raffles.filter((r) => isPriceTier(r, tier));
-    } else if (activeFilter.startsWith("chain")) {
-      const type = activeFilter.split(":")[1];
-      filtered = raffles.filter((r) => determineChainType(r) === type);
-    }
-    setFilteredRaffles(filtered);
+    const applyFilter = () => {
+      let filtered = [];
+
+      if (activeFilter === "all") {
+        filtered = raffles;
+      } else if (activeFilter === "new") {
+        filtered = raffles.filter(isNewRaffle);
+      } else if (activeFilter.startsWith("endingSoon")) {
+        const hours = parseInt(activeFilter.split(":")[1], 10);
+        filtered = raffles.filter((r) => isEndingSoon(r, hours));
+      } else if (activeFilter.startsWith("price")) {
+        const tier = activeFilter.split(":")[1];
+        filtered = raffles.filter((r) => isPriceTier(r, tier));
+      } else if (activeFilter.startsWith("chain")) {
+        const type = activeFilter.split(":")[1];
+        filtered = raffles.filter((r) => determineChainType(r) === type);
+      }
+
+      setFilteredRaffles(filtered);
+    };
+
+    applyFilter();
   }, [activeFilter, raffles]);
 
-  // Close dropdown if user clicks outside
+  // Close Dropdown on Outside Click
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (!event.target.closest(".tab.dropdown")) {
         setOpenDropdown(null);
       }
     };
+
     document.addEventListener("click", handleOutsideClick);
     return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
 
-  // Filter & Dropdown handlers
+  // Helper function to change the active filter and log it
   const handleChangeFilter = (newFilter) => {
     setActiveFilter(newFilter);
     addLog(`User changed filter to: ${newFilter}`, "info");
   };
 
+  // Toggle a dropdown and log the action
   const handleToggleDropdown = (dropdownName) => {
     const nextVal = openDropdown === dropdownName ? null : dropdownName;
     setOpenDropdown(nextVal);
@@ -123,112 +134,109 @@ const RaffleList = () => {
   };
 
   return (
-    <div className="raffle-list">
-      {/* A subtle heading using CLI-style terminology */}
-      <h4 className="filters-heading">== TERMINAL FILTERS ==</h4>
-
-      {/* Icon bar with tooltips + one "Advanced" dropdown */}
-      <div className="tabs icon-bar">
-        {/* All Raffles */}
+    <div className={`raffle-list ${isMobile ? "mobile" : ""}`}>
+      {/* Mobile Drawer Toggle Button */}
+      {isMobile && (
+        <button className="drawer-toggle" onClick={toggleDrawer}>
+          {isDrawerOpen ? "Close Raffle List" : "Open Raffle List"}
+        </button>
+      )}
+  
+      {/* Tabs Section */}
+      <div
+        className={`tabs ${isMobile ? (isDrawerOpen ? "visible" : "hidden") : ""}`}
+      >
         <div
-          className={`tab icon-only ${activeFilter === "all" ? "active" : ""} tooltipped`}
-          data-tooltip={`All Raffles (${filterCounts.all})`}
+          className={`tab ${activeFilter === "all" ? "active" : ""}`}
           onClick={() => handleChangeFilter("all")}
         >
-          <FaListAlt />
+          <FaListAlt /> All Raffles ({filterCounts.all})
         </div>
-
-        {/* New Raffles */}
         <div
-          className={`tab icon-only ${activeFilter === "new" ? "active" : ""} tooltipped`}
-          data-tooltip={`New Raffles (${filterCounts.new})`}
+          className={`tab ${activeFilter === "new" ? "active" : ""}`}
           onClick={() => handleChangeFilter("new")}
         >
-          <FaStar />
+          <FaListAlt /> New Raffles ({filterCounts.new})
         </div>
-
-        {/* ADVANCED: Ending Soon + Risk Tolerance + Chain Type in 1 dropdown */}
         <div
-          className={`tab dropdown icon-only tooltipped ${openDropdown === "advanced" ? "open" : ""}`}
-          data-tooltip="Advanced Filters"
-          onClick={() => handleToggleDropdown("advanced")}
+          className={`tab dropdown ${openDropdown === "endingSoon" ? "open" : ""}`}
+          onClick={() => handleToggleDropdown("endingSoon")}
         >
-          <FaCog />
-
-          {/* The big combined dropdown */}
-          {openDropdown === "advanced" && (
-            <div className="dropdown-menu combined-filters">
-
-              {/* ENDING SOON */}
-              <div className="dropdown-section">
-                <p className="dropdown-section-title">
-                  <FaClock /> Ending Soon
-                </p>
-                {["1h", "6h", "24h", "72h"].map((timeFrame) => (
-                  <div
-                    key={timeFrame}
-                    className={activeFilter === `endingSoon:${timeFrame}` ? "active" : ""}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleChangeFilter(`endingSoon:${timeFrame}`);
-                    }}
-                  >
-                    {timeFrame.toUpperCase()} ({filterCounts.endingSoon[timeFrame]})
-                  </div>
-                ))}
-              </div>
-
-              {/* RISK TOLERANCE */}
-              <div className="dropdown-section">
-                <p className="dropdown-section-title">
-                  <FaShieldAlt /> Risk Tolerance
-                </p>
-                {Object.keys(priceTiers).map((tier) => (
-                  <div
-                    key={tier}
-                    className={activeFilter === `price:${tier}` ? "active" : ""}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleChangeFilter(`price:${tier}`);
-                    }}
-                  >
-                    {tier.charAt(0).toUpperCase() + tier.slice(1)} (
-                    {filterCounts.priceTiers[tier]})
-                  </div>
-                ))}
-              </div>
-
-              {/* CHAIN TYPE */}
-              <div className="dropdown-section">
-                <p className="dropdown-section-title">
-                  <FaLink /> Chain Type
-                </p>
+          <FaClock /> Ending Soon
+          {openDropdown === "endingSoon" && (
+            <div className="dropdown-menu">
+              {["1h", "6h", "24h", "72h"].map((timeFrame) => (
                 <div
-                  className={activeFilter === "chain:onChain" ? "active" : ""}
+                  key={timeFrame}
+                  className={activeFilter === `endingSoon:${timeFrame}` ? "active" : ""}
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleChangeFilter("chain:onChain");
+                    handleChangeFilter(`endingSoon:${timeFrame}`);
                   }}
                 >
-                  On-Chain ({filterCounts.chainType.onChain})
+                  {timeFrame.toUpperCase()} ({filterCounts.endingSoon[timeFrame]})
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div
+          className={`tab dropdown ${openDropdown === "price" ? "open" : ""}`}
+          onClick={() => handleToggleDropdown("price")}
+        >
+          <FaFilter /> Risk Tolerance
+          {openDropdown === "price" && (
+            <div className="dropdown-menu">
+              {Object.keys(priceTiers).map((tier) => (
                 <div
-                  className={activeFilter === "chain:offChain" ? "active" : ""}
+                  key={tier}
+                  className={activeFilter === `price:${tier}` ? "active" : ""}
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleChangeFilter("chain:offChain");
+                    handleChangeFilter(`price:${tier}`);
                   }}
                 >
-                  Off-Chain ({filterCounts.chainType.offChain})
+                  {tier.charAt(0).toUpperCase() + tier.slice(1)} (
+                  {filterCounts.priceTiers[tier]})
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div
+          className={`tab dropdown ${openDropdown === "chain" ? "open" : ""}`}
+          onClick={() => handleToggleDropdown("chain")}
+        >
+          <FaEthereum /> Chain Type
+          {openDropdown === "chain" && (
+            <div className="dropdown-menu">
+              <div
+                className={activeFilter === "chain:onChain" ? "active" : ""}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleChangeFilter("chain:onChain");
+                }}
+              >
+                On-Chain ({filterCounts.chainType.onChain})
+              </div>
+              <div
+                className={activeFilter === "chain:offChain" ? "active" : ""}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleChangeFilter("chain:offChain");
+                }}
+              >
+                Off-Chain ({filterCounts.chainType.offChain})
               </div>
             </div>
           )}
         </div>
       </div>
-
+  
       {/* Filtered Raffles List */}
-      <ul className="raffles">
+      <ul
+        className={`raffles ${isMobile ? (isDrawerOpen ? "visible" : "hidden") : ""}`}
+      >
         {filteredRaffles.length === 0 ? (
           <p>No raffles match your criteria.</p>
         ) : (
@@ -260,6 +268,7 @@ const RaffleList = () => {
       </ul>
     </div>
   );
+  
 };
 
 export default RaffleList;
