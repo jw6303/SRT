@@ -157,12 +157,12 @@
 }
 
 .panel-right {
-  flex: 1; /* Base size remains 1 unit */
-  max-width: 250px; /* Slightly reduce max width to give middle panel more space */
-  min-width: 150px; /* Prevent excessive shrinking */
-  border-right: none; /* No border for the right panel */
-}
-
+    flex: 1.5; /* Increase the flex ratio for this panel */
+    max-width: 400px; /* Allow it to grow wider */
+    min-width: 250px; /* Ensure it doesn't shrink too much */
+    border-right: none; /* Maintain no border for the right panel */
+  }
+  
 /* Ensure content fits within panels */
 .panel-left,
 .panel-middle,

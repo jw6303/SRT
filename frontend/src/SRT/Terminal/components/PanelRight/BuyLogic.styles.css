@@ -1,239 +1,188 @@
-/**********************************************
- * BuyLogic.styles.css
- * Solana-themed, tighter spacing, CLI-inspired
- **********************************************/
-
-/* Container for the Buy Logic panel */
 .buy-logic {
-    display: flex;
-    flex-direction: column;
-    background-color: var(--panel-bg-color);
-    border: 1px solid var(--border-color);
-    padding: var(--panel-padding);
-    margin: 0; /* or some minimal margin if needed */
-    color: var(--text-color);
-    font-family: var(--cli-font-family);
-    font-size: var(--cli-font-size);
-    line-height: var(--cli-line-height);
-  }
-  
-  .buy-logic h3 {
-    margin: 0 0 8px 0;
-    color: var(--accent-color);
-    font-size: 1rem;
-    font-weight: 600;
-  }
-  
-  .buy-logic p {
-    margin: 4px 0;
-    color: var(--text-muted-color);
-    font-size: 0.85rem;
-  }
-  
-  /* If no raffle is selected */
-  .no-raffle {
-    font-size: 0.9rem;
-    color: var(--error-color);
-    margin: 0;
-  }
-  
-  /**********************************************
-   * Question Section
-   **********************************************/
-  .question-section {
-    margin-top: 8px;
-    margin-bottom: 12px;
-    border: 1px solid var(--border-color);
-    padding: 8px;
-  }
-  
-  .question-section h4 {
-    margin: 0 0 8px 0;
-    font-size: 0.95rem;
-    color: var(--accent-color);
-  }
-  
-  .answer-option {
-    display: flex;
-    align-items: center;
-    margin-bottom: 4px;
-    font-size: 0.85rem;
-  }
-  
-  .answer-option input[type="radio"] {
-    margin-right: 6px;
-    cursor: pointer;
-  }
-  
-  /**********************************************
-   * Ticket Purchase
-   **********************************************/
-  .ticket-purchase {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px; /* space between label & button */
-    margin-top: 12px;
-  }
-  
-  .ticket-purchase label {
-    display: flex;
-    flex-direction: column;
-    font-size: 0.85rem;
-    color: var(--text-color);
-  }
-  
-  .ticket-purchase input[type="number"] {
-    width: 60px;
-    margin-top: 4px;
-    padding: 4px;
-    background-color: #1e1e1e;
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    font-family: inherit;
-    font-size: inherit;
-    outline: none;
-    text-align: center;
-  }
-  
-  .ticket-purchase button {
-    padding: 6px 12px;
-    background-color: var(--accent-color);
-    border: 1px solid var(--accent-color);
-    color: #ffffff;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
-    font-family: inherit;
-  }
-  
-  .ticket-purchase button:hover {
-    background-color: #b373ff; /* a lighter purple for hover */
-    border-color: #b373ff;
-  }
-  
-  .ticket-purchase button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  
-
-
-  /**********************************************
- * Buy Logic Styles
- **********************************************/
-.buy-logic {
-    font-family: var(--font-primary);
-    color: var(--text-secondary);
-    padding: 16px;
-    background-color: var(--background-panel);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-  }
-  
-  .question-section,
-  .ticket-purchase,
-  .shipping-section {
-    margin-bottom: 16px;
-  }
-  
-  .answer-option {
-    display: block;
-    margin: 8px 0;
-    cursor: pointer;
-  }
-  
-  .shipping-section h4 {
-    color: var(--text-highlight);
-    margin-bottom: 8px;
-  }
-  
-  .shipping-field {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 12px;
-  }
-  
-  .shipping-field span {
-    font-weight: bold;
-    margin-bottom: 4px;
-  }
-  
-  button {
-    background-color: var(--accent-color);
+    padding: 1rem;
+    font-family: Arial, sans-serif;
     color: var(--text-primary);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  button:disabled {
-    background-color: var(--border-color);
-    cursor: not-allowed;
-  }
-  
-
-  .buy-logic {
-    font-family: monospace;
-    color: var(--text-secondary);
-    background-color: var(--background-panel);
-    padding: 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    max-width: 100%;
   }
   
   .section-title {
+    font-size: 1.5rem;
     font-weight: bold;
-    color: var(--text-primary);
-    margin-bottom: 12px;
+    margin-bottom: 1rem;
+  }
+  
+  .ticket-selection {
+    margin-bottom: 1rem;
+  }
+  
+  .ticket-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .ticket-button {
+    background-color: #444;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
   
-  .tree-branch {
-    list-style: none;
-    padding-left: 20px;
-    margin: 8px 0;
-    border-left: 1px dashed var(--border-color);
+  .ticket-button:hover {
+    background-color: #555;
+    transform: scale(1.05);
   }
   
-  .tree-key {
+  .ticket-button.selected {
+    background-color: #4caf50;
+    color: #fff;
     font-weight: bold;
-    color: var(--text-highlight);
   }
   
-  .tree-input {
-    margin-left: 10px;
-    padding: 4px;
-    font-family: monospace;
-    color: var(--text-primary);
-    background: var(--input-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    width: 50px;
+  .ticket-info {
+    margin-top: 1rem;
+    font-size: 1.1rem;
   }
   
   .buy-button {
-    padding: 8px 12px;
-    font-family: monospace;
-    color: var(--text-primary);
-    background-color: var(--accent-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+    background-color: #673ab7;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.25rem;
+    font-size: 1.2rem;
     cursor: pointer;
+    transition: background-color 0.3s ease;
   }
   
   .buy-button:hover {
-    background-color: var(--accent-color-hover);
+    background-color: #7e57c2;
   }
   
-  .collapsible {
+
+
+  .custom-input {
+    margin-top: 16px;
+  }
+  
+  .custom-input input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .error-message {
+    margin-top: 8px;
+    color: var(--error-color);
+    font-size: 12px;
+  }
+  
+  .warning {
+    margin-top: 8px;
+    color: var(--warning-color);
+    font-size: 14px;
+  }
+  
+  .buy-button:disabled {
+    background-color: var(--disabled-bg);
+    color: var(--disabled-text);
+    cursor: not-allowed;
+  }
+  
+
+  .custom-dropdown {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .custom-dropdown label {
+    font-size: 14px;
+    color: var(--text-color-secondary);
+    margin-bottom: 8px;
+  }
+  
+  .custom-dropdown select {
+    width: 100%; /* Match panel width */
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    box-sizing: border-box;
     cursor: pointer;
-    font-weight: bold;
-    color: var(--text-highlight);
+    appearance: none; /* Remove default arrow styling */
+    position: relative;
   }
   
-  .tree-nested {
-    margin-left: 20px;
+  .custom-dropdown {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .custom-dropdown label {
+    font-size: 14px;
+    color: var(--text-color-secondary);
+    margin-bottom: 8px;
+  }
+  
+  .custom-dropdown select {
+    width: 100%; /* Match panel width */
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    box-sizing: border-box;
+    cursor: pointer;
+    appearance: none; /* Remove default arrow styling */
+    position: relative;
+  }
+  
+  .custom-dropdown select:focus {
+    outline: 2px solid var(--highlight-color); /* Focus highlight */
+  }
+  
+  .custom-dropdown option {
+    padding: 10px;
+    font-size: 14px;
+    color: var(--text-color);
+    background-color: var(--dropdown-bg);
+  }
+  
+  /* Limit dropdown height and enable scrolling for large options */
+  .custom-dropdown select {
+    max-height: 250px;
+    overflow-y: auto;
+  }
+  
+  /* Add a custom arrow */
+  .custom-dropdown select::after {
+    content: "";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border: solid var(--text-color);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    pointer-events: none;
+  }
+  
+  .error-message {
+    margin-top: 8px;
+    color: var(--error-color);
+    font-size: 12px;
   }
   
