@@ -1,80 +1,100 @@
-/*****************************************************
- * Header.styles.css
- * A bar across the top for app title, language, theme
- *****************************************************/
+/**********************************************
+ * Header - Terminal/Tree Theme
+ **********************************************/
  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: var(--panel-bg-color);
-    border-bottom: 1px solid var(--border-color);
-    padding: 8px 12px;
-    font-family: var(--cli-font-family);
-    font-size: var(--cli-font-size);
-    color: var(--text-color);
-  }
-  
-  .header-title {
-    margin: 0;
-    font-size: 1.1rem;
-    color: var(--accent-color);
-    font-weight: 600;
-  }
-  
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  
-  /* Language dropdown */
-  .header-actions select {
-    background-color: #1e1e1e;
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    padding: 4px 8px;
-    font-family: inherit;
-    font-size: 0.85rem;
-    cursor: pointer;
-  }
-  
-  /**********************************************
-   * Theme Toggle
-   **********************************************/
-  .theme-toggle {
-    position: relative;
-  }
-  
-  .toggle-label {
-    display: inline-block;
-    cursor: pointer;
-    width: 40px;
-    height: 20px;
-    position: relative;
-  }
-  
-  .toggle-label input {
-    display: none;
-  }
-  
-  .toggle-slider {
-    background-color: #444;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-  }
-  
-  .toggle-label input:checked + .toggle-slider {
-    background-color: #ddd; /* Light for the "sun" state */
-  }
-  
-  .toggle-icon {
-    color: var(--accent-color);
-    font-size: 14px;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--terminal-bg-color); /* Matches terminal background */
+  color: var(--text-color); /* Dynamic text color */
+  border-bottom: 2px dashed var(--border-color); /* Tree-like dashed border */
+  font-family: "Courier New", Courier, monospace; /* Terminal font */
+}
+
+.header-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--accent-color); /* Accent color for the title */
+  text-shadow: 0 1px var(--border-color);
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Space between actions */
+}
+
+/* Language Selector */
+.header-actions select {
+  padding: 5px 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  background-color: var(--panel-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.header-actions select:hover {
+  background-color: var(--hover-color);
+  color: var(--terminal-bg-color);
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toggle-label {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle-input {
+  display: none; /* Hide default checkbox */
+}
+
+.toggle-slider {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 20px;
+  background-color: var(--panel-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  position: relative;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.toggle-slider:hover {
+  background-color: var(--hover-color);
+}
+
+.toggle-icon {
+  font-size: 1rem;
+  color: var(--text-color);
+  position: absolute;
+  transition: transform 0.3s;
+}
+
+.toggle-input:checked + .toggle-slider {
+  background-color: var(--accent-color);
+}
+
+.toggle-input:checked + .toggle-slider .toggle-icon {
+  transform: translateX(15px); /* Move the icon to the right */
+}
+
+.toggle-input:not(:checked) + .toggle-slider .toggle-icon {
+  transform: translateX(-15px); /* Move the icon to the left */
+}
+
+

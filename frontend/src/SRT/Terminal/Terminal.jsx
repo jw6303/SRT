@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Sidebar from "./components/Shared/Sidebar";
 import Header from "./components/Shared/Header";
 import FullWidthPanel from "./components/Shared/FullWidthPanel";
 import PanelLeft from "./components/PanelLeft/RaffleList";
@@ -9,13 +8,9 @@ import CliPanel from "./components/PanelBottom/cli";
 import "./Terminal.styles.css";
 
 const Terminal = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // For mobile drawer
-  const [selectedRaffle, setSelectedRaffle] = useState(null);
-
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Mobile drawer state
+  const [selectedRaffle, setSelectedRaffle] = useState(null); // Selected raffle state
+  const [isCliCollapsed, setIsCliCollapsed] = useState(false); // CLI Panel Collapsible state
 
   const openDrawer = (raffle) => {
     setSelectedRaffle(raffle);
@@ -23,15 +18,12 @@ const Terminal = () => {
   };
 
   const closeDrawer = () => {
-    setIsDrawerOpen(false);
     setSelectedRaffle(null);
+    setIsDrawerOpen(false);
   };
 
   return (
-    <div className={`terminal-wrapper ${isCollapsed ? "collapsed" : ""}`}>
-      {/* Sidebar */}
-      <Sidebar isCollapsed={isCollapsed} toggleSidebar={toggleSidebar} />
-
+    <div className="terminal-wrapper">
       <div className="terminal-main">
         {/* Header */}
         <Header />
@@ -40,21 +32,26 @@ const Terminal = () => {
         <FullWidthPanel />
 
         {/* Main Content */}
-        <div className="terminal-container">
-          <div className="panel-left">
-            <PanelLeft onSelectRaffle={openDrawer} />
+        <div className={`terminal-container ${isCliCollapsed ? "cli-collapsed" : ""}`}>
+          {/* Panels Wrapper: Raffle List & Raffle Details */}
+          <div className="panels-wrapper">
+            <div className="panel-left">
+              <PanelLeft onSelectRaffle={openDrawer} />
+            </div>
+            <div className="panel-middle">
+              <PanelMiddle selectedRaffle={selectedRaffle} />
+            </div>
           </div>
-          <div className="panel-middle">
-            <PanelMiddle selectedRaffle={selectedRaffle} />
-          </div>
+
+          {/* Right Panel: Buy Tickets */}
           <div className="panel-right">
             <PanelRight selectedRaffle={selectedRaffle} />
           </div>
         </div>
 
-        {/* Bottom Panel */}
+        {/* Bottom Panel: CLI Logs */}
         <div className="panel-bottom">
-          <CliPanel />
+          <CliPanel setIsCliCollapsed={setIsCliCollapsed} isCliCollapsed={isCliCollapsed} />
         </div>
 
         {/* Mobile Drawer */}

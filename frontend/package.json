@@ -14,6 +14,7 @@
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.98.0",
     "@vitalets/google-translate-api": "^9.2.1",
+    "axios": "^1.7.9",
     "buffer": "^6.0.3",
     "cra-template": "1.2.0",
     "framer-motion": "^12.0.0",
@@ -30,6 +31,7 @@
     "react-slick": "^0.30.3",
     "slick-carousel": "^1.8.1",
     "three": "^0.172.0",
+    "tradingview-widget": "^0.0.1",
     "web-vitals": "^4.2.4"
   },
   "scripts": {

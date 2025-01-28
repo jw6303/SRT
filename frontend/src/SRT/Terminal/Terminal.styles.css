@@ -1,341 +1,171 @@
-/* =========================================
-   1) Global Variables & Reset
-   ========================================= */
-   :root {
-    /* Color Variables (Solana-Branded) */
-    --terminal-bg-color: #121212;        /* Overall page background */
-    --sidebar-bg-color: #1e1e1e;         /* Sidebar background */
-    --panel-bg-color: #2c2c2c;           /* Panel background */
-    --border-color: #3c3c3c;             /* Border lines */
-    --text-color: #ffffff;               /* Main text color */
-    --text-muted-color: #cccccc;         /* Slightly dimmer text */
-    
-    /* Solana Accent & Log Colors */
-    --accent-color: #9945FF;            /* Primary Solana purple for highlights */
-    --info-color: #14F195;              /* Teal (another Solana brand color) for info logs */
-    --warning-color: #FFC500;           /* Bright yellow for warnings */
-    --error-color: #F94D5C;             /* Pinkish-red for errors */
-    --success-color: #00D26A;           /* Green for success states */
-    
-    /* Hover & Scrollbars */
-    --hover-color: #b373ff;             /* Lighter purple hover for links/buttons */
-    --scrollbar-track-color: #222;      /* Scrollbar track */
-    --scrollbar-thumb-color: #555;      /* Scrollbar thumb */
-  
-    /* Font & Sizing (Tighter) */
-    --cli-font-family: 'Fira Code', monospace;
-    --cli-font-size: 12px;              /* Smaller font for a tighter UI */
-    --cli-line-height: 1.3;             /* Reduced line-height for compact look */
-    
-    /* Layout & Transitions */
-    --sidebar-width: 180px;
-    --sidebar-width-collapsed: 50px;
-    --panel-padding: 8px;               /* Reduced padding for a denser layout */
-    --transition-speed: 0.3s;
-  }
-  
-  
-  /* Reset styles */
-  body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background: var(--terminal-bg-color);
-    color: var(--text-color);
-    font-family: var(--cli-font-family);
-    font-size: var(--cli-font-size);
-    line-height: var(--cli-line-height);
-    overflow: hidden; /* Prevent page-wide scrolling */
-  }
-  
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  h1, h2, h3, h4 {
-    margin: 0;
-    font-weight: 600;
-  }
-  
-  button {
-    font-family: inherit;
-    font-size: inherit;
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: var(--accent-color);
-    transition: color var(--transition-speed) ease;
-  }
-  button:hover {
-    color: var(--hover-color);
-  }
-  
-  /* =========================================
-     2) Terminal Wrapper & Layout
-     ========================================= */
-  .terminal-wrapper {
-    display: flex;
-    height: 100vh;
-    transition: all var(--transition-speed) ease;
-    background-color: var(--terminal-bg-color);
-  }
-  
-  .sidebar {
-    width: var(--sidebar-width);
-    background-color: var(--sidebar-bg-color);
-    color: var(--text-color);
-    padding: var(--panel-padding);
-    box-sizing: border-box;
-    transition: width var(--transition-speed) ease;
-  }
-  
-  /* Collapsed Sidebar */
-  .sidebar.collapsed {
-    width: var(--sidebar-width-collapsed);
-  }
-  
-  .toggle-btn {
-    font-size: 14px; /* Slightly smaller toggle icon */
-    cursor: pointer;
-    margin-bottom: 0.5rem;
-  }
-  
-  .terminal-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--panel-bg-color);
-  }
-  
-  .terminal-container {
-    display: flex;
-    flex: 1;
-    background-color: var(--panel-bg-color);
-    overflow: hidden; /* Panels scroll individually */
-  }
-  
-  /* Header */
-  .header {
-    min-height: 48px;
-    display: flex;
-    align-items: center;
-    padding: 0 var(--panel-padding);
-    border-bottom: 1px solid var(--border-color);
-    background-color: var(--panel-bg-color);
-    box-sizing: border-box;
-  }
-  
-/* =========================================
-   3) Panels - Improved Flexibility
-========================================= */
-.panel-left,
-.panel-middle,
-.panel-right {
-  padding: var(--panel-padding);
+/* VARIABLES */
+:root {
+  /* Colors */
+  --primary-gradient: linear-gradient(90deg, #9945FF, #14F195);
+  --background-dark: #121212;
+  --background-panel: #1A1A1A;
+  --border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: #FFFFFF;
+  --text-secondary: #A3A3A3;
+  --accent-success: #14F195;
+  --accent-error: #FF4D4D;
+  --accent-interactive: #3ABFF8;
+
+  /* Scaling */
+  --app-scale: 0.7; /* Zoom-out effect (70%) */
+  --header-height: 8vh; /* Header takes 8% of the viewport */
+  --logs-height: 12vh; /* Logs take 12% of the viewport */
+  --main-content-height: calc(100vh - var(--header-height) - var(--logs-height)); /* Remaining height */
+  --font-size-base: 1.2vh; /* Scaled font size */
+  --padding: 1vh;
+  --gap: 0.5vh;
+  --border-radius: 0.8vh;
+}
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
-  background-color: var(--panel-bg-color);
-  overflow-y: auto; /* Ensure scrollability for overflow */
-  overflow-x: hidden; /* Prevent horizontal scrolling */
-  transition: flex var(--transition-speed) ease, max-height var(--transition-speed) ease;
-  border-right: 1px solid var(--border-color);
-  min-height: 0; /* Prevent collapse issues in flex containers */
 }
 
-/* Panel Layout Adjustments */
-.panel-left {
-  flex: 1; /* Base size is 1 unit */
-  max-width: 300px; /* Set a max width for better scaling */
-  min-width: 150px; /* Prevent excessive shrinking */
+body {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--font-size-base);
+  background: var(--background-dark);
+  color: var(--text-primary);
+  overflow: hidden; /* Prevent scrolling */
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
 }
 
+/* APPLY SCALING TO WRAPPER */
+.terminal-wrapper {
+  transform: scale(var(--app-scale)); /* Apply zoom-out effect */
+  transform-origin: top left; /* Anchor scaling to the top-left corner */
+  width: calc(100% / var(--app-scale)); /* Prevent clipping */
+  height: calc(100% / var(--app-scale)); /* Prevent clipping */
+  overflow: hidden; /* Ensure no scrollbars */
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.full-width-panel {
+  background: var(--background-panel);
+  padding: var(--padding);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius);
+  height: var(--header-height); /* Fixed height for header */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* MAIN CONTENT */
+.terminal-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: var(--main-content-height); /* Dynamic height for main content */
+  gap: var(--gap);
+  overflow: hidden; /* Prevent overflow scrolling */
+}
+
+.panels-wrapper {
+  display: flex;
+  flex: 1; /* Take up available space */
+  gap: var(--gap);
+}
+
+.panel-left,
 .panel-middle {
-  flex: 3; /* Increase to 3 units to allow more space */
-  max-width: 800px; /* Allow the middle panel to grow larger */
-  min-width: 300px; /* Ensure it doesn't shrink too much */
+  flex: 1; /* Equal width */
+  background: var(--background-panel);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius);
+  padding: var(--padding);
+  overflow: hidden; /* Prevent scrollbars */
 }
 
 .panel-right {
-    flex: 1.5; /* Increase the flex ratio for this panel */
-    max-width: 400px; /* Allow it to grow wider */
-    min-width: 250px; /* Ensure it doesn't shrink too much */
-    border-right: none; /* Maintain no border for the right panel */
-  }
-  
-/* Ensure content fits within panels */
-.panel-left,
-.panel-middle,
-.panel-right > * {
-  overflow-wrap: break-word; /* Force-wrap long text */
-  word-wrap: break-word; /* Fallback for older browsers */
-  word-break: break-word; /* Break long words */
+  flex: 0 0 auto;
+  background: var(--background-panel);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius);
+  padding: var(--padding);
+  height: 100%;
 }
 
-
-/* Scrollbar Styling - Match Theme */
-.panel-left::-webkit-scrollbar,
-.panel-middle::-webkit-scrollbar,
-.panel-right::-webkit-scrollbar {
-  width: 8px;
+/* CLI LOGS */
+.panel-bottom {
+  height: var(--logs-height); /* Fixed height for logs */
+  background: var(--background-panel);
+  padding: var(--padding);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius);
+  font-family: 'Fira Code', monospace;
+  font-size: var(--font-size-base);
+  color: var(--accent-success);
+  overflow: auto; /* Allow logs to scroll if necessary */
 }
 
-.panel-left::-webkit-scrollbar-track,
-.panel-middle::-webkit-scrollbar-track,
-.panel-right::-webkit-scrollbar-track {
-  background-color: var(--scrollbar-track-color);
-}
-
-.panel-left::-webkit-scrollbar-thumb,
-.panel-middle::-webkit-scrollbar-thumb,
-.panel-right::-webkit-scrollbar-thumb {
-  background-color: var(--scrollbar-thumb-color);
-  border-radius: 4px;
-}
-
-/* Hover Effect for Panels */
-.panel-left:hover,
-.panel-middle:hover,
-.panel-right:hover {
-  background-color: rgba(255, 255, 255, 0.05); /* Subtle highlight on hover */
-}
-
-/* Responsive Adjustments for Panels */
-@media (max-width: 768px) {
-  .panel-left,
-  .panel-middle,
-  .panel-right {
-    flex: 1; /* Make all panels equal in width */
-    max-width: none; /* Remove max-width constraints */
-    min-width: 0; /* Allow panels to shrink */
-  }
-  .panel-layout {
-    flex-direction: column; /* Stack panels vertically */
-    gap: 8px; /* Add some spacing between stacked panels */
-  }
-}
-  
-  /* =========================================
-     4) Log Styles
-     ========================================= */
-  .log-entry.info {
-    color: var(--info-color);
-  }
-  
-  .log-entry.warning {
-    color: var(--warning-color);
-  }
-  
-  .log-entry.error {
-    color: var(--error-color);
-  }
-  
-  .log-entry.success {
-    color: var(--success-color);
-  }
-  
-  .log-time {
-    color: var(--text-muted-color);
-    font-size: 0.75rem;
-    margin-right: 4px;
-    opacity: 0.8;
-  }
-  
-  
-
-
-
-  /* =========================================
-   Drawer Styles (Mobile)
-========================================= */
+/* MOBILE DRAWER */
 .drawer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    max-height: 70%; /* Limit drawer height */
-    background: var(--panel-bg-color);
-    border-radius: 12px 12px 0 0;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.5);
-    transform: translateY(100%); /* Hidden by default */
-    transition: transform var(--transition-speed) ease;
-    overflow-y: auto;
-  }
-  
-  .drawer.open {
-    transform: translateY(0); /* Slide up when open */
-  }
-  
-  .drawer-header {
-    padding: var(--panel-padding);
-    background: var(--sidebar-bg-color);
-    border-bottom: 1px solid var(--border-color);
-    text-align: right;
-  }
-  
-  .drawer-content {
-    padding: var(--panel-padding);
-  }
-  
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--background-panel);
+  border-top: 1px solid var(--border-light);
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.5);
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in-out;
+}
 
+.drawer.open {
+  transform: translateY(0);
+}
 
-/****************************************************
- * Mobile-Specific Layout
- ****************************************************/
- @media (max-width: 768px) {
-    /* Main Terminal Layout */
-    .terminal-container {
-      display: flex;
-      flex-direction: column; /* Stack elements vertically */
-      height: calc(100vh - var(--cli-panel-height)); /* Adjust for CLI visibility */
-      overflow: hidden; /* Prevent scrolling of main container */
-    }
-  
-    /* Raffle List and Details Side-by-Side */
-    .panel-layout {
-      display: flex;
-      flex-direction: row; /* Arrange horizontally */
-      flex: 1;
-      gap: 8px; /* Small gap between panels */
-      height: 50%; /* Half of the available height */
-      box-sizing: border-box;
-    }
-  
-    .panel-left {
-      flex: 1;
-      overflow-y: auto; /* Allow scrolling for longer content */
-      max-width: 50%; /* Ensure it doesn’t take over the layout */
-    }
-  
-    .panel-middle {
-      flex: 1;
-      overflow-y: auto;
-      max-width: 50%;
-    }
-  
-    /* Buy Logic Panel Below */
-    .panel-right {
-      flex: none;
-      height: 25%; /* Quarter of the available height */
-      overflow-y: auto;
-    }
-  
-    /* CLI Panel Always Visible at Bottom */
-    .panel-bottom {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: var(--cli-panel-height); /* Define a consistent CLI height */
-      background-color: var(--panel-bg-color);
-      border-top: 1px solid var(--border-color);
-      overflow-y: auto;
-      z-index: 1000; /* Ensure it stays above other elements */
-    }
-  
-    .cli-logs {
-      font-size: 0.75rem; /* Scale down font for smaller screens */
-      padding: 8px; /* Minimal padding */
-    }
+.drawer-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--padding);
+}
+
+.drawer-content {
+  padding: var(--padding);
+}
+
+/* DESKTOP LAYOUT */
+@media (min-width: 768px) {
+  .terminal-container {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: var(--gap);
+    height: var(--main-content-height);
   }
-  
+
+  .panels-wrapper {
+    display: contents;
+  }
+
+  .panel-left {
+    grid-column: 1;
+  }
+
+  .panel-middle {
+    grid-column: 2;
+  }
+
+  .panel-right {
+    grid-column: 3;
+  }
+
+  .panel-bottom {
+    grid-column: 1 / span 3;
+    grid-row: 2;
+  }
+}

@@ -5,7 +5,7 @@ import "./Header.styles.css";
 
 const Header = () => {
   const [language, setLanguage] = useState("en");
-  const [isDarkTheme, setIsDarkTheme] = useState(true); // Default to dark theme
+  const [isDarkTheme, setIsDarkTheme] = useState(true); // Default theme
 
   const handleLanguageChange = async (e) => {
     const selectedLanguage = e.target.value;
@@ -22,26 +22,24 @@ const Header = () => {
   const toggleTheme = () => {
     setIsDarkTheme((prevTheme) => !prevTheme);
 
-    // Update CSS variables based on the theme
+    // Update CSS variables for the theme
     const root = document.documentElement;
     if (isDarkTheme) {
-      // Light theme with pinks and cyans
+      // Light theme
       root.style.setProperty("--terminal-bg-color", "#ffffff");
-      root.style.setProperty("--sidebar-bg-color", "#fef8fc");
-      root.style.setProperty("--panel-bg-color", "#f9f9ff");
-      root.style.setProperty("--border-color", "#e0d4f7");
+      root.style.setProperty("--sidebar-bg-color", "#f4f4f4");
+      root.style.setProperty("--panel-bg-color", "#eaeaea");
+      root.style.setProperty("--border-color", "#cccccc");
       root.style.setProperty("--text-color", "#333333");
-      root.style.setProperty("--accent-color", "#ff8bd4"); // Pink
-      root.style.setProperty("--hover-color", "#00d9ff"); // Cyan
+      root.style.setProperty("--accent-color", "#007acc");
     } else {
-      // Dark monotone theme with greys and whites
+      // Dark theme
       root.style.setProperty("--terminal-bg-color", "#1e1e1e");
       root.style.setProperty("--sidebar-bg-color", "#252526");
       root.style.setProperty("--panel-bg-color", "#2c2c2c");
       root.style.setProperty("--border-color", "#3c3c3c");
       root.style.setProperty("--text-color", "#d4d4d4");
-      root.style.setProperty("--accent-color", "#61dafb"); // Blue
-      root.style.setProperty("--hover-color", "#4fa6d6");
+      root.style.setProperty("--accent-color", "#61dafb");
     }
   };
 

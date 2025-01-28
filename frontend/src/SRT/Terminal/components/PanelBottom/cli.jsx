@@ -2,87 +2,105 @@ import React, { useState, useRef, useEffect } from "react";
 import { useLogs } from "../../../../context/LogContext";
 import "./cli.styles.css";
 
-const CliPanel = () => {
-  const [height, setHeight] = useState(120);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isScrollVisible, setIsScrollVisible] = useState(false); // New state for scroll visibility
-
+const CliPanel = ({ setIsCliCollapsed, isCliCollapsed }) => {
   const { logs } = useLogs();
-
   const logContainerRef = useRef(null);
+  const [panelHeight, setPanelHeight] = useState(50); // Start at 50vh
+  const isDragging = useRef(false);
+  const animationFrameRef = useRef(null);
 
-  // Automatically scroll to bottom when logs update
   useEffect(() => {
     if (logContainerRef.current) {
       logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
-
-      // Check if scroll bar is necessary
-      const { scrollHeight, clientHeight } = logContainerRef.current;
-      setIsScrollVisible(scrollHeight > clientHeight);
     }
-  }, [logs, height]); // Include height dependency for dynamic resize
+  }, [logs]);
 
-  // Drag to resize logic
-  const startDrag = (e) => {
+  // 🖱 Start Dragging
+  const handleMouseDown = (e) => {
     e.preventDefault();
-    setIsDragging(true);
+    isDragging.current = true;
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
 
-    const initialY = e.clientY;
-    const initialHeight = height;
+  // ✨ Smooth Animation Function
+  const animateHeight = (targetHeight) => {
+    const startHeight = panelHeight;
+    const duration = 200; // Animation time in ms
+    const startTime = performance.now();
 
-    const onMouseMove = (moveEvt) => {
-      const offset = moveEvt.clientY - initialY;
-      const newHeight = initialHeight - offset;
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1); // Ensure max progress = 1
 
-      if (newHeight < 80) {
-        setHeight(80);
-      } else if (newHeight > window.innerHeight / 2) {
-        setHeight(window.innerHeight / 2);
-      } else {
-        setHeight(newHeight);
+      // **Ease Out Effect** for smooth snap motion
+      const easedProgress = 1 - Math.pow(1 - progress, 3); 
+      const newHeight = startHeight + (targetHeight - startHeight) * easedProgress;
+      
+      setPanelHeight(newHeight);
+
+      if (progress < 1) {
+        animationFrameRef.current = requestAnimationFrame(animate);
       }
     };
 
-    const onMouseUp = () => {
-      setIsDragging(false);
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-    };
+    cancelAnimationFrame(animationFrameRef.current);
+    animationFrameRef.current = requestAnimationFrame(animate);
+  };
 
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
+  // 🎯 Handle Mouse Move (Resize Panel)
+  const handleMouseMove = (e) => {
+    if (!isDragging.current) return;
+
+    const newHeight = ((window.innerHeight - e.clientY) / window.innerHeight) * 100;
+    const clampedHeight = Math.max(25, Math.min(100, newHeight)); // Restrict between 25vh - 100vh
+
+    setPanelHeight(clampedHeight);
+  };
+
+  // 🛑 Handle Mouse Release (Stop Resizing)
+  const handleMouseUp = () => {
+    isDragging.current = false;
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+
+    // **Snap Effect** - It automatically adjusts to predefined sizes (25%, 50%, 100%)
+    const snapPoints = [25, 50, 100]; // Possible snap positions
+    const closestSnap = snapPoints.reduce((prev, curr) =>
+      Math.abs(curr - panelHeight) < Math.abs(prev - panelHeight) ? curr : prev
+    );
+
+    animateHeight(closestSnap);
   };
 
   return (
-    <div className="cli-panel" style={{ height: `${height}px` }}>
-      {/* Drag Handle */}
-      <div
-        className={`drag-handle ${isDragging ? "active" : ""}`}
-        onMouseDown={startDrag}
-        title="Drag to resize"
-      />
+    <div
+      className={`cli-panel ${isCliCollapsed ? "collapsed" : ""}`}
+      style={{ height: `${isCliCollapsed ? "25vh" : `${panelHeight}vh`}` }}
+    >
+      {/* Draggable Grab Handle */}
+      <div className="cli-toggle" onClick={() => setIsCliCollapsed(!isCliCollapsed)} onMouseDown={handleMouseDown} />
 
       {/* Logs Section */}
-      <div className="cli-logs">
-        <h3>Logs</h3>
-        {logs && logs.length > 0 ? (
-          <div
-            className={`log-container ${isScrollVisible ? "scroll-visible" : ""}`}
-            ref={logContainerRef}
-          >
-            {logs.map((log, index) => (
-              <div key={index} className={`log-entry ${log.type}`}>
-                <span className="log-time">
-                  [{new Date(log.logTime).toLocaleTimeString()}]
-                </span>{" "}
-                <span className="log-message">{log.message}</span>
-              </div>
-            ))}
+      {!isCliCollapsed && (
+        <div className="cli-logs">
+          <h3>Logs</h3>
+          <div className="log-container" ref={logContainerRef}>
+            {logs.length > 0 ? (
+              logs.map((log, index) => (
+                <div key={index} className={`log-entry ${log.type}`}>
+                  <span className="log-time">
+                    [{new Date(log.logTime).toLocaleTimeString()}]
+                  </span>{" "}
+                  <span className="log-message">{log.message}</span>
+                </div>
+              ))
+            ) : (
+              <p>No logs available.</p>
+            )}
           </div>
-        ) : (
-          <p>No logs available.</p>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
