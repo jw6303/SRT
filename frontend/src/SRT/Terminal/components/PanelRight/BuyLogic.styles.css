@@ -186,3 +186,17 @@
     font-size: 12px;
   }
   
+
+  .error-highlight {
+    border: 2px solid red;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 0.85rem;
+    margin-top: 5px;
+  }
+  
