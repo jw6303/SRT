@@ -3,7 +3,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Connection, clusterApiUrl } from "@solana/web3.js";
 import { useLogs } from "../../../../context/LogContext";
-import "./FullWidthPanel.styles.css";
+import "../../Terminal.styles.css";
 
 const FullWidthPanel = () => {
   const { publicKey, wallet, disconnecting, connected } = useWallet();
@@ -63,9 +63,9 @@ const FullWidthPanel = () => {
         )}
       </div>
 
-      {/* Center Column: Solana Ticker ✅ */}
+      {/* Center Column: Solana Ticker Added Here ✅ */}
       <div className="panel-center">
-        <SolanaTicker />
+        <SolanaTicker /> {/* ✅ SOLANA DATA ADDED HERE */}
       </div>
 
       {/* Right Column: Wallet Button */}
@@ -76,7 +76,7 @@ const FullWidthPanel = () => {
   );
 };
 
-/** ✅ SolanaTicker Component (Styled to Match Your CSS) */
+/** ✅ SolanaTicker Component (Inside the Same File) */
 const SolanaTicker = () => {
   const [solanaData, setSolanaData] = useState(null);
 
@@ -97,21 +97,33 @@ const SolanaTicker = () => {
   }, []);
 
   return (
-    <div className="solana-ticker">
+    <div className="solana-ticker" style={styles.container}>
       {solanaData ? (
         <>
-          <span>💰 SOL: <strong>${solanaData.current_price.toFixed(2)}</strong></span> |
-          <span>📈 24h: <strong className={solanaData.price_change_percentage_24h > 0 ? "positive" : "negative"}>
+          <span>Solana (SOL) Price: <strong>${solanaData.current_price.toFixed(2)}</strong></span> |
+          <span> 24h Change: <strong style={{ color: solanaData.price_change_percentage_24h > 0 ? "green" : "red" }}>
             {solanaData.price_change_percentage_24h.toFixed(2)}%
           </strong></span> |
-          <span>🏦 MCap: <strong>${(solanaData.market_cap / 1e9).toFixed(2)}B</strong></span> |
-          <span>🔄 Vol: <strong>${(solanaData.total_volume / 1e9).toFixed(2)}B</strong></span>
+          <span> Market Cap: <strong>${(solanaData.market_cap / 1e9).toFixed(2)}B</strong></span> |
+          <span> 24h Volume: <strong>${(solanaData.total_volume / 1e9).toFixed(2)}B</strong></span>
         </>
       ) : (
         <span>Loading Solana data...</span>
       )}
     </div>
   );
+};
+
+const styles = {
+  container: {
+    display: "flex",
+    gap: "10px",
+    padding: "10px",
+    backgroundColor: "#f8f8f8",
+    fontSize: "14px",
+    fontWeight: "bold",
+    borderRadius: "5px",
+  },
 };
 
 export default FullWidthPanel;

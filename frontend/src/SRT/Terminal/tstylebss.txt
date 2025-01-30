@@ -1,0 +1,484 @@
+/****************************************************
+ * TERMINAL LAYOUT - FULL VIEWPORT, FIXED PANELS
+ ****************************************************/
+
+/* ✅ GLOBAL VARIABLES */
+:root {
+  --primary-gradient: linear-gradient(90deg, #9945FF, #14F195);
+  --background-dark: #121212;
+  --background-panel: #1A1A1A;
+  --border-light: rgba(255, 255, 255, 0.1);
+  --text-primary: #FFFFFF;
+  --text-secondary: #A3A3A3;
+  --accent-success: #14F195;
+  --accent-error: #FF4D4D;
+  --accent-interactive: #3ABFF8;
+
+  /* Scaling */
+  --app-scale: 0.80;
+  --font-size-base: 2vh;
+
+  /* Viewport */
+  --header-height: 8vh;
+  --logs-height: 15vh; 
+  --main-content-height: calc(100vh - var(--header-height) - var(--logs-height));
+
+  /* Panel Layout */
+  --panel-width: 33.3vw;
+  --panel-height: var(--main-content-height);
+  --padding: 1vh;
+  --gap: 0.5vh;
+  --border-radius: 0.8vh;
+}
+
+/* ✅ RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--font-size-base);
+  background: var(--background-dark);
+  color: var(--text-primary);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ✅ APPLY ZOOMED-OUT EFFECT */
+.terminal-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ✅ Only scale the terminal content */
+.terminal-container {
+  transform: scale(var(--app-scale)); /* 🔥 Scale only the content */
+  transform-origin: center;
+  width: calc(100% / var(--app-scale));
+  height: calc(100% / var(--app-scale));
+}
+
+/* ✅ PANELS WRAPPER */
+.panels-wrapper {
+  display: flex;
+  gap: var(--gap);
+  flex: 1;
+}
+
+/* ✅ PANELS (Left, Middle, Right) */
+.panel-left,
+.panel-middle,
+.panel-right {
+  flex-grow: 1; /* ✅ Allow panels to grow with screen */
+  height: auto;
+  min-height: 60vh;
+  max-height: calc(100vh - var(--header-height) - var(--logs-height));
+}
+
+
+
+/* ✅ CLI PANEL - LOCKED AT BOTTOM */
+.cli-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--background-panel);
+  border-top: 2px solid var(--border-light);
+  height: var(--logs-height);
+  display: flex;
+  flex-direction: column;
+  padding: var(--padding);
+}
+
+/* ✅ SCROLLABLE CLI LOGS */
+.cli-logs {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--padding);
+}
+
+/****************************************************
+ * 📱 MOBILE LAYOUT - SIDE BY SIDE
+ ****************************************************/
+
+@media (max-width: 768px) {
+  /* ✅ Reduce scale for mobile */
+  :root {
+    --app-scale: 0.50;
+    --font-size-base: 1.5vh;
+    --padding: 0.8vh;
+    --gap: 0.3vh;
+    --logs-height: 20vh;
+  }
+
+  /* ✅ Scale effect */
+  .terminal-wrapper {
+    transform: scale(var(--app-scale));
+    transform-origin: center;
+    width: calc(100% / var(--app-scale));
+    height: calc(100% / var(--app-scale));
+  }
+
+  /* ✅ Stack Panels */
+  .terminal-container {
+    flex-direction: column;
+    display: flex;
+    height: auto;
+    gap: var(--gap);
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* ✅ Full-Width Panels */
+  .full-width-panel {
+    width: 100%;
+    height: var(--header-height); /* Keep height fixed */
+    padding: var(--padding);
+    font-size: calc(var(--font-size-base) * 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+
+  /* ✅ SIDE-BY-SIDE FOR MOBILE */
+  .panels-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--gap);
+    width: 100%;
+  }
+
+  /* ✅ Raffle List */
+  .panel-left {
+    width: 100%;
+  }
+
+  /* ✅ Raffle Details & Buy Logic (Side by Side) */
+  .panel-middle,
+  .panel-right {
+    width: 50%;
+  }
+
+  /* ✅ CLI PANEL */
+  .cli-panel {
+    width: 100%;
+    height: var(--logs-height);
+  }
+}
+
+
+
+
+/**********************************************
+ * RAFFLE LIST COMPONENT STYLES
+ **********************************************/
+
+/* RAFFLE LIST CONTAINER */
+.raffle-list {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-panel);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  padding: 1.5vh;
+  height: 100%; /* Fill parent container */
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+/* TABS SECTION */
+.tabs {
+  display: flex;
+  flex-wrap: wrap; /* Wrap tabs on smaller screens */
+  gap: 0.5vh;
+  margin-bottom: 1vh;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 1vh;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5vh 1vh;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--text-secondary);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.tab:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tab.active {
+  background-color: var(--accent-success);
+  color: var(--background-panel);
+  border-color: var(--accent-success);
+}
+
+/* DROPDOWN MENU */
+.tab.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--background-panel);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  width: max-content;
+  padding: 0.5vh 1vh;
+}
+
+.dropdown-menu div {
+  padding: 0.5vh;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-menu div:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-menu .active {
+  color: var(--accent-success);
+  font-weight: bold;
+}
+
+/* RAFFLE ITEMS LIST */
+.raffles {
+  flex: 1; /* Fill available vertical space */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto; /* Enable scrolling for long lists */
+  border-top: 1px solid var(--border-light);
+  padding-top: 1vh;
+}
+
+.raffle-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vh;
+  padding: 1vh;
+  margin-bottom: 1vh;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.raffle-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-success);
+}
+
+.raffle-item h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.raffle-item p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* RESPONSIVENESS */
+
+
+@media (max-width: 768px) {
+  .panels-wrapper {
+    flex-direction: column;
+    align-items: center; /* ✅ Center everything */
+  }
+
+  .panel-left,
+  .panel-middle,
+  .panel-right {
+    width: 90%; /* 🔥 Keep them inside viewport */
+    max-width: 400px; /* Prevent oversizing */
+    height: auto;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .raffle-list {
+    padding: 1vh;
+    font-size: 0.9rem;
+  }
+
+  .tab {
+    padding: 0.4vh 0.8vh;
+    font-size: 0.85rem;
+  }
+
+  .raffles {
+    padding-top: 0.5vh;
+  }
+
+  .raffle-item {
+    padding: 0.8vh;
+    font-size: 0.85rem;
+  }
+
+  .raffle-item h3 {
+    font-size: 1rem;
+  }
+
+  .raffle-item p {
+    font-size: 0.8rem;
+  }
+
+  .dropdown-menu {
+    padding: 0.4vh 0.8vh;
+  }
+
+  .dropdown-menu div {
+    font-size: 0.8rem;
+  }
+}
+
+
+
+/* VARIABLES */
+:root {
+  --panel-height: 6vh;
+  --padding: 1vh;
+  --font-size-small: 1.2vh;
+  --background-color: var(--background-panel);
+  --border-color: var(--border-light);
+}
+
+/* FULL-WIDTH PANEL */
+.full-width-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 3-column layout */
+  align-items: center;
+  background: var(--background-color);
+  padding: var(--padding);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  height: var(--panel-height);
+  font-size: var(--font-size-small);
+}
+
+/* LEFT COLUMN */
+.panel-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5vh;
+  padding-left: var(--padding);
+}
+
+.wallet-info {
+  display: flex;
+  gap: 0.5vh;
+}
+
+.wallet-info span {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.wallet-balance {
+  font-weight: 600;
+  color: var(--accent-success);
+}
+
+.wallet-prompt {
+  font-size: var(--font-size-small);
+  color: var(--text-secondary);
+}
+
+/* CENTER COLUMN */
+.panel-center {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--font-size-small);
+}
+
+/* RIGHT COLUMN */
+.panel-right {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: var(--padding);
+}
+
+/* WALLET BUTTON */
+.wallet-button {
+  font-size: var(--font-size-small);
+  padding: 0.5vh 1vh;
+  background: var(--primary-gradient);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wallet-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(20, 241, 149, 0.5);
+}
+
+
+.details {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
+
+.detail-item {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 200px;
+}
+
+.detail-item img {
+  margin-top: 10px;
+  width: 50px;
+  height: 50px;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+

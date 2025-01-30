@@ -122,33 +122,3 @@
   /**********************************************
    * Responsive Adjustments
    **********************************************/
-  @media (max-width: 768px) {
-    .raffle-details {
-      padding: 8px;
-    }
-  
-    .raffle-title {
-      font-size: 0.9rem;
-    }
-  
-    .highlight-section p,
-    .tree-branch li {
-      font-size: 0.8rem; /* Scale down for smaller screens */
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .raffle-details {
-      padding: 6px;
-    }
-  
-    .raffle-title {
-      font-size: 0.8rem; /* Smaller title */
-    }
-  
-    .highlight-section p,
-    .tree-branch li {
-      font-size: 0.75rem;
-    }
-  }
-  

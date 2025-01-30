@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useLogs } from "../../../../context/LogContext";
 import { useRaffle } from "../../context/RaffleContext";
 import CLIShippingForm from "../../../components/CLIShippingForm";
-import "./BuyLogic.styles.css";
+import "../../Terminal.styles.css";
 
-const COOLDOWN_TIME = 10 * 1000; // Cooldown in milliseconds (10 seconds)
-const OWNERSHIP_CAP_PERCENTAGE = 0.1; // Max 10% of tickets per user
+const COOLDOWN_TIME = 10 * 1000;
+const OWNERSHIP_CAP_PERCENTAGE = 0.1;
 
-// Track user purchases and cooldowns
 const userPurchases = new Map();
 const userCooldowns = new Map();
 
@@ -27,24 +26,18 @@ const BuyLogic = () => {
   const [maxTickets, setMaxTickets] = useState(1);
   const [isShippingProvided, setIsShippingProvided] = useState(false);
 
-  const {
-    prizeDetails = {},
-    participants = {},
-    question = {},
-  } = selectedRaffle || {};
-
+  const { prizeDetails = {}, participants = {}, question = {} } = selectedRaffle || {};
   const totalTickets = participants.max || 0;
   const ticketsSold = participants.ticketsSold || 0;
   const remainingTickets = totalTickets - ticketsSold;
-
   const chainType = determineChainType(selectedRaffle);
 
-  // Dynamically calculate the maximum tickets the user can purchase
   const calculateUserMaxTickets = () => {
     const userTicketsOwned = userPurchases.get("currentUser") || 0;
-    const userMaxTickets = Math.floor(totalTickets * OWNERSHIP_CAP_PERCENTAGE) - userTicketsOwned;
-
-    return Math.min(userMaxTickets, remainingTickets);
+    return Math.min(
+      Math.floor(totalTickets * OWNERSHIP_CAP_PERCENTAGE) - userTicketsOwned,
+      remainingTickets
+    );
   };
 
   useEffect(() => {
@@ -53,7 +46,6 @@ const BuyLogic = () => {
     }
   }, [selectedRaffle, ticketsSold, remainingTickets]);
 
-  // Handle ticket count change
   const handleTicketCountChange = (value) => {
     if (value > maxTickets || value > remainingTickets) {
       addLog("Invalid ticket count. Please select a valid amount.", "error");
@@ -63,20 +55,18 @@ const BuyLogic = () => {
     addLog(`You selected ${value} ticket(s).`, "info");
   };
 
-  // Simplified shipping submission
   const handleShippingSubmit = (info) => {
     setShippingInfo(info);
     setIsShippingProvided(true);
     addLog("Shipping details provided successfully.", "success");
   };
 
-  // Handle ticket purchase
   const handleBuyTicket = async () => {
     addLog(`Attempting to purchase tickets. Ticket Count: ${ticketCount}`, "info");
 
     if (chainType === "offChain" && !isShippingProvided) {
       addLog("Shipping information is required for off-chain prizes.", "error");
-      setIsShippingCollapsed(false); // Expand the form to prompt user
+      setIsShippingCollapsed(false);
       return;
     }
 
@@ -87,7 +77,6 @@ const BuyLogic = () => {
 
     const lastPurchaseTime = userCooldowns.get("currentUser") || 0;
     const now = Date.now();
-
     if (now - lastPurchaseTime < COOLDOWN_TIME) {
       const waitTime = Math.ceil((COOLDOWN_TIME - (now - lastPurchaseTime)) / 1000);
       addLog(`You must wait ${waitTime} seconds before purchasing again.`, "warning");
@@ -104,7 +93,6 @@ const BuyLogic = () => {
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-
       participants.ticketsSold += ticketCount;
       userPurchases.set("currentUser", (userPurchases.get("currentUser") || 0) + ticketCount);
       userCooldowns.set("currentUser", now);
@@ -124,42 +112,29 @@ const BuyLogic = () => {
   };
 
   return (
-    <div className="buy-logic">
+    <div className="panel-right buy-logic">
       {!selectedRaffle ? (
         <p className="no-raffle">Select a raffle to start buying tickets.</p>
       ) : (
         <>
-          <h3 className="section-title">Buy Tickets</h3>
-
+          <h3 className="section-title tree-key">Buy Tickets</h3>
+  
           <div className="tree-branch">
-            <p>
-              <span className="tree-key">Prize:</span> {prizeDetails.title || "N/A"}
-            </p>
-            <p>
-              <span className="tree-key">Entry Fee:</span> {selectedRaffle.entryFee || "0"} SOL
-            </p>
-            <p>
-              <span className="tree-key">On-Chain Status:</span>{" "}
-              {chainType === "onChain" ? "Yes" : "No"}
-            </p>
+            <p><span className="tree-key">Prize:</span> {prizeDetails.title || "N/A"}</p>
+            <p><span className="tree-key">Entry Fee:</span> {selectedRaffle.entryFee || "0"} SOL</p>
+            <p><span className="tree-key">On-Chain Status:</span> {chainType === "onChain" ? "Yes" : "No"}</p>
             {prizeDetails.requiresShipping && (
               <p className="shipping-required">Shipping Required: Yes</p>
             )}
           </div>
-
+  
           <div className="ticket-availability tree-branch">
-            <p>
-              <span className="tree-key">Tickets Sold:</span> {ticketsSold}/{totalTickets}
-            </p>
-            <p>
-              <span className="tree-key">Tickets Remaining:</span> {remainingTickets}
-            </p>
+            <p><span className="tree-key">Tickets Sold:</span> {ticketsSold}/{totalTickets}</p>
+            <p><span className="tree-key">Tickets Remaining:</span> {remainingTickets}</p>
           </div>
-
+  
           <div className="ticket-selection tree-branch">
-            <p>
-              <span className="tree-key">Select Tickets:</span>
-            </p>
+            <p><span className="tree-key">Select Tickets:</span></p>
             <div className="ticket-buttons">
               {[...Array(10)].map((_, i) => (
                 <button
@@ -175,13 +150,10 @@ const BuyLogic = () => {
               </button>
             </div>
           </div>
-
+  
           {question.text && (
             <div className="question-section tree-branch">
-              <p>
-                <span className="tree-key">Question:</span> {question.text}
-                <span className="required-indicator"> *</span>
-              </p>
+              <p><span className="tree-key">Question:</span> {question.text}</p>
               {question.options?.map((option, index) => (
                 <label key={index} className="answer-option">
                   <input
@@ -199,27 +171,20 @@ const BuyLogic = () => {
               ))}
             </div>
           )}
-
+  
           {prizeDetails.requiresShipping && (
-            <div
-              className={`shipping-section tree-branch ${!isShippingProvided ? "error-highlight" : ""}`}
-            >
-              <h4
-                className="collapsible-header"
-                onClick={() => setIsShippingCollapsed(!isShippingCollapsed)}
-              >
-                Shipping Information <span className="required-indicator"> *</span>{" "}
-                {isShippingCollapsed ? "▶" : "▼"}
+            <div className="shipping-section tree-branch">
+              <h4 className="collapsible-header" onClick={() => setIsShippingCollapsed(!isShippingCollapsed)}>
+                Shipping Information {isShippingCollapsed ? "▶" : "▼"}
               </h4>
-              {!isShippingCollapsed && (
-                <CLIShippingForm onSubmit={handleShippingSubmit} />
-              )}
+              {!isShippingCollapsed && <CLIShippingForm onSubmit={handleShippingSubmit} />}
             </div>
           )}
-
+  
           <button
             onClick={handleBuyTicket}
             disabled={progress || (chainType === "offChain" && !isShippingProvided)}
+            className="tree-toggle"
           >
             {progress ? "Processing..." : "Buy Tickets"}
           </button>
@@ -227,6 +192,7 @@ const BuyLogic = () => {
       )}
     </div>
   );
+  
 };
 
 export default BuyLogic;

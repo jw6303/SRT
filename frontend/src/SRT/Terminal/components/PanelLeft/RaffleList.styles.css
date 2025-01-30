@@ -1,144 +1,25 @@
 /****************************************************
- * RaffleList.styles.css
- * Solana-themed, tighter spacing, CLI-inspired
+ * Raffles List Scroll Box Height Adjustment
  ****************************************************/
 
-/* 1) Container for everything in the RaffleList */
+/* Ensure .raffle-list fills its container */
 .raffle-list {
-    display: flex;
-    flex-direction: column;
-    background-color: var(--panel-bg-color);
-    color: var(--text-color);
-    font-family: var(--cli-font-family);
-    font-size: var(--cli-font-size);
-    padding: var(--panel-padding);
-    height: 100%; /* Ensure it fills the parent container */
-    box-sizing: border-box;
-  }
-  
-  /* Filters Heading */
-  .filters-heading {
-    font-size: 0.85rem;
-    color: var(--accent-color);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: bold;
-  }
-  
-  /****************************************************
-   * Tabs Section
-   ****************************************************/
-  .tabs {
-    display: flex;
-    flex-wrap: wrap; /* Allow wrapping if tabs overflow */
-    gap: 4px;
-    margin-bottom: 8px;
-  }
-  
-  .tab {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    user-select: none;
-    border: 1px solid transparent;
-    transition: background-color 0.2s, border-color 0.2s;
-    padding: 4px 8px;
-    font-size: 0.8rem; /* Smaller font for compact tabs */
-    color: var(--text-color);
-  }
-  
-  .tab:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: var(--border-color);
-  }
-  
-  .tab.active {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: var(--accent-color);
-  }
-  
-  /****************************************************
-   * Raffle Items List
-   ****************************************************/
-  .raffles {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    max-height: 65vh; /* Define a consistent height */
-    overflow-y: auto; /* Scroll if items exceed the height */
-    border: 1px solid var(--border-color);
-    padding: 8px; /* Consistent inner spacing */
-    box-sizing: border-box;
-  }
-  
-  .raffle-item {
-    display: flex;
-    flex-direction: column;
-    padding: 8px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 8px;
-    background-color: rgba(255, 255, 255, 0.03);
-    transition: background-color 0.2s, border-color 0.2s;
-    cursor: pointer;
-  }
-  
-  .raffle-item:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: var(--accent-color);
-  }
-  
-  .raffle-item h3 {
-    margin: 0 0 4px 0;
-    color: var(--accent-color);
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
-  
-  .raffle-item p {
-    margin: 0;
-    font-size: 0.75rem;
-    color: var(--text-muted-color);
-    line-height: 1.4; /* Improve readability */
-  }
-  
-  /****************************************************
-   * Responsive Adjustments
-   ****************************************************/
-  @media (max-width: 768px) {
-    .raffles {
-      max-height: 50vh; /* Reduce height for smaller screens */
-    }
-  
-    .raffle-item {
-      padding: 6px; /* Tighter spacing */
-    }
-  
-    .raffle-item h3 {
-      font-size: 0.85rem; /* Slightly smaller text */
-    }
-  
-    .raffle-item p {
-      font-size: 0.7rem; /* Adjust font for readability */
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .raffles {
-      max-height: 40vh; /* Further reduce height for compact screens */
-    }
-  
-    .raffle-item {
-      padding: 4px; /* Compact spacing */
-    }
-  
-    .raffle-item h3 {
-      font-size: 0.8rem; /* Shrink header text */
-    }
-  
-    .raffle-item p {
-      font-size: 0.65rem; /* Compact paragraph text */
-    }
-  }
-  
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 🔹 Ensure `.raffles` starts with a predefined height */
+.raffles {
+  list-style: none;
+  margin: 0;
+  padding: calc(var(--padding) * 1.2);
+  flex: 1;
+  min-height: 40vh; /* Set an initial height */
+  max-height: 60vh; /* Restrict max height */
+  overflow-y: auto; /* Enable scrolling */
+  border: 1px solid var(--border-light);
+  box-sizing: border-box;
+}

@@ -1,105 +1,78 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLogs } from "../../../../context/LogContext";
-import "./cli.styles.css";
+import "../../Terminal.styles.css";
 
-const CliPanel = ({ setIsCliCollapsed, isCliCollapsed }) => {
-  const { logs } = useLogs();
+const CliPanel = ({ isCliCollapsed }) => {
+  const { logs, addLog, clearLogs } = useLogs();
   const logContainerRef = useRef(null);
-  const [panelHeight, setPanelHeight] = useState(50); // Start at 50vh
-  const isDragging = useRef(false);
-  const animationFrameRef = useRef(null);
+  const lastLogRef = useRef(null);
+  const [command, setCommand] = useState("");
 
+  // Auto-scroll when logs update
   useEffect(() => {
-    if (logContainerRef.current) {
-      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    if (lastLogRef.current) {
+      lastLogRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [logs]);
 
-  // 🖱 Start Dragging
-  const handleMouseDown = (e) => {
+  // Handle command input
+  const handleCommand = (e) => {
     e.preventDefault();
-    isDragging.current = true;
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-  };
+    if (!command.trim()) return;
 
-  // ✨ Smooth Animation Function
-  const animateHeight = (targetHeight) => {
-    const startHeight = panelHeight;
-    const duration = 200; // Animation time in ms
-    const startTime = performance.now();
+    addLog(`> ${command}`, "input");
 
-    const animate = (currentTime) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1); // Ensure max progress = 1
+    if (command.toLowerCase() === "clear") {
+      clearLogs();
+      addLog("Logs cleared.", "success");
+    } else if (command.toLowerCase().startsWith("buy")) {
+      addLog(`Processing ${command}...`, "info");
+      setTimeout(() => addLog("✅ Purchase successful!", "success"), 2000);
+    } else {
+      addLog(`Unknown command: "${command}". Type 'help' for options.`, "error");
+    }
 
-      // **Ease Out Effect** for smooth snap motion
-      const easedProgress = 1 - Math.pow(1 - progress, 3); 
-      const newHeight = startHeight + (targetHeight - startHeight) * easedProgress;
-      
-      setPanelHeight(newHeight);
-
-      if (progress < 1) {
-        animationFrameRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    cancelAnimationFrame(animationFrameRef.current);
-    animationFrameRef.current = requestAnimationFrame(animate);
-  };
-
-  // 🎯 Handle Mouse Move (Resize Panel)
-  const handleMouseMove = (e) => {
-    if (!isDragging.current) return;
-
-    const newHeight = ((window.innerHeight - e.clientY) / window.innerHeight) * 100;
-    const clampedHeight = Math.max(25, Math.min(100, newHeight)); // Restrict between 25vh - 100vh
-
-    setPanelHeight(clampedHeight);
-  };
-
-  // 🛑 Handle Mouse Release (Stop Resizing)
-  const handleMouseUp = () => {
-    isDragging.current = false;
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", handleMouseUp);
-
-    // **Snap Effect** - It automatically adjusts to predefined sizes (25%, 50%, 100%)
-    const snapPoints = [25, 50, 100]; // Possible snap positions
-    const closestSnap = snapPoints.reduce((prev, curr) =>
-      Math.abs(curr - panelHeight) < Math.abs(prev - panelHeight) ? curr : prev
-    );
-
-    animateHeight(closestSnap);
+    setCommand("");
   };
 
   return (
-    <div
-      className={`cli-panel ${isCliCollapsed ? "collapsed" : ""}`}
-      style={{ height: `${isCliCollapsed ? "25vh" : `${panelHeight}vh`}` }}
-    >
-      {/* Draggable Grab Handle */}
-      <div className="cli-toggle" onClick={() => setIsCliCollapsed(!isCliCollapsed)} onMouseDown={handleMouseDown} />
-
-      {/* Logs Section */}
+    <div className={`cli-panel ${isCliCollapsed ? "collapsed" : ""}`}>
       {!isCliCollapsed && (
-        <div className="cli-logs">
-          <h3>Logs</h3>
-          <div className="log-container" ref={logContainerRef}>
-            {logs.length > 0 ? (
-              logs.map((log, index) => (
-                <div key={index} className={`log-entry ${log.type}`}>
-                  <span className="log-time">
-                    [{new Date(log.logTime).toLocaleTimeString()}]
-                  </span>{" "}
-                  <span className="log-message">{log.message}</span>
-                </div>
-              ))
-            ) : (
-              <p>No logs available.</p>
-            )}
+        <>
+          {/* CLI Logs */}
+          <div className="cli-logs">
+            <div className="log-container" ref={logContainerRef}>
+              {logs.length > 0 ? (
+                logs.map((log, index) => (
+                  <div
+                    key={log.id}
+                    className={`log-entry log-${log.type}`}
+                    ref={index === logs.length - 1 ? lastLogRef : null}
+                  >
+                    <span className="log-time">
+                      [{new Date(log.logTime).toLocaleTimeString()}]
+                    </span>{" "}
+                    <span className="log-message">{log.message}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="no-logs">No logs available.</p>
+              )}
+            </div>
           </div>
-        </div>
+
+          {/* CLI Input Field */}
+          <form onSubmit={handleCommand} className="cli-input">
+            <span className="cli-prompt">$</span>
+            <input
+              type="text"
+              value={command}
+              onChange={(e) => setCommand(e.target.value)}
+              placeholder="Type a command..."
+              autoFocus
+            />
+          </form>
+        </>
       )}
     </div>
   );

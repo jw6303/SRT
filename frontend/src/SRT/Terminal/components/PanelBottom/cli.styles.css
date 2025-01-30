@@ -1,56 +1,85 @@
+/****************************************************
+ * CLI PANEL - INTEGRATES WITH TERMINAL HEIGHT
+ ****************************************************/
+
 /* VARIABLES */
 :root {
-  --cli-start-height: 50vh; /* Default height */
-  --cli-min-height: 25vh; /* Minimum height */
-  --cli-max-height: 100vh; /* Maximum height */
-  --grab-handle-height: 1vh;
-  --transition-speed: 0.4s; /* Increased for smoother transition */
+  --cli-padding: 1.5vh;
+  --cli-border-radius: 0.8vh;
+  --cli-font-size: 1.8vh;
 }
 
-/* CLI PANEL - FIXED AT BOTTOM */
+/* CLI PANEL - DYNAMIC HEIGHT */
 .cli-panel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: var(--background-panel);
-  border-top: 1px solid var(--border-light);
-  border-radius: 0.8vh 0.8vh 0 0;
-  transition: height var(--transition-speed) cubic-bezier(0.25, 1, 0.5, 1); /* Smooth bounce */
-  height: var(--cli-start-height);
+  position: relative; /* Removed absolute positioning */
+  height: 100%; /* Fully fills allocated space */
+  background: #1A1A1A;
+  border-top: 2px solid #00eaff;
+  border-radius: var(--cli-border-radius) var(--cli-border-radius) 0 0;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
-/* COLLAPSED STATE */
-.cli-panel.collapsed {
-  height: var(--cli-min-height);
-  overflow: hidden;
+/* LOG CONTAINER - FILLS AVAILABLE SPACE */
+.log-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--cli-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vh;
 }
 
-/* DRAGGABLE GRAB HANDLE */
-.cli-toggle {
-  position: absolute;
-  top: -2vh;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 8vh;
-  height: 2vh;
-  background: var(--text-secondary);
+/* LOG ENTRY - VISIBILITY IMPROVED */
+.log-entry {
+  font-size: var(--cli-font-size);
+  line-height: 1.6;
+  padding: var(--cli-padding);
+  border-left: 3px solid transparent;
+  border-radius: 0.5vh;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* LOG COLORS */
+.log-entry.info {
+  border-left: 3px solid #00eaff;
+}
+
+.log-entry.warning {
+  border-left: 3px solid #a040ff;
+}
+
+.log-entry.error {
+  border-left: 3px solid #ff4b82;
+  font-weight: bold;
+}
+
+/* NO LOGS MESSAGE */
+.no-logs {
+  text-align: center;
+  font-size: var(--cli-font-size);
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 1vh;
+}
+
+/* SCROLLBAR STYLE */
+.log-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.log-container::-webkit-scrollbar-thumb {
+  background: #00eaff;
   border-radius: 10px;
-  cursor: ns-resize;
-  transition: background 0.3s ease, transform 0.2s ease;
 }
 
-/* HOVER EFFECT */
-.cli-toggle:hover {
-  background: var(--accent-interactive);
-  transform: translateX(-50%) scale(1.1);
+.log-container::-webkit-scrollbar-thumb:hover {
+  background: #a040ff;
 }
 
-/* ENSURE PANEL NEVER COMPLETELY DISAPPEARS */
-.cli-panel.collapsed .cli-toggle {
-  background: var(--accent-interactive);
-  height: 2vh;
+/* MOBILE ADJUSTMENTS */
+@media (max-width: 768px) {
+  .cli-panel {
+    position: relative;
+  }
 }

@@ -1,35 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { useRaffle } from "../../context/RaffleContext";
-import { useLogs } from "../../../../context/LogContext"; // Make sure this path matches your file structure
+import { useLogs } from "../../../../context/LogContext"; // Ensure correct path
 import { FaClock, FaFilter, FaEthereum, FaListAlt } from "react-icons/fa";
-import "./RaffleList.styles.css";
+import "../../Terminal.styles.css";
+import RaffleItem from "./RaffleItem"; // Adjust the path if needed
+
+
+
+
 
 const RaffleList = () => {
+  // -------------------- STATE VARIABLES --------------------
   const { raffles, loadRaffleDetails } = useRaffle();
   const [filteredRaffles, setFilteredRaffles] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false); // Track mobile state
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Access the logging function from LogContext
-  const { addLog } = useLogs(); 
 
+  const ITEMS_PER_PAGE = 7; // Number of raffles per page
+const [currentPage, setCurrentPage] = useState(1);
+
+// Calculate total pages based on filtered raffles
+const totalPages = Math.ceil(filteredRaffles.length / ITEMS_PER_PAGE);
+
+// Get raffles for current page
+const currentRaffles = filteredRaffles.slice(
+  (currentPage - 1) * ITEMS_PER_PAGE,
+  currentPage * ITEMS_PER_PAGE
+);
+
+const goToNextPage = () => {
+  if (currentPage < totalPages) {
+    setCurrentPage(currentPage + 1);
+  }
+};
+
+const goToPrevPage = () => {
+  if (currentPage > 1) {
+    setCurrentPage(currentPage - 1);
+  }
+};
+
+
+  // Access logging function from LogContext
+  const { addLog } = useLogs();
+
+  // -------------------- HELPER CONSTANTS --------------------
   const now = new Date();
-
-// State for managing the drawer visibility (mobile-specific)
-
-// Function to toggle the drawer state
-const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
-
-  // Price tiers for filtering
   const priceTiers = {
     conservative: { min: 0.01, max: 0.03 },
     moderate: { min: 0.04, max: 0.1 },
     aggressive: { min: 0.1, max: Infinity },
   };
 
-  // Helper Functions
+  // -------------------- HELPER FUNCTIONS --------------------
   const isNewRaffle = (raffle) => {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     return new Date(raffle.time?.created) >= oneDayAgo;
@@ -47,13 +73,9 @@ const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
   };
 
   const determineChainType = (raffle) => {
-    // Assumes `prizeDetails.type` indicates chain type:
-    // "onChain" for blockchain prizes, "physical" for off-chain.
-    const prizeType = raffle.prizeDetails?.type;
-    return prizeType === "onChain" ? "onChain" : "offChain";
+    return raffle.prizeDetails?.type === "onChain" ? "onChain" : "offChain";
   };
 
-  // Calculate Filter Counts
   const calculateFilterCounts = () => {
     return {
       all: raffles.length,
@@ -76,13 +98,26 @@ const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
     };
   };
 
+  const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
+
+  const handleChangeFilter = (newFilter) => {
+    setActiveFilter(newFilter);
+    addLog(`User changed filter to: ${newFilter}`, "info");
+  };
+
+  const handleToggleDropdown = (dropdownName) => {
+    const nextVal = openDropdown === dropdownName ? null : dropdownName;
+    setOpenDropdown(nextVal);
+    addLog(`User toggled '${dropdownName}' dropdown; now set to: ${nextVal}`, "info");
+  };
+
+  // -------------------- EFFECTS --------------------
   const [filterCounts, setFilterCounts] = useState(calculateFilterCounts());
 
   useEffect(() => {
     setFilterCounts(calculateFilterCounts());
   }, [raffles]);
 
-  // Apply Filters
   useEffect(() => {
     const applyFilter = () => {
       let filtered = [];
@@ -108,7 +143,6 @@ const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
     applyFilter();
   }, [activeFilter, raffles]);
 
-  // Close Dropdown on Outside Click
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (!event.target.closest(".tab.dropdown")) {
@@ -120,19 +154,7 @@ const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
     return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
 
-  // Helper function to change the active filter and log it
-  const handleChangeFilter = (newFilter) => {
-    setActiveFilter(newFilter);
-    addLog(`User changed filter to: ${newFilter}`, "info");
-  };
-
-  // Toggle a dropdown and log the action
-  const handleToggleDropdown = (dropdownName) => {
-    const nextVal = openDropdown === dropdownName ? null : dropdownName;
-    setOpenDropdown(nextVal);
-    addLog(`User toggled '${dropdownName}' dropdown; now set to: ${nextVal}`, "info");
-  };
-
+  // -------------------- RENDER --------------------
   return (
     <div className={`raffle-list ${isMobile ? "mobile" : ""}`}>
       {/* Mobile Drawer Toggle Button */}
@@ -142,26 +164,33 @@ const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
         </button>
       )}
   
+      {/* ✅ Fully Scrollable Raffle List */}
+      <div className="raffle-list-scroll-container">
+        <ul className={`raffles ${isMobile ? (isDrawerOpen ? "visible" : "hidden") : ""}`}>
+          {filteredRaffles.length === 0 ? (
+            <p>No raffles match your criteria.</p>
+          ) : (
+            filteredRaffles.map((raffle) => (
+              <RaffleItem key={raffle._id} raffle={raffle} loadRaffleDetails={loadRaffleDetails} addLog={addLog} />
+            ))
+          )}
+        </ul>
+      </div>
+  
       {/* Tabs Section */}
-      <div
-        className={`tabs ${isMobile ? (isDrawerOpen ? "visible" : "hidden") : ""}`}
-      >
-        <div
-          className={`tab ${activeFilter === "all" ? "active" : ""}`}
-          onClick={() => handleChangeFilter("all")}
-        >
+      <div className={`tabs ${isMobile ? (isDrawerOpen ? "visible" : "hidden") : ""}`}>
+        {/* All Raffles Tab */}
+        <div className={`tab ${activeFilter === "all" ? "active" : ""}`} onClick={() => handleChangeFilter("all")}>
           <FaListAlt /> All Raffles ({filterCounts.all})
         </div>
-        <div
-          className={`tab ${activeFilter === "new" ? "active" : ""}`}
-          onClick={() => handleChangeFilter("new")}
-        >
+  
+        {/* New Raffles Tab */}
+        <div className={`tab ${activeFilter === "new" ? "active" : ""}`} onClick={() => handleChangeFilter("new")}>
           <FaListAlt /> New Raffles ({filterCounts.new})
         </div>
-        <div
-          className={`tab dropdown ${openDropdown === "endingSoon" ? "open" : ""}`}
-          onClick={() => handleToggleDropdown("endingSoon")}
-        >
+  
+        {/* Ending Soon Dropdown */}
+        <div className={`tab dropdown ${openDropdown === "endingSoon" ? "open" : ""}`} onClick={() => handleToggleDropdown("endingSoon")}>
           <FaClock /> Ending Soon
           {openDropdown === "endingSoon" && (
             <div className="dropdown-menu">
@@ -180,10 +209,9 @@ const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
             </div>
           )}
         </div>
-        <div
-          className={`tab dropdown ${openDropdown === "price" ? "open" : ""}`}
-          onClick={() => handleToggleDropdown("price")}
-        >
+  
+        {/* Price Tiers Dropdown */}
+        <div className={`tab dropdown ${openDropdown === "price" ? "open" : ""}`} onClick={() => handleToggleDropdown("price")}>
           <FaFilter /> Risk Tolerance
           {openDropdown === "price" && (
             <div className="dropdown-menu">
@@ -196,17 +224,15 @@ const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
                     handleChangeFilter(`price:${tier}`);
                   }}
                 >
-                  {tier.charAt(0).toUpperCase() + tier.slice(1)} (
-                  {filterCounts.priceTiers[tier]})
+                  {tier.charAt(0).toUpperCase() + tier.slice(1)} ({filterCounts.priceTiers[tier]})
                 </div>
               ))}
             </div>
           )}
         </div>
-        <div
-          className={`tab dropdown ${openDropdown === "chain" ? "open" : ""}`}
-          onClick={() => handleToggleDropdown("chain")}
-        >
+  
+        {/* Chain Type Dropdown */}
+        <div className={`tab dropdown ${openDropdown === "chain" ? "open" : ""}`} onClick={() => handleToggleDropdown("chain")}>
           <FaEthereum /> Chain Type
           {openDropdown === "chain" && (
             <div className="dropdown-menu">
@@ -232,42 +258,10 @@ const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
           )}
         </div>
       </div>
-  
-      {/* Filtered Raffles List */}
-      <ul
-        className={`raffles ${isMobile ? (isDrawerOpen ? "visible" : "hidden") : ""}`}
-      >
-        {filteredRaffles.length === 0 ? (
-          <p>No raffles match your criteria.</p>
-        ) : (
-          filteredRaffles.map((raffle) => (
-            <li
-              key={raffle._id}
-              className="raffle-item"
-              onClick={() => {
-                addLog(
-                  `User clicked on raffle: ${raffle.raffleName} (ID: ${raffle._id})`,
-                  "info"
-                );
-                loadRaffleDetails(raffle._id);
-              }}
-            >
-              <h3>{raffle.raffleName}</h3>
-              <p>Entry Fee: {raffle.entryFee.toFixed(2)} SOL</p>
-              <p>
-                Tickets Sold: {raffle.participants?.ticketsSold} /{" "}
-                {raffle.participants?.max}
-              </p>
-              <p>
-                On-Chain Status:{" "}
-                {determineChainType(raffle) === "onChain" ? "Yes" : "No"}
-              </p>
-            </li>
-          ))
-        )}
-      </ul>
     </div>
   );
+  
+  
   
 };
 
