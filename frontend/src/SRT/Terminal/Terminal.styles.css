@@ -41,22 +41,20 @@ body {
   🔲 TERMINAL CONTAINER (Perfect Fit)
 *****************************************/
 .terminal-wrapper {
-  position: relative;
-  width: 90vw; /* Responsive width */
+  width: 90vw;
   max-width: 1200px;
-  height: 95vh; /* Ensure it fits within the viewport */
+  height: 95vh;
   max-height: 800px;
   display: flex;
   flex-direction: column;
   background-color: var(--panel-bg-color);
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.8); /* Floating effect */
-  border: 1px solid rgba(255, 255, 255, 0.1); /* Thin border */
-  overflow: hidden; /* Prevents content overflow */
-  transform-origin: center;
-  transform: scale(0.8); /* Zoom-out effect */
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
 }
+
 
 /****************************************
   📌 TERMINAL LAYOUT
@@ -96,7 +94,7 @@ body {
 .panels-wrapper {
   display: flex;
   flex-grow: 1;
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* Left Panel (Raffle List) */
@@ -616,4 +614,186 @@ body {
 .error-highlight {
   border-color: red;
   box-shadow: 0px 0px 5px rgba(255, 0, 0, 0.5);
+}
+
+
+/****************************************
+  📂 BUY LOGIC PANEL STYLING (Right Panel)
+*****************************************/
+
+.panel-right {
+  width: 35%; /* Extended for better layout */
+  background-color: var(--sidebar-bg-color);
+  border-left: 2px solid var(--border-color);
+  padding: 15px;
+  overflow-y: auto;
+  min-width: 420px; /* Prevents excessive shrinking */
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 🏆 Buy Logic Section */
+.buy-logic {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ❌ No Raffle Selected */
+.no-raffle {
+  color: var(--text-color);
+  font-size: 16px;
+  text-align: center;
+  padding: 15px;
+}
+
+/****************************************
+  🌳 TREE STYLING (For Hierarchical Display)
+*****************************************/
+
+/* 🎯 Main Branch Styling (Parent Items) */
+.tree-branch {
+  padding-left: 15px;
+  border-left: 2px solid var(--border-color);
+  margin-bottom: 10px;
+}
+
+/* 🎯 Keys (Labels) */
+.tree-key {
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+/* 🎯 Sub-tree List */
+.tree-sublist {
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 5px;
+}
+
+.tree-sublist li {
+  position: relative;
+  padding-left: 15px;
+}
+
+/* 🌿 Dotted Line for Tree */
+.tree-sublist li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 10px;
+  border-top: 2px dotted var(--border-color);
+}
+
+/****************************************
+  🎟️ TICKET SELECTION BUTTONS
+*****************************************/
+
+.ticket-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ticket-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ticket-button,
+.bulk-button {
+  background: var(--panel-bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s ease-in-out;
+}
+
+.ticket-button:hover,
+.bulk-button:hover {
+  background: var(--accent-color);
+  color: white;
+}
+
+.ticket-button.selected {
+  background: var(--accent-color);
+  color: white;
+  font-weight: bold;
+}
+
+/****************************************
+  ❓ QUESTION & ANSWER SELECTION
+*****************************************/
+
+.question-section {
+  margin-top: 10px;
+}
+
+.answer-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 5px 0;
+}
+
+.answer-option input {
+  cursor: pointer;
+  accent-color: var(--accent-color);
+}
+
+/****************************************
+  📦 SHIPPING FORM SECTION
+*****************************************/
+
+.shipping-section {
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--panel-bg-color);
+  border-radius: 5px;
+}
+
+.collapsible-header {
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapsible-header:hover {
+  opacity: 0.8;
+}
+
+/****************************************
+  🏆 BUY TICKET BUTTON
+*****************************************/
+
+.tree-toggle {
+  background: var(--accent-color);
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s ease-in-out;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.tree-toggle:hover {
+  background: #007acc;
+}
+
+.tree-toggle:disabled {
+  background: #555;
+  cursor: not-allowed;
 }
