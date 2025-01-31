@@ -113,7 +113,7 @@ const Header = () => {
             <span> Market Cap: <strong>${(solanaData.market_cap / 1e9)?.toFixed(2) || "0.00"}B</strong></span>
           </div>
         ) : (
-          <div className="solana-ticker">🚀 Loading Solana price...</div>
+          <div className="solana-ticker"> Loading Solana price...</div>
         )}
       </div>
 
