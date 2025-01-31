@@ -84,9 +84,6 @@ body {
   padding: 15px;
   overflow: hidden;
 }
-/****************************************
-  📂 PANEL STYLING (Balanced Layout)
-*****************************************/
 
 /****************************************
   📂 PANEL STYLING
@@ -134,22 +131,29 @@ body {
 *****************************************/
 
 /* Right Panel Text Scaling */
+.panel-left,
+.panel-middle,
 .panel-right {
-  font-size: 14px; /* Reduces text size to fit better */
-  line-height: 1.3; /* Improves spacing */
+  font-size: 0.9rem; /* Responsive text */
+  line-height: 1.4;
+  overflow-y: auto; /* Allow vertical scrolling only if necessary */
 }
 
 /* Ticket Selection Buttons */
-.ticket-buttons {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 per row */
-  gap: 5px;
+.ticket-buttons button {
+  font-size: 0.85rem;
+  padding: 6px 10px;
 }
 
-.ticket-buttons button {
-  font-size: 12px;
-  padding: 4px 8px;
+.tree-key {
+  white-space: nowrap; /* Prevents wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Adds "..." if text is too long */
 }
+
+
+
+
 
 /****************************************
   📜 CLI PANEL (BOTTOM SECTION)
@@ -268,10 +272,7 @@ body {
     overflow: hidden;
   }
 
-  /* Ensure buttons and text scale properly */
-  .terminal-wrapper * {
-    font-size: 85%; /* Reduce font sizes slightly to fit */
-  }
+
 
   /* Fix pagination & buttons */
   .pagination-controls, .tabs, .section-title {
@@ -796,4 +797,81 @@ body {
 .tree-toggle:disabled {
   background: #555;
   cursor: not-allowed;
+}
+
+
+html {
+  font-size: 55%; /* Scales all text down */
+}
+
+body {
+  font-family: "Courier New", monospace;
+  line-height: 1.3;
+}
+
+
+
+
+
+
+/* ✅ Filter Menu Container */
+.filter-menu {
+  position: fixed;
+  top: 50px;
+  right: -280px; /* Hidden by default */
+  width: 250px;
+  height: auto;
+  background: rgba(30, 30, 30, 0.95);
+  color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: -5px 0px 15px rgba(0, 0, 0, 0.3);
+  transition: right 0.3s ease-in-out;
+  z-index: 100;
+}
+
+.filter-menu.open {
+  right: 10px; /* Slide in */
+}
+
+/* ✅ Filter Options */
+.filter-options {
+  list-style: none;
+  padding: 0;
+}
+
+.filter-options li {
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.filter-options li:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ✅ Active Filter Indicator */
+.filter-options li.active {
+  font-weight: bold;
+  color: limegreen;
+}
+
+/* ✅ Filter Button (Gear Icon) */
+.filter-toggle-container {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+}
+
+.filter-toggle {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.filter-toggle.active {
+  transform: rotate(90deg);
 }

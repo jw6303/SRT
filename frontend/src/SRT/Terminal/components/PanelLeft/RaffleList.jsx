@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useRaffle } from "../../context/RaffleContext";
 import { useLogs } from "../../../../context/LogContext"; // Ensure correct path
-import { FaClock, FaFilter, FaEthereum, FaListAlt } from "react-icons/fa";
+import { FaClock, FaBars, FaEthereum, FaCog, FaBolt } from "react-icons/fa";
 import "../../Terminal.styles.css";
 import RaffleItem from "./RaffleItem"; // Adjust the path if needed
-
+import FilterMenu from "./FilterMenu";
 
 
 
@@ -17,10 +17,39 @@ const RaffleList = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
+  const [openSections, setOpenSections] = useState({}); // Stores which sections are open
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
 
   const ITEMS_PER_PAGE = 7; // Number of raffles per page
 const [currentPage, setCurrentPage] = useState(1);
+
+  // Toggle the filter menu
+  const toggleFilterMenu = () => {
+    setIsFilterMenuOpen((prev) => !prev);
+  };
+
+
+   // Filtering logic
+   const applyFilter = (filter) => {
+    setActiveFilter(filter);
+
+    if (filter === "all") {
+      setFilteredRaffles(raffles);
+    } else if (filter === "new") {
+      setFilteredRaffles(raffles.filter((raffle) => {
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        return new Date(raffle.time?.created) >= oneDayAgo;
+      }));
+    } else if (filter.startsWith("endingSoon")) {
+      const hours = parseInt(filter.split(":")[1], 10);
+      setFilteredRaffles(raffles.filter((raffle) => {
+        const endTime = new Date(raffle.time?.end);
+        return endTime - new Date() <= hours * 60 * 60 * 1000;
+      }));
+    }
+    // Close menu after selection
+    setIsFilterMenuOpen(false);
+  };
 
 // Calculate total pages based on filtered raffles
 const totalPages = Math.ceil(filteredRaffles.length / ITEMS_PER_PAGE);
@@ -111,6 +140,15 @@ const goToPrevPage = () => {
     addLog(`User toggled '${dropdownName}' dropdown; now set to: ${nextVal}`, "info");
   };
 
+
+  const toggleSection = (section) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
+
   // -------------------- EFFECTS --------------------
   const [filterCounts, setFilterCounts] = useState(calculateFilterCounts());
 
@@ -155,114 +193,111 @@ const goToPrevPage = () => {
   }, []);
 
   // -------------------- RENDER --------------------
-  return (
-    <div className={`raffle-list ${isMobile ? "mobile" : ""}`}>
-      {/* Mobile Drawer Toggle Button */}
-      {isMobile && (
-        <button className="drawer-toggle" onClick={toggleDrawer}>
-          {isDrawerOpen ? "Close Raffle List" : "Open Raffle List"}
-        </button>
-      )}
+
   
-      {/* ✅ Fully Scrollable Raffle List */}
+  return (
+    <div className="raffle-list">
+      
+      {/* ✅ Filter Menu Toggle Button (Gear Icon) */}
+      <div className="filter-toggle-container">
+        <button 
+          className={`filter-toggle ${isFilterMenuOpen ? "active" : ""}`} 
+          onClick={() => {
+            toggleFilterMenu();
+            addLog("Toggled filter menu", "info");
+          }}
+        >
+          <FaCog />
+        </button>
+      </div>
+  
+      {/* ✅ Pop-out Filter Menu */}
+      <div className={`filter-menu ${isFilterMenuOpen ? "open" : ""}`}>
+        <h3>Filter Raffles</h3>
+        <ul className="filter-options">
+          
+          {/* Show Section */}
+          <li className={`filter-item ${activeFilter === "all" ? "active" : ""}`} 
+              onClick={() => {
+                applyFilter("all");
+                addLog("Applied 'Show All' filter", "info");
+              }}>
+            <FaBars /> Show All ({filterCounts.all})
+          </li>
+          <li className={`filter-item ${activeFilter === "new" ? "active" : ""}`} 
+              onClick={() => {
+                applyFilter("new");
+                addLog("Applied 'New' filter", "info");
+              }}>
+            New ({filterCounts.new})
+          </li>
+  
+          {/* Ending Soon Section */}
+          <li className="filter-title">Ending Soon</li>
+          {["1h", "6h", "24h", "72h"].map((timeFrame) => (
+            <li key={timeFrame} className={`filter-item ${activeFilter === `endingSoon:${timeFrame}` ? "active" : ""}`} 
+                onClick={() => {
+                  applyFilter(`endingSoon:${timeFrame}`);
+                  addLog(`Applied 'Ending Soon' filter (${timeFrame})`, "info");
+                }}>
+              <FaClock /> {timeFrame.toUpperCase()} ({filterCounts.endingSoon[timeFrame]})
+            </li>
+          ))}
+  
+          {/* Risk Section */}
+          <li className="filter-title">Risk</li>
+          {Object.keys(priceTiers).map((tier) => (
+            <li key={tier} className={`filter-item ${activeFilter === `price:${tier}` ? "active" : ""}`} 
+                onClick={() => {
+                  applyFilter(`price:${tier}`);
+                  addLog(`Applied 'Risk' filter (${tier})`, "info");
+                }}>
+              <FaBolt /> {tier.charAt(0).toUpperCase() + tier.slice(1)} ({filterCounts.priceTiers[tier]})
+            </li>
+          ))}
+  
+          {/* Chain Type Section */}
+          <li className="filter-title">Chain Type</li>
+          <li className={`filter-item ${activeFilter === "chain:onChain" ? "active" : ""}`} 
+              onClick={() => {
+                applyFilter("chain:onChain");
+                addLog("Applied 'On-Chain' filter", "info");
+              }}>
+            <FaEthereum /> On-Chain ({filterCounts.chainType.onChain})
+          </li>
+          <li className={`filter-item ${activeFilter === "chain:offChain" ? "active" : ""}`} 
+              onClick={() => {
+                applyFilter("chain:offChain");
+                addLog("Applied 'Off-Chain' filter", "info");
+              }}>
+            <FaEthereum /> Off-Chain ({filterCounts.chainType.offChain})
+          </li>
+        </ul>
+      </div>
+  
+      {/* ✅ Scrollable Raffle List */}
       <div className="raffle-list-scroll-container">
-        <ul className={`raffles ${isMobile ? (isDrawerOpen ? "visible" : "hidden") : ""}`}>
+        <ul className="raffles">
           {filteredRaffles.length === 0 ? (
             <p>No raffles match your criteria.</p>
           ) : (
             filteredRaffles.map((raffle) => (
-              <RaffleItem key={raffle._id} raffle={raffle} loadRaffleDetails={loadRaffleDetails} addLog={addLog} />
+              <RaffleItem 
+                key={raffle._id} 
+                raffle={raffle} 
+                loadRaffleDetails={loadRaffleDetails} 
+                addLog={addLog} // ✅ Ensure logging works inside RaffleItem
+              />
             ))
           )}
         </ul>
       </div>
   
-      {/* Tabs Section */}
-      <div className={`tabs ${isMobile ? (isDrawerOpen ? "visible" : "hidden") : ""}`}>
-        {/* All Raffles Tab */}
-        <div className={`tab ${activeFilter === "all" ? "active" : ""}`} onClick={() => handleChangeFilter("all")}>
-          <FaListAlt /> All Raffles ({filterCounts.all})
-        </div>
-  
-        {/* New Raffles Tab */}
-        <div className={`tab ${activeFilter === "new" ? "active" : ""}`} onClick={() => handleChangeFilter("new")}>
-          <FaListAlt /> New Raffles ({filterCounts.new})
-        </div>
-  
-        {/* Ending Soon Dropdown */}
-        <div className={`tab dropdown ${openDropdown === "endingSoon" ? "open" : ""}`} onClick={() => handleToggleDropdown("endingSoon")}>
-          <FaClock /> Ending Soon
-          {openDropdown === "endingSoon" && (
-            <div className="dropdown-menu">
-              {["1h", "6h", "24h", "72h"].map((timeFrame) => (
-                <div
-                  key={timeFrame}
-                  className={activeFilter === `endingSoon:${timeFrame}` ? "active" : ""}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleChangeFilter(`endingSoon:${timeFrame}`);
-                  }}
-                >
-                  {timeFrame.toUpperCase()} ({filterCounts.endingSoon[timeFrame]})
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-  
-        {/* Price Tiers Dropdown */}
-        <div className={`tab dropdown ${openDropdown === "price" ? "open" : ""}`} onClick={() => handleToggleDropdown("price")}>
-          <FaFilter /> Risk Tolerance
-          {openDropdown === "price" && (
-            <div className="dropdown-menu">
-              {Object.keys(priceTiers).map((tier) => (
-                <div
-                  key={tier}
-                  className={activeFilter === `price:${tier}` ? "active" : ""}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleChangeFilter(`price:${tier}`);
-                  }}
-                >
-                  {tier.charAt(0).toUpperCase() + tier.slice(1)} ({filterCounts.priceTiers[tier]})
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-  
-        {/* Chain Type Dropdown */}
-        <div className={`tab dropdown ${openDropdown === "chain" ? "open" : ""}`} onClick={() => handleToggleDropdown("chain")}>
-          <FaEthereum /> Chain Type
-          {openDropdown === "chain" && (
-            <div className="dropdown-menu">
-              <div
-                className={activeFilter === "chain:onChain" ? "active" : ""}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleChangeFilter("chain:onChain");
-                }}
-              >
-                On-Chain ({filterCounts.chainType.onChain})
-              </div>
-              <div
-                className={activeFilter === "chain:offChain" ? "active" : ""}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleChangeFilter("chain:offChain");
-                }}
-              >
-                Off-Chain ({filterCounts.chainType.offChain})
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
     </div>
   );
   
   
-  
-};
+
+  };  
 
 export default RaffleList;
