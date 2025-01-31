@@ -66,14 +66,95 @@ body {
 }
 
 /* Full-width panel (Top Section) */
+/* ✅ Full-Width Panel */
 .full-width-panel {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
-  background-color: var(--panel-bg-color);
+  padding: 10px 15px;
+  height: 60px;
   border-bottom: 2px solid var(--border-color);
-  flex-shrink: 0; /* Prevents shrinking */
+  background: transparent;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* ✅ Wallet Panel (Left) */
+.panel-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ✅ Wallet Button */
+.wallet-button {
+  z-index: 150; /* Ensures dropdown is above all */
+}
+
+/* ✅ Wallet Dropdown */
+.wallet-adapter-dropdown {
+  position: absolute !important;
+  top: 100%;
+  left: 0;
+  background: var(--panel-bg-color);
+  border: 1px solid var(--border-color);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  padding: 5px 10px;
+  min-width: 180px;
+  z-index: 9999;
+}
+
+/* ✅ Center Panel (Solana Ticker) */
+.panel-center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* ✅ Solana Ticker (Prevents Wrapping) */
+.solana-ticker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 5px 10px;
+  gap: 8px;
+}
+
+/* ✅ Collapse Button */
+.collapse-toggle {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-color);
+  transition: transform 0.3s ease;
+}
+
+/* Rotate icon when collapsed */
+.collapse-icon.rotated {
+  transform: rotate(180deg);
+}
+
+/* ✅ Mobile Responsiveness */
+@media (max-width: 768px) {
+  .full-width-panel {
+    height: 50px;
+    padding: 8px 10px;
+  }
+
+  .panel-center {
+    flex: 2;
+  }
+
+  .solana-ticker {
+    font-size: 12px;
+  }
 }
 
 /* Main content */
@@ -813,65 +894,78 @@ body {
 
 
 
-
-/* ✅ Filter Menu Container */
-.filter-menu {
-  position: fixed;
-  top: 50px;
-  right: -280px; /* Hidden by default */
-  width: 250px;
-  height: auto;
-  background: rgba(30, 30, 30, 0.95);
-  color: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: -5px 0px 15px rgba(0, 0, 0, 0.3);
-  transition: right 0.3s ease-in-out;
-  z-index: 100;
-}
-
-.filter-menu.open {
-  right: 10px; /* Slide in */
-}
-
-/* ✅ Filter Options */
-.filter-options {
-  list-style: none;
-  padding: 0;
-}
-
-.filter-options li {
+/****************************************
+  🔲 CLI PANEL (Collapsible Feature)
+*****************************************/
+.cli-panel {
+  background-color: var(--panel-bg-color);
+  border-top: 2px solid var(--border-color);
   padding: 10px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.filter-options li:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* ✅ Active Filter Indicator */
-.filter-options li.active {
-  font-weight: bold;
-  color: limegreen;
-}
-
-/* ✅ Filter Button (Gear Icon) */
-.filter-toggle-container {
+  height: 180px; /* Default Height */
+  overflow-y: auto;
+  transition: height 0.3s ease-in-out;
+  flex-shrink: 0;
   display: flex;
-  justify-content: flex-end;
-  padding: 10px;
+  flex-direction: column;
+  position: relative;
 }
 
-.filter-toggle {
+/* ✅ Collapsed State */
+.cli-panel.collapsed {
+  height: 40px; /* Shrinks when collapsed */
+  overflow: hidden;
+}
+
+/* ✅ Collapse Button */
+.cli-collapse-toggle {
   background: transparent;
   border: none;
-  color: white;
-  font-size: 22px;
+  font-size: 16px;
   cursor: pointer;
-  transition: transform 0.3s ease-in-out;
+  color: var(--text-color);
+  transition: transform 0.3s ease;
+  position: absolute;
+  top: 5px;
+  right: 10px;
 }
 
-.filter-toggle.active {
-  transform: rotate(90deg);
+/* ✅ Rotate Chevron when collapsed */
+.cli-collapse-toggle .collapse-icon {
+  transition: transform 0.3s ease;
+}
+
+.cli-panel.collapsed .collapse-icon {
+  transform: rotate(180deg);
+}
+
+/****************************************
+  📜 CLI LOGS (Smooth Scrolling)
+*****************************************/
+.cli-logs {
+  flex-grow: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--panel-bg-color);
+}
+
+/* ✅ CLI Input Field */
+.cli-input {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-top: 5px;
+}
+
+.cli-input input {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 14px;
+  outline: none;
+}
+
+.cli-prompt {
+  color: limegreen;
+  font-weight: bold;
 }
