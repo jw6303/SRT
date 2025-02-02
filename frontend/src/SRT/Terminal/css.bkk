@@ -260,7 +260,17 @@ body {
   📜 CLI PANEL (BOTTOM SECTION)
 *****************************************/
 
-
+/* CLI Log Panel */
+.panel-bottom {
+  background-color: var(--panel-bg-color);
+  border-top: 2px solid var(--border-color);
+  padding: 10px;
+  height: 180px; /* Adjusted to balance space */
+  overflow-y: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
 
 /****************************************
   📱 MOBILE RESPONSIVENESS
@@ -283,7 +293,23 @@ body {
 }
 
 
-
+/****************************************
+  📜 CLI PANEL (BOTTOM SECTION)
+*****************************************/
+/* 📜 Extended Bottom Panel (CLI or Logs Section) */
+.panel-bottom {
+  width: 100%; /* 👈 Expands to full width */
+  max-width: 1400px; /* 👈 Prevents excessive stretching on large screens */
+  background-color: var(--panel-bg-color);
+  border-top: 2px solid var(--border-color);
+  padding: 10px;
+  height: 180px; /* Keeps fixed height */
+  overflow-y: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  margin: auto; /* Centers it */
+}
 
 /****************************************
   📱 MOBILE RESPONSIVENESS (Auto-fit)
@@ -932,6 +958,37 @@ body {
   transform: rotate(180deg);
 }
 
+/****************************************
+  📜 CLI LOGS (Smooth Scrolling)
+*****************************************/
+.cli-logs {
+  flex-grow: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--panel-bg-color);
+}
+
+/* ✅ CLI Input Field */
+.cli-input {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-top: 5px;
+}
+
+.cli-input input {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 14px;
+  outline: none;
+}
+
+.cli-prompt {
+  color: limegreen;
+  font-weight: bold;
+}
 
 
 
@@ -1012,35 +1069,6 @@ body {
 }
 
 
-
-
-/****************************************
-  ⌨️ CLI Input Section (User Interaction)
-*****************************************/
-.cli-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  border-top: 2px solid var(--border-color);
-}
-
-.cli-input input {
-  flex-grow: 1;
-  background: none;
-  border: none;
-  color: var(--text-color);
-  font-size: 14px;
-  outline: none;
-  padding: 5px;
-}
-
-.cli-prompt {
-  color: limegreen;
-  font-weight: bold;
-}
-
-
 /* ✅ CLI Clickable Entries */
 .cli-clickable {
   cursor: pointer;
@@ -1055,78 +1083,3 @@ body {
 
 
 
-/* ❌ Disconnect Option - Highlight in Red */
-.cli-disconnect {
-  color: red !important;
-}
-
-
-.log-container {
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  flex-grow: 1;
-}
-
-/* ✅ Ensures new logs appear at the bottom */
-.log-container .log-entry:last-child {
-  margin-bottom: 5px; /* Prevents cut-off */
-}
-
-
-/* ✅ CLI Scrollbar (Only One Visible) */
-.cli-logs::-webkit-scrollbar {
-  width: 8px;
-}
-
-.cli-logs::-webkit-scrollbar-thumb {
-  background-color: var(--border-color);
-  border-radius: 4px;
-}
-
-.cli-logs::-webkit-scrollbar-track {
-  background: var(--panel-bg-color);
-}
-
-
-/****************************************
-  📜 CLI LOG MESSAGES (Color Coding Keywords)
-*****************************************/
-
-
-
-/* ✅ Log Timestamps (Keeps them muted) */
-.log-time {
-  color: rgb(183, 178, 178);
-  font-weight: bold;
-  font-family: inherit;
-}
-
-/* ✅ Color Only Keywords - Not Full Line */
-.log-entry .log-keyword {
-  font-weight: bold;
-}
-
-/* ✅ INFO Keyword (Blue) */
-.log-entry .log-info {
-  color: #55c3ff;  /* Text color */
-  background: rgba(85, 195, 255, 0.1); /* Light blue highlight */
-  padding: 2px 5px;
-  border-radius: 3px;
-}
-
-/* ✅ WARN Keyword (Yellow) */
-.log-entry .log-warn {
-  color: #ffcc00;  /* Text color */
-  background: rgba(255, 204, 0, 0.1); /* Light yellow highlight */
-  padding: 2px 5px;
-  border-radius: 3px;
-}
-
-/* ✅ ERROR Keyword (Red) */
-.log-entry .log-error {
-  color: #ff5555;  /* Text color */
-  background: rgba(255, 85, 85, 0.1); /* Light red highlight */
-  padding: 2px 5px;
-  border-radius: 3px;
-}
