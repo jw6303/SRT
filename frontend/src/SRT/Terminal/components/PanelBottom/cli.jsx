@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useWallet, useWallets } from "@solana/wallet-adapter-react";
 import { Connection, clusterApiUrl } from "@solana/web3.js";
-import { FaChevronDown } from "react-icons/fa";
+import { FaChevronDown, FaBolt, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { useLogs } from "../../../../context/LogContext";
 import "../../Terminal.styles.css";
 
@@ -15,27 +15,34 @@ const CliPanel = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [balance, setBalance] = useState(null);
   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+  const welcomeLogged = useRef(false); // ✅ Prevents duplicate logs
 
-  // ✅ Format timestamp for logs
-  const formatTimestamp = () => new Date().toLocaleTimeString("en-US", { hour12: false });
-
-  // ✅ Show welcome message on startup
   useEffect(() => {
-    const timestamp = formatTimestamp();
-    addLog(`[${timestamp}] [INFO] Welcome to Solana Raffle Terminal`);
-    addLog(`[${timestamp}] [INFO] Click "Connect Wallet" or type "connect"`);
-  }, [addLog]);
+    if (logContainerRef.current) {
+      logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
+    }
+  }, [logs]); // Triggers every time logs update
 
-  // ✅ List available wallets
+  // ✅ Welcome Message (Logged Only Once)
+  useEffect(() => {
+    if (!welcomeLogged.current) {
+      addLog("──────────────────────────────────────");
+      addLog("Welcome to Solana Raffle Terminal");
+      addLog("──────────────────────────────────────");
+      addLog('Type "connect" to connect a wallet.');
+      welcomeLogged.current = true; // ✅ Ensures it runs only once
+    }
+  }, []);
+
+  // ✅ List Wallets
   const listWallets = () => {
     if (wallets.length === 0) {
-      addLog(`[${formatTimestamp()}] [ERROR] No wallets detected. Please install a wallet extension.`);
+      addLog("No wallets detected. Please install a wallet extension.");
       return;
     }
 
-    const timestamp = formatTimestamp();
-    addLog(`[${timestamp}] [INFO] Available Wallets:`);
-
+    addLog("──────────────────────────────────────");
+    addLog("Available Wallets:");
     wallets.forEach((w, index) => {
       addLog(
         <span key={index} className="cli-clickable" onClick={() => selectWallet(index + 1)}>
@@ -43,96 +50,102 @@ const CliPanel = () => {
         </span>
       );
     });
-
-    addLog(`[${timestamp}] [INFO] Click a wallet or type: select <number>`);
+    addLog("──────────────────────────────────────");
+    addLog('Click a wallet or type: select <number>');
   };
 
-  // ✅ Select a wallet
+  // ✅ Select Wallet
   const selectWallet = (index) => {
     if (index < 1 || index > wallets.length) {
-      addLog(`[${formatTimestamp()}] [ERROR] Invalid selection. Use the wallet number from the list.`);
+      addLog("Invalid selection. Use the wallet number from the list.");
       return;
     }
 
     const selectedWallet = wallets[index - 1];
     select(selectedWallet.adapter.name);
-    addLog(`[${formatTimestamp()}] [INFO] Selected Wallet: ${selectedWallet.adapter.name}`);
+    addLog(`Selected Wallet: ${selectedWallet.adapter.name}`);
     setWalletEnabled(true);
   };
 
-  // ✅ Fetch wallet balance (original method)
+  // ✅ Fetch Wallet Balance
   const fetchBalance = async () => {
     if (publicKey) {
       try {
         const lamports = await connection.getBalance(publicKey);
         const solBalance = lamports / 1e9;
         setBalance(solBalance);
-        addLog(`[${formatTimestamp()}] [INFO] Balance: ${solBalance.toFixed(2)} SOL`);
+        addLog(`Balance: ${solBalance.toFixed(2)} SOL`);
       } catch (error) {
-        addLog(`[${formatTimestamp()}] [ERROR] Failed to fetch balance.`);
+        addLog("Failed to fetch balance.");
       }
     }
   };
 
-  // ✅ Handle wallet connection
+  // ✅ Handle Wallet Connection
   useEffect(() => {
     if (connected) {
-      const timestamp = formatTimestamp();
-      addLog(`[${timestamp}] [INFO] Wallet Connected: ${wallet?.adapter?.name || "Unknown Wallet"}`);
-      addLog(`[${timestamp}] [INFO] Public Key: ${publicKey?.toBase58() || "N/A"}`);
-      fetchBalance(); // 🔥 Fetch balance immediately
+      addLog("──────────────────────────────────────");
+      addLog(
+        <span>
+          <FaCheckCircle className="log-icon success" /> Wallet Connected: {wallet?.adapter?.name || "Unknown Wallet"}
+        </span>
+      );
+      addLog(
+        <span>
+          <FaBolt className="log-icon update" /> Public Key: {publicKey?.toBase58() || "N/A"}
+        </span>
+      );
+      fetchBalance();
       showWalletActions();
     }
   }, [connected, wallet, publicKey]);
 
-  // ✅ Show available wallet actions
+  // ✅ Show Wallet Actions
   const showWalletActions = () => {
-    const timestamp = formatTimestamp();
-    addLog(`[${timestamp}] [INFO] Actions:`);
-
+    addLog("──────────────────────────────────────");
+    addLog("Available Actions:");
     addLog(
       <span className="cli-clickable" onClick={copyAddress}>
         ├─ [A] Copy Address
       </span>
     );
-
     addLog(
       <span className="cli-clickable" onClick={listWallets}>
         ├─ [B] Change Wallet
       </span>
     );
-
     addLog(
       <span className="cli-clickable cli-disconnect" onClick={disconnectWallet}>
         ├─ [X] Disconnect Wallet
       </span>
     );
+    addLog("──────────────────────────────────────");
   };
 
-  // ✅ Copy wallet address
+  // ✅ Copy Wallet Address
   const copyAddress = () => {
     if (publicKey) {
       navigator.clipboard.writeText(publicKey.toBase58());
-      addLog(`[${formatTimestamp()}] [INFO] Wallet Address Copied`);
+      addLog("Wallet address copied.");
     }
   };
 
-  // ✅ Handle wallet disconnection
+  // ✅ Disconnect Wallet
   const disconnectWallet = async () => {
     if (walletEnabled) {
       await disconnect();
       setWalletEnabled(false);
       setBalance(null);
-      addLog(`[${formatTimestamp()}] [WARN] Wallet Disconnected`);
+      addLog("Wallet Disconnected.");
     }
   };
 
-  // ✅ Handle CLI commands
+  // ✅ Handle CLI Commands
   const handleCommand = async (e) => {
     e.preventDefault();
     if (!command.trim()) return;
 
-    addLog(`$ ${command}`, "input");
+    addLog(`$ ${command}`);
     const lowerCommand = command.toLowerCase();
 
     if (lowerCommand === "clear") clearLogs();
@@ -141,7 +154,7 @@ const CliPanel = () => {
     else if (lowerCommand === "copy address" || lowerCommand === "a") copyAddress();
     else if (lowerCommand === "change wallet" || lowerCommand === "b") listWallets();
     else if (lowerCommand === "disconnect" || lowerCommand === "x") disconnectWallet();
-    else addLog(`[${formatTimestamp()}] [ERROR] Unknown command.`);
+    else addLog("Unknown command.");
 
     setCommand("");
   };
@@ -157,21 +170,26 @@ const CliPanel = () => {
       {!isCollapsed && (
         <>
           <div className="cli-logs" ref={logContainerRef}>
-            {logs.map((log, index) => (
-              <div key={log.id} className={`log-entry log-${log.type}`} ref={index === logs.length - 1 ? lastLogRef : null}>
-                <span className="log-time">[{new Date(log.logTime).toLocaleTimeString()}]</span>{" "}
-                <span className={`log-keyword ${log.type === "info" ? "log-info" : log.type === "warn" ? "log-warn" : "log-error"}`}>
-                  [{log.type.toUpperCase()}]
-                </span>{" "}
-                <span className="log-message">{log.message}</span>
-              </div>
-            ))}
+            {logs.map((log, index) => {
+              return (
+                <div key={index} className="log-entry" ref={index === logs.length - 1 ? lastLogRef : null}>
+                  {typeof log.message !== "string" ? log.message : <span className="log-message">{log.message}</span>}
+                </div>
+              );
+            })}
           </div>
 
           {/* CLI Input */}
           <form onSubmit={handleCommand} className="cli-input">
             <span className="cli-prompt">$</span>
-            <input type="text" value={command} onChange={(e) => setCommand(e.target.value)} placeholder="Type a command..." autoFocus />
+            <input
+              type="text"
+              value={command}
+              onChange={(e) => setCommand(e.target.value)}
+              placeholder="Type a command..."
+              autoFocus
+              className="log-input"
+            />
           </form>
         </>
       )}

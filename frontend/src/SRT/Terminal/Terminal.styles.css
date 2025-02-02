@@ -888,53 +888,6 @@ body {
 
 
 
-/****************************************
-  🔲 CLI PANEL (Collapsible Feature)
-*****************************************/
-.cli-panel {
-  background-color: var(--panel-bg-color);
-  border-top: 2px solid var(--border-color);
-  padding: 10px;
-  height: 180px; /* Default Height */
-  overflow-y: auto;
-  transition: height 0.3s ease-in-out;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-/* ✅ Collapsed State */
-.cli-panel.collapsed {
-  height: 40px; /* Shrinks when collapsed */
-  overflow: hidden;
-}
-
-/* ✅ Collapse Button */
-.cli-collapse-toggle {
-  background: transparent;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  color: var(--text-color);
-  transition: transform 0.3s ease;
-  position: absolute;
-  top: 5px;
-  right: 10px;
-}
-
-/* ✅ Rotate Chevron when collapsed */
-.cli-collapse-toggle .collapse-icon {
-  transition: transform 0.3s ease;
-}
-
-.cli-panel.collapsed .collapse-icon {
-  transform: rotate(180deg);
-}
-
-
-
-
 /* ✅ Header Styling */
 /* ✅ Header Styling */
 /****************************************
@@ -1014,119 +967,257 @@ body {
 
 
 
+
+
+
+
+
 /****************************************
-  ⌨️ CLI Input Section (User Interaction)
+  🔲 CLI PANEL (Collapsible Feature)
 *****************************************/
-.cli-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 0;
+/****************************************
+  🔲 CLI PANEL (Compact & Scroll Optimization)
+*****************************************/
+.cli-panel {
+  background-color: var(--panel-bg-color);
   border-top: 2px solid var(--border-color);
-}
-
-.cli-input input {
-  flex-grow: 1;
-  background: none;
-  border: none;
-  color: var(--text-color);
-  font-size: 14px;
-  outline: none;
-  padding: 5px;
-}
-
-.cli-prompt {
-  color: limegreen;
-  font-weight: bold;
-}
-
-
-/* ✅ CLI Clickable Entries */
-.cli-clickable {
-  cursor: pointer;
-  color: var(--accent-color);
-  font-weight: bold;
-}
-
-.cli-clickable:hover {
-  text-decoration: underline;
-}
-
-
-
-
-/* ❌ Disconnect Option - Highlight in Red */
-.cli-disconnect {
-  color: red !important;
-}
-
-
-.log-container {
+  padding: 5px; /* Reduced padding for a tighter look */
+  height: 240px; /* Increased height to fit more logs */
+  overflow-y: auto;
+  transition: height 0.3s ease-in-out;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  position: relative;
+  font-size: 11px; /* Smaller font for compact display */
+  font-family: "JetBrains Mono", "Courier New", monospace;
+}
+
+/* ✅ Collapsed State */
+.cli-panel.collapsed {
+  height: 30px; /* More compact when collapsed */
+  overflow: hidden;
+}
+
+/* ✅ Collapse Button */
+.cli-collapse-toggle {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text-color);
+  transition: transform 0.3s ease;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+
+.cli-panel.collapsed .collapse-icon {
+  transform: rotate(180deg);
+}
+
+/****************************************
+  📜 CLI LOGS (Compact Formatting & Colors)
+*****************************************/
+
+/* ✅ CLI Logs */
+.cli-logs {
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-size: 11px; /* Smaller font size */
+  line-height: 1.4; /* Tighter spacing */
+  white-space: pre-wrap;
+  padding: 5px;
   flex-grow: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ✅ Ensures new logs appear at the bottom */
-.log-container .log-entry:last-child {
-  margin-bottom: 5px; /* Prevents cut-off */
+/* ✅ Auto-scroll to latest log */
+.cli-logs div:last-child {
+  scroll-margin-bottom: 10px; /* Ensures last message isn't cut off */
 }
 
-
-/* ✅ CLI Scrollbar (Only One Visible) */
+/* ✅ Scrollbar Improvements */
 .cli-logs::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .cli-logs::-webkit-scrollbar-thumb {
   background-color: var(--border-color);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 .cli-logs::-webkit-scrollbar-track {
   background: var(--panel-bg-color);
 }
 
+/* ✅ Log Entry */
+.log-entry {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+/* ✅ Prefix (INFO, WARN, ERROR, UPDATE) */
+.log-keyword {
+  font-weight: bold;
+  padding-right: 5px;
+}
+
+.log-info {
+  color: #4ec9b0; /* Teal */
+}
+
+.log-warn {
+  color: #ffcc00; /* Yellow */
+}
+
+.log-error {
+  color: #ff5555; /* Bright red */
+  font-weight: bold;
+}
+
+/* ✅ CLI Icons (Only For Updates, Success, Errors) */
+.log-icon {
+  font-size: 11px;
+  margin-right: 5px;
+}
+
+.log-icon.update {
+  color: #ff8c00; /* Orange for gas fees, network fees */
+}
+
+.log-icon.success {
+  color: limegreen; /* Green for wallet connection & confirmed transactions */
+}
+
+.log-icon.error {
+  color: #ff5555; /* Red for transaction failures */
+}
 
 /****************************************
-  📜 CLI LOG MESSAGES (Color Coding Keywords)
+  💻 ENHANCED LOG FORMATTING
 *****************************************/
 
-
-
-/* ✅ Log Timestamps (Keeps them muted) */
-.log-time {
-  color: rgb(183, 178, 178);
+/* ✅ Highlight Titles (e.g., "Selected Wallet:") */
+.log-title {
   font-weight: bold;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ✅ Highlight Important Values (e.g., Phantom, Balance Amount) */
+.log-value {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+/* ✅ Gas Fees & Updates */
+.log-update {
+  background-color: rgba(255, 140, 0, 0.2);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: bold;
+  color: #ff8c00;
+}
+
+/* ✅ Commands Typed by User */
+.log-input {
+  color: #00e6e6; /* Cyan */
+  font-weight: bold;
+}
+
+/* ✅ Transaction Confirmations */
+.log-success {
+  color: limegreen;
+  font-weight: bold;
+}
+
+/* ✅ Highlight Balance */
+.log-balance {
+  color: #00ff00; /* Green */
+  font-weight: bold;
+}
+
+/* ✅ Highlight Important Transactions */
+.log-transaction {
+  color: #ffffff; /* White */
+  font-weight: bold;
+  background-color: rgba(0, 255, 255, 0.15); /* Light cyan */
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/****************************************
+  ⌨️ CLI INPUT (Command Entry)
+*****************************************/
+
+.cli-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-top: 2px solid var(--border-color);
+  font-size: 11px; /* Smaller font for consistency */
+}
+
+/* ✅ Input Box */
+.cli-input input {
+  flex-grow: 1;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 11px;
+  outline: none;
+  padding: 2px;
   font-family: inherit;
 }
 
-/* ✅ Color Only Keywords - Not Full Line */
-.log-entry .log-keyword {
+/* ✅ Command Prompt (`$`) */
+.cli-prompt {
+  color: limegreen;
   font-weight: bold;
 }
 
-/* ✅ INFO Keyword (Blue) */
-.log-entry .log-info {
-  color: #55c3ff;  /* Text color */
-  background: rgba(85, 195, 255, 0.1); /* Light blue highlight */
-  padding: 2px 5px;
-  border-radius: 3px;
+/****************************************
+  ✅ CLICKABLE ACTIONS & BUTTONS
+*****************************************/
+
+/* ✅ Clickable Logs (Clickable Actions) */
+.cli-clickable {
+  cursor: pointer;
+  color: #00e6e6; /* Cyan */
 }
 
-/* ✅ WARN Keyword (Yellow) */
-.log-entry .log-warn {
-  color: #ffcc00;  /* Text color */
-  background: rgba(255, 204, 0, 0.1); /* Light yellow highlight */
-  padding: 2px 5px;
-  border-radius: 3px;
+.cli-clickable:hover {
+  text-decoration: underline;
 }
 
-/* ✅ ERROR Keyword (Red) */
-.log-entry .log-error {
-  color: #ff5555;  /* Text color */
-  background: rgba(255, 85, 85, 0.1); /* Light red highlight */
-  padding: 2px 5px;
-  border-radius: 3px;
+/* ✅ Disconnect Button */
+.cli-disconnect {
+  color: #ff5555;
+  font-weight: bold;
+}
+
+/****************************************
+  🕒 TIMESTAMPS (Gas Fees & Updates)
+*****************************************/
+
+.log-time {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: normal;
+  font-size: 10px;
+  padding-left: 5px;
+}
+
+/****************************************
+  🏁 TERMINAL-STYLE SEPARATORS
+*****************************************/
+.cli-separator {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 10px;
+  font-weight: normal;
+  text-align: center;
+  margin: 4px 0;
 }
