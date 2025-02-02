@@ -69,17 +69,19 @@ const CliPanel = () => {
 
   // ✅ Fetch Wallet Balance
   const fetchBalance = async () => {
-    if (publicKey) {
-      try {
-        const lamports = await connection.getBalance(publicKey);
-        const solBalance = lamports / 1e9;
+    if (!publicKey) return;
+    try {
+      const lamports = await connection.getBalance(publicKey);
+      const solBalance = (lamports / 1e9).toFixed(4); // ✅ Match Full-Width Panel format
+      if (solBalance !== balance) { // ✅ Only update if balance changed
         setBalance(solBalance);
-        addLog(`Balance: ${solBalance.toFixed(2)} SOL`);
-      } catch (error) {
-        addLog("Failed to fetch balance.");
+        addLog(`Balance: ${solBalance} SOL`);
       }
+    } catch (error) {
+      addLog("Failed to fetch balance.");
     }
   };
+  
 
   // ✅ Handle Wallet Connection
   useEffect(() => {
