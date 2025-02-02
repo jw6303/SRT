@@ -72,9 +72,12 @@ const RaffleDetails = () => {
     isOnChain,
   } = selectedRaffle;
 
+
+  
+
   return (
     <div className="raffle-details">
-      <h2 className="raffle-title">Raffle Details</h2>
+<h2 className="raffle-title">{raffleName || "Raffle Details"}</h2>
 
       {/* Prize Section */}
       <div className="tree-branch">
@@ -98,6 +101,21 @@ const RaffleDetails = () => {
           </ul>
         )}
       </div>
+
+
+            {/* 🖼️ Media Section (Initially Collapsed) */}
+            {prizeDetails.imageUrl && (
+        <div className="tree-branch">
+          <h3 className={`section-title ${collapsedSections["media"] ? "collapsed" : ""}`} onClick={() => toggleCollapse("media")}>
+            Media {collapsedSections["media"] ? "▶" : "▼"}
+          </h3>
+          {!collapsedSections["media"] && (
+            <div className="raffle-media">
+              <img src={prizeDetails.imageUrl} alt={prizeDetails.title} className="raffle-image" />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Participation Section */}
       <div className="tree-branch">

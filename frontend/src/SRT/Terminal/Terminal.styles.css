@@ -1249,3 +1249,50 @@ body {
   text-align: center;
   margin: 4px 0;
 }
+
+
+/* 🎨 Media Section */
+.raffle-media {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.raffle-image {
+  width: 100%;
+  max-width: 350px;
+  height: auto;
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease-in-out;
+}
+
+.tree-branch {
+  margin-bottom: 10px;
+}
+
+/* Collapsible sections */
+.section-title {
+  cursor: pointer;
+  font-weight: bold;
+  transition: color 0.2s ease-in-out;
+}
+
+.section-title.collapsed {
+  color: var(--text-muted);
+}
+
+.countdown {
+  font-weight: bold;
+  color: #4ec9b0;
+}
+
+.countdown.warning {
+  color: #ffcc00;
+}
+
+.countdown.expired {
+  color: #ff5555;
+}
