@@ -71,76 +71,104 @@ body {
 /* ✅ Full-Width Panel Layout */
 /* ✅ Full-Width Panel Layout */
 /* ✅ Full-Width Panel (Ensures Proper Layout) */
+/****************************************
+  🖥️ FULL-WIDTH PANEL (Header UI)
+*****************************************/
 .full-width-panel {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
-  height: 60px;
+  background-color: var(--panel-bg-color);
   border-bottom: 2px solid var(--border-color);
-  background: transparent;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  padding: 10px 15px;
+  width: 100%;
+  font-size: 10px; /* Compact font */
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  color: var(--text-color);
 }
 
-/* ✅ Panel Right (Container for Wallet Button) */
-.panel-right {
+/* ✅ Left Section: Wallet Info */
+.panel-left {
+  flex: 1;
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Ensures right alignment */
-  flex: 0 0 auto; /* Prevents shrinking */
-  min-width: 180px; /* Ensures space for button */
-  position: relative;
+  gap: 10px;
 }
 
-/* ✅ Ensure the Wallet Button Fits Properly */
-.wallet-button {
-  background: var(--accent-color) !important; /* Override default */
-  border: 2px solid var(--border-color) !important; /* Add a border */
-  color: var(--text-color) !important; /* Ensure contrast */
+.wallet-info {
+  color: #4ec9b0; /* Teal */
   font-weight: bold;
-  padding: 6px 12px;
-  border-radius: 6px; /* Makes it rounded */
+}
+
+.wallet-balance {
+  color: #00ff00; /* Green */
+  font-weight: bold;
+}
+
+/* ✅ Center Section: Solana Gas Fee */
+.panel-center {
+  flex: 1;
+  text-align: center;
+}
+
+.solana-gas-indicator {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.fee-level {
+  font-weight: bold;
+}
+
+.fee-amount {
+  color: #ff8c00; /* Orange for gas fees */
+  font-weight: bold;
+}
+
+/* ✅ Right Section: Wallet Button */
+.panel-right {
+  flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 140px; /* Ensures a proper button size */
-  max-width: 200px;
-  cursor: pointer;
-  transition: background 0.2s ease-in-out, transform 0.1s ease-in-out;
+  justify-content: flex-end;
 }
 
-/* ✅ Hover Effect */
-.wallet-button:hover {
-  background: var(--border-color) !important;
-  transform: scale(1.05); /* Slight pop effect */
-}
-
-/* ✅ When Wallet is Connected */
-.wallet-button.connected {
-  background: var(--panel-bg-color) !important;
-  border-color: var(--accent-color) !important;
-  color: var(--accent-color) !important;
-}
-
-/* ✅ Adjust Dropdown Position */
-.wallet-adapter-dropdown {
-  position: absolute !important;
-  top: 100%;
-  right: 0;
-  background: var(--panel-bg-color);
-  border: 1px solid var(--border-color);
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+.wallet-button {
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 5px;
-  padding: 5px 10px;
-  min-width: 180px;
-  z-index: 9999;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffffff;
+  transition: background 0.3s;
 }
 
+.wallet-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
 
+/****************************************
+  📌 RESPONSIVE ADJUSTMENTS
+*****************************************/
+@media (max-width: 768px) {
+  .full-width-panel {
+    flex-direction: column;
+    text-align: center;
+    padding: 8px;
+  }
 
+  .panel-left,
+  .panel-center,
+  .panel-right {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 5px;
+  }
 
+  .wallet-button {
+    width: 100%;
+    text-align: center;
+  }
+}
 
 
 
