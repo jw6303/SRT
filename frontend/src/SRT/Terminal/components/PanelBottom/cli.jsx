@@ -16,6 +16,7 @@ const CliPanel = () => {
   const [balance, setBalance] = useState(null);
   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
   const welcomeLogged = useRef(false); // ✅ Prevents duplicate logs
+  const [lastWallet, setLastWallet] = useState(null);
 
   useEffect(() => {
     if (logContainerRef.current) {
@@ -97,11 +98,21 @@ const CliPanel = () => {
           <FaBolt className="log-icon update" /> Public Key: {publicKey?.toBase58() || "N/A"}
         </span>
       );
+  
       fetchBalance();
       showWalletActions();
+  
+      // ✅ New Prompt: Encourage users to enter a raffle after connecting
+      addLog("──────────────────────────────────────");
+      addLog(
+        <span className="cli-clickable" onClick={promptEnterRaffle}>
+          Click here to enter a raffle or type 'raffle' to view active raffles.
+        </span>
+      );
+      addLog("──────────────────────────────────────");
     }
   }, [connected, wallet, publicKey]);
-
+  
   // ✅ Show Wallet Actions
   const showWalletActions = () => {
     addLog("──────────────────────────────────────");
@@ -139,8 +150,35 @@ const CliPanel = () => {
       setWalletEnabled(false);
       setBalance(null);
       addLog("Wallet Disconnected.");
+  
+      // ✅ Instead of clearing logs, just push the user back to the connection flow
+      addLog(
+        <span className="cli-clickable" onClick={resetToInitialState}>
+          Click here to reconnect
+        </span>
+      );
     }
   };
+  
+  // ✅ Appends the connection prompt at the bottom instead of clearing logs
+  const resetToInitialState = () => {
+    addLog("──────────────────────────────────────");
+    addLog("Welcome to Solana Raffle Terminal");
+    addLog("──────────────────────────────────────");
+    addLog('Type "connect" to connect a wallet.');
+  };
+  
+  const promptEnterRaffle = () => {
+    addLog("──────────────────────────────────────");
+    addLog("Viewing active raffles...");
+    // Call function to display active raffles (to be implemented)
+    addLog("Select a raffle to enter by typing 'raffle <number>'");
+    addLog("──────────────────────────────────────");
+  };
+  
+
+
+  
 
   // ✅ Handle CLI Commands
   const handleCommand = async (e) => {
