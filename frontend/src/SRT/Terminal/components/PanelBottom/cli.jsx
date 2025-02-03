@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useWallet, useWallets } from "@solana/wallet-adapter-react";
 import { Connection, clusterApiUrl } from "@solana/web3.js";
-import { FaChevronDown, FaBolt, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaChevronDown, FaBolt, FaCheckCircle } from "react-icons/fa";
 import { useLogs } from "../../../../context/LogContext";
 import "../../Terminal.styles.css";
 
@@ -15,27 +15,26 @@ const CliPanel = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [balance, setBalance] = useState(null);
   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-  const welcomeLogged = useRef(false); // ✅ Prevents duplicate logs
-  const [lastWallet, setLastWallet] = useState(null);
+  const welcomeLogged = useRef(false);
 
   useEffect(() => {
     if (logContainerRef.current) {
       logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
     }
-  }, [logs]); // Triggers every time logs update
+  }, [logs]);
 
-  // ✅ Welcome Message (Logged Only Once)
+  // ✅ Initial Welcome Message (Runs Only Once)
   useEffect(() => {
     if (!welcomeLogged.current) {
       addLog("──────────────────────────────────────");
       addLog("Welcome to Solana Raffle Terminal");
       addLog("──────────────────────────────────────");
       addLog('Type "connect" to connect a wallet.');
-      welcomeLogged.current = true; // ✅ Ensures it runs only once
+      welcomeLogged.current = true;
     }
   }, []);
 
-  // ✅ List Wallets
+  // ✅ List Available Wallets
   const listWallets = () => {
     if (wallets.length === 0) {
       addLog("No wallets detected. Please install a wallet extension.");
@@ -73,8 +72,8 @@ const CliPanel = () => {
     if (!publicKey) return;
     try {
       const lamports = await connection.getBalance(publicKey);
-      const solBalance = (lamports / 1e9).toFixed(4); // ✅ Match Full-Width Panel format
-      if (solBalance !== balance) { // ✅ Only update if balance changed
+      const solBalance = (lamports / 1e9).toFixed(4);
+      if (solBalance !== balance) {
         setBalance(solBalance);
         addLog(`Balance: ${solBalance} SOL`);
       }
@@ -82,10 +81,10 @@ const CliPanel = () => {
       addLog("Failed to fetch balance.");
     }
   };
-  
 
-  // ✅ Handle Wallet Connection
+  // ✅ Wallet Connection Handling
   useEffect(() => {
+    setWalletEnabled(connected); // Ensure UI reflects wallet state
     if (connected) {
       addLog("──────────────────────────────────────");
       addLog(
@@ -98,11 +97,11 @@ const CliPanel = () => {
           <FaBolt className="log-icon update" /> Public Key: {publicKey?.toBase58() || "N/A"}
         </span>
       );
-  
+
       fetchBalance();
       showWalletActions();
-  
-      // ✅ New Prompt: Encourage users to enter a raffle after connecting
+
+      // ✅ Encourage users to enter a raffle after connecting
       addLog("──────────────────────────────────────");
       addLog(
         <span className="cli-clickable" onClick={promptEnterRaffle}>
@@ -112,8 +111,8 @@ const CliPanel = () => {
       addLog("──────────────────────────────────────");
     }
   }, [connected, wallet, publicKey]);
-  
-  // ✅ Show Wallet Actions
+
+  // ✅ Show Wallet Actions (Post-Connection)
   const showWalletActions = () => {
     addLog("──────────────────────────────────────");
     addLog("Available Actions:");
@@ -128,7 +127,7 @@ const CliPanel = () => {
       </span>
     );
     addLog(
-      <span className="cli-clickable cli-disconnect" onClick={disconnectWallet}>
+      <span className={`cli-clickable cli-disconnect ${walletEnabled ? "" : "disabled"}`} onClick={walletEnabled ? disconnectWallet : null}>
         ├─ [X] Disconnect Wallet
       </span>
     );
@@ -143,42 +142,43 @@ const CliPanel = () => {
     }
   };
 
-  // ✅ Disconnect Wallet
+  // ✅ Disconnect Wallet (Prevents Multiple Clicks)
   const disconnectWallet = async () => {
-    if (walletEnabled) {
+    if (!walletEnabled) return;
+
+    addLog("Disconnecting wallet...", "warning");
+    try {
       await disconnect();
       setWalletEnabled(false);
       setBalance(null);
-      addLog("Wallet Disconnected.");
-  
-      // ✅ Instead of clearing logs, just push the user back to the connection flow
+      addLog("Wallet Disconnected.", "success");
+
+      // ✅ Provide reconnect option instead of clearing logs
       addLog(
         <span className="cli-clickable" onClick={resetToInitialState}>
           Click here to reconnect
         </span>
       );
+    } catch (error) {
+      addLog("Error disconnecting wallet. Try again.", "error");
     }
   };
-  
-  // ✅ Appends the connection prompt at the bottom instead of clearing logs
+
+  // ✅ Reset to Initial Connection Prompt
   const resetToInitialState = () => {
     addLog("──────────────────────────────────────");
     addLog("Welcome to Solana Raffle Terminal");
     addLog("──────────────────────────────────────");
     addLog('Type "connect" to connect a wallet.');
   };
-  
+
+  // ✅ Prompt User to Enter a Raffle
   const promptEnterRaffle = () => {
     addLog("──────────────────────────────────────");
     addLog("Viewing active raffles...");
-    // Call function to display active raffles (to be implemented)
     addLog("Select a raffle to enter by typing 'raffle <number>'");
     addLog("──────────────────────────────────────");
   };
-  
-
-
-  
 
   // ✅ Handle CLI Commands
   const handleCommand = async (e) => {
@@ -210,26 +210,17 @@ const CliPanel = () => {
       {!isCollapsed && (
         <>
           <div className="cli-logs" ref={logContainerRef}>
-            {logs.map((log, index) => {
-              return (
-                <div key={index} className="log-entry" ref={index === logs.length - 1 ? lastLogRef : null}>
-                  {typeof log.message !== "string" ? log.message : <span className="log-message">{log.message}</span>}
-                </div>
-              );
-            })}
+            {logs.map((log, index) => (
+              <div key={index} className="log-entry" ref={index === logs.length - 1 ? lastLogRef : null}>
+                {typeof log.message !== "string" ? log.message : <span className="log-message">{log.message}</span>}
+              </div>
+            ))}
           </div>
 
           {/* CLI Input */}
           <form onSubmit={handleCommand} className="cli-input">
             <span className="cli-prompt">$</span>
-            <input
-              type="text"
-              value={command}
-              onChange={(e) => setCommand(e.target.value)}
-              placeholder="Type a command..."
-              autoFocus
-              className="log-input"
-            />
+            <input type="text" value={command} onChange={(e) => setCommand(e.target.value)} placeholder="Type a command..." autoFocus className="log-input" />
           </form>
         </>
       )}

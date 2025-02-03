@@ -31,11 +31,13 @@ const calculateCountdown = (endDate) => {
 
 const RaffleDetails = () => {
   const { selectedRaffle, loading } = useRaffle();
-
-  // State to manage collapsed sections
-  const [collapsedSections, setCollapsedSections] = useState({});
-
-  // State for countdown timer
+  const [collapsedSections, setCollapsedSections] = useState({
+    prize: false,
+    media: true,
+    participation: false,
+    timing: false,
+    status: false,
+  });
   const [countdown, setCountdown] = useState(null);
 
   // Toggle collapse for sections
@@ -46,7 +48,13 @@ const RaffleDetails = () => {
     }));
   };
 
-  // Update countdown timer
+  // ✅ Determine Prize Type: "SOL" (onChain) or "Physical" (offChain)
+  const getPrizeClass = () => {
+    if (selectedRaffle?.isOnChain) return "prize-sol"; // SOL (on-chain)
+    if (selectedRaffle?.prizeDetails?.type === "physical") return "prize-physical"; // Physical (off-chain)
+    return "prize-unknown"; // Unknown type
+  };
+
   useEffect(() => {
     if (selectedRaffle?.time?.end) {
       setCountdown(calculateCountdown(selectedRaffle.time.end));
@@ -55,138 +63,68 @@ const RaffleDetails = () => {
         setCountdown(calculateCountdown(selectedRaffle.time.end));
       }, 1000);
 
-      return () => clearInterval(timer); // Cleanup timer on unmount
+      return () => clearInterval(timer);
     }
   }, [selectedRaffle]);
 
   if (loading) return <p className="cli-text">Loading details...</p>;
   if (!selectedRaffle) return <p className="cli-text">Select a raffle to view details.</p>;
 
-  const {
-    raffleName,
-    entryFee,
-    prizeDetails = {},
-    participants = {},
-    time = {},
-    status = {},
-    isOnChain,
-  } = selectedRaffle;
-
-
-  
+  const { raffleName, entryFee, prizeDetails = {}, participants = {}, time = {}, status = {}, isOnChain } = selectedRaffle;
 
   return (
     <div className="raffle-details">
-<h2 className="raffle-title">{raffleName || "Raffle Details"}</h2>
+      <h2 className="raffle-title">{raffleName}</h2>
 
       {/* Prize Section */}
       <div className="tree-branch">
-        <h3
-          className={`section-title ${collapsedSections["prize"] ? "collapsed" : ""}`}
-          onClick={() => toggleCollapse("prize")}
-        >
+        <h3 className={`section-title ${collapsedSections["prize"] ? "collapsed" : ""}`} onClick={() => toggleCollapse("prize")}>
           Prize {collapsedSections["prize"] ? "▶" : "▼"}
         </h3>
         {!collapsedSections["prize"] && (
           <ul>
             <li>
-              <span className="tree-key">Prize:</span> {prizeDetails.title}
+              <span className="tree-key">Prize:</span>{" "}
+              <span className={`prize-title ${getPrizeClass()}`}>
+                {prizeDetails.title || "N/A"}
+              </span>
             </li>
             <li>
               <span className="tree-key">Entry Fee:</span> {entryFee} SOL
             </li>
             <li>
-              <span className="tree-key">Details:</span> {prizeDetails.details}
+              <span className="tree-key">Details:</span> {prizeDetails.details || "N/A"}
             </li>
           </ul>
         )}
       </div>
 
-
-            {/* 🖼️ Media Section (Initially Collapsed) */}
-            {prizeDetails.imageUrl && (
+      {/* Media Section */}
+      {prizeDetails.imageUrl && (
         <div className="tree-branch">
           <h3 className={`section-title ${collapsedSections["media"] ? "collapsed" : ""}`} onClick={() => toggleCollapse("media")}>
             Media {collapsedSections["media"] ? "▶" : "▼"}
           </h3>
           {!collapsedSections["media"] && (
             <div className="raffle-media">
-              <img src={prizeDetails.imageUrl} alt={prizeDetails.title} className="raffle-image" />
+              <img src={prizeDetails.imageUrl} alt={prizeDetails.title || "Raffle Image"} className="raffle-image" />
             </div>
           )}
         </div>
       )}
 
-      {/* Participation Section */}
-      <div className="tree-branch">
-        <h3
-          className={`section-title ${collapsedSections["participation"] ? "collapsed" : ""}`}
-          onClick={() => toggleCollapse("participation")}
-        >
-          Participation {collapsedSections["participation"] ? "▶" : "▼"}
-        </h3>
-        {!collapsedSections["participation"] && (
-          <ul>
-            <li>
-              <span className="tree-key">Max Tickets:</span> {participants.max}
-            </li>
-            <li>
-              <span className="tree-key">Min Tickets:</span> {participants.min}
-            </li>
-            <li>
-              <span className="tree-key">Tickets Sold:</span> {participants.ticketsSold}
-            </li>
-          </ul>
-        )}
-      </div>
-
-      {/* Timing Section */}
-      <div className="tree-branch">
-        <h3
-          className={`section-title ${collapsedSections["timing"] ? "collapsed" : ""}`}
-          onClick={() => toggleCollapse("timing")}
-        >
-          Timing {collapsedSections["timing"] ? "▶" : "▼"}
-        </h3>
-        {!collapsedSections["timing"] && (
-          <ul>
-            <li>
-              <span className="tree-key">Start:</span> {formatDate(time.start)}
-            </li>
-            <li>
-              <span className="tree-key">End:</span> {formatDate(time.end)}
-            </li>
-            {countdown ? (
-              <li>
-                <span className="tree-key">Countdown:</span>
-                <span className="countdown">
-                  {countdown.days}d {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
-                </span>
-              </li>
-            ) : (
-              <li>
-                <span className="tree-key">Countdown:</span> <span className="countdown">Expired</span>
-              </li>
-            )}
-          </ul>
-        )}
-      </div>
-
       {/* Status Section */}
       <div className="tree-branch">
-        <h3
-          className={`section-title ${collapsedSections["status"] ? "collapsed" : ""}`}
-          onClick={() => toggleCollapse("status")}
-        >
+        <h3 className={`section-title ${collapsedSections["status"] ? "collapsed" : ""}`} onClick={() => toggleCollapse("status")}>
           Status {collapsedSections["status"] ? "▶" : "▼"}
         </h3>
         {!collapsedSections["status"] && (
           <ul>
             <li>
-              <span className="tree-key">Current:</span> {status.current}
+              <span className="tree-key">Current:</span> {status.current || "N/A"}
             </li>
             <li>
-              <span className="tree-key">Fulfillment:</span> {status.fulfillment}
+              <span className="tree-key">Fulfillment:</span> {status.fulfillment || "N/A"}
             </li>
           </ul>
         )}

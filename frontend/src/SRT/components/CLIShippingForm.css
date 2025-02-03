@@ -39,3 +39,42 @@
   color: var(--error-color);
   font-weight: bold;
 }
+
+
+.phone-input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.country-selector {
+  display: flex;
+  align-items: center;
+}
+
+.country-flag {
+  width: 24px;
+  height: 16px;
+  margin-right: 5px;
+}
+
+.country-dropdown {
+  border: none;
+  font-size: 14px;
+  background: transparent;
+}
+
+
+
+.cli-valid {
+  color: green;
+  font-weight: bold;
+}
+
+
+

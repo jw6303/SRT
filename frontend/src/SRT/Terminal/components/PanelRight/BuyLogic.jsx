@@ -3,31 +3,34 @@ import { useLogs } from "../../../../context/LogContext";
 import { useRaffle } from "../../context/RaffleContext";
 import CLIShippingForm from "../../../components/CLIShippingForm";
 import "../../Terminal.styles.css";
+import { useWallet } from '@solana/wallet-adapter-react';
+import { Connection, PublicKey, Transaction, SystemProgram } from '@solana/web3.js';
 
 const COOLDOWN_TIME = 10 * 1000;
 const OWNERSHIP_CAP_PERCENTAGE = 0.1;
+const BUSINESS_WALLET_ADDRESS = "RiNv49qHTyD42fZ2SRwqqnGjZLbi5dP8ub2Nj9RLr3c";
 
-const userPurchases = new Map();
-const userCooldowns = new Map();
+// Alchemy RPC URLs (HTTP & WebSocket)
+const ALCHEMY_HTTP_RPC = "https://solana-devnet.g.alchemy.com/v2/pseVdFLkUV2LXg-uoYqUfodPinyEEeBD";
+const ALCHEMY_WS_RPC = "wss://solana-devnet.g.alchemy.com/v2/pseVdFLkUV2LXg-uoYqUfodPinyEEeBD";
 
-const determineChainType = (raffle) => {
-  return raffle?.prizeDetails?.type === "onChain" ? "onChain" : "offChain";
-};
+const connection = new Connection(ALCHEMY_HTTP_RPC, {
+  commitment: "confirmed",
+  wsEndpoint: ALCHEMY_WS_RPC, // Ensure WebSocket connection works properly
+});
+
 
 const BuyLogic = () => {
   const { selectedRaffle } = useRaffle();
   const { addLog } = useLogs();
+  const wallet = useWallet();
 
   const [ticketCount, setTicketCount] = useState(1);
   const [progress, setProgress] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [shippingInfo, setShippingInfo] = useState({});
-  const [isShippingCollapsed, setIsShippingCollapsed] = useState(true);
-  const [maxTickets, setMaxTickets] = useState(1);
   const [isShippingProvided, setIsShippingProvided] = useState(false);
-
-
-  // 🛠 FIX: Add State for Collapsible Sections
+  const [maxTickets, setMaxTickets] = useState(1);
   const [collapsedSections, setCollapsedSections] = useState({
     prize: false,
     tickets: false,
@@ -36,7 +39,26 @@ const BuyLogic = () => {
     shipping: false,
   });
 
-  // 🛠 FIX: Function to Toggle Collapsed Sections
+  const { prizeDetails = {}, participants = {}, question = {} } = selectedRaffle || {};
+  const totalTickets = participants.max || 0;
+  const ticketsSold = participants.ticketsSold || 0;
+  const remainingTickets = totalTickets - ticketsSold;
+  const isQuestionRequired = !!question.text;
+  const isShippingRequired = prizeDetails.requiresShipping;
+  const chainType = prizeDetails.type === "onChain" ? "onChain" : "offChain";
+
+  const calculateUserMaxTickets = () => {
+    const userTicketsOwned = participants.tickets?.filter((p) => p.participantId === wallet.publicKey?.toBase58()).length || 0;
+    return Math.min(Math.floor(totalTickets * OWNERSHIP_CAP_PERCENTAGE) - userTicketsOwned, remainingTickets);
+  };
+
+  useEffect(() => {
+    if (selectedRaffle) {
+      setMaxTickets(calculateUserMaxTickets());
+      setTicketCount(1);
+    }
+  }, [selectedRaffle, ticketsSold, remainingTickets]);
+
   const toggleCollapse = (section) => {
     setCollapsedSections((prev) => ({
       ...prev,
@@ -44,29 +66,8 @@ const BuyLogic = () => {
     }));
   };
 
-
-  const { prizeDetails = {}, participants = {}, question = {} } = selectedRaffle || {};
-  const totalTickets = participants.max || 0;
-  const ticketsSold = participants.ticketsSold || 0;
-  const remainingTickets = totalTickets - ticketsSold;
-  const chainType = determineChainType(selectedRaffle);
-
-  const calculateUserMaxTickets = () => {
-    const userTicketsOwned = userPurchases.get("currentUser") || 0;
-    return Math.min(
-      Math.floor(totalTickets * OWNERSHIP_CAP_PERCENTAGE) - userTicketsOwned,
-      remainingTickets
-    );
-  };
-
-  useEffect(() => {
-    if (selectedRaffle) {
-      setMaxTickets(calculateUserMaxTickets());
-    }
-  }, [selectedRaffle, ticketsSold, remainingTickets]);
-
   const handleTicketCountChange = (value) => {
-    if (value > maxTickets || value > remainingTickets) {
+    if (value > remainingTickets) {
       addLog("Invalid ticket count. Please select a valid amount.", "error");
       return;
     }
@@ -80,25 +81,11 @@ const BuyLogic = () => {
     addLog("Shipping details provided successfully.", "success");
   };
 
+  let ws;
+
   const handleBuyTicket = async () => {
-    addLog(`Attempting to purchase tickets. Ticket Count: ${ticketCount}`, "info");
-
-    if (chainType === "offChain" && !isShippingProvided) {
-      addLog("Shipping information is required for off-chain prizes.", "error");
-      setIsShippingCollapsed(false);
-      return;
-    }
-
-    if (question.text && !selectedAnswer) {
-      addLog("Please select an answer before purchasing tickets.", "error");
-      return;
-    }
-
-    const lastPurchaseTime = userCooldowns.get("currentUser") || 0;
-    const now = Date.now();
-    if (now - lastPurchaseTime < COOLDOWN_TIME) {
-      const waitTime = Math.ceil((COOLDOWN_TIME - (now - lastPurchaseTime)) / 1000);
-      addLog(`You must wait ${waitTime} seconds before purchasing again.`, "warning");
+    if (!wallet || !wallet.connected) {
+      addLog("Please connect your wallet first.", "error");
       return;
     }
 
@@ -107,24 +94,69 @@ const BuyLogic = () => {
       return;
     }
 
+    if (isQuestionRequired && !selectedAnswer) {
+      addLog("You must answer the question before purchasing.", "error");
+      return;
+    }
+
+    if (isShippingRequired && !isShippingProvided) {
+      addLog("Please provide shipping details before purchasing.", "error");
+      return;
+    }
+
     setProgress(true);
-    addLog(`Processing purchase of ${ticketCount} ticket(s)...`, "info");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      participants.ticketsSold += ticketCount;
-      userPurchases.set("currentUser", (userPurchases.get("currentUser") || 0) + ticketCount);
-      userCooldowns.set("currentUser", now);
+      const sender = wallet.publicKey;
+      const recipient = new PublicKey(BUSINESS_WALLET_ADDRESS);
+      const amountInLamports = ticketCount * selectedRaffle.entryFee * 1e9;
 
-      addLog(`${ticketCount} ticket(s) purchased successfully!`, "success");
-
-      const remainingAfterPurchase = remainingTickets - ticketCount;
-      addLog(
-        `Tickets remaining: ${remainingAfterPurchase}/${totalTickets}.`,
-        remainingAfterPurchase > 0 ? "info" : "warning"
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: sender,
+          toPubkey: recipient,
+          lamports: amountInLamports,
+        })
       );
+
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = sender;
+
+      const signedTransaction = await wallet.signTransaction(transaction);
+      const rawTransaction = signedTransaction.serialize();
+      const signature = await connection.sendRawTransaction(rawTransaction);
+
+      addLog(`Transaction submitted! Tx Hash: ${signature}`, "info");
+
+      // Close any previous WebSocket connection
+      if (ws) ws.close();
+
+      ws = new WebSocket(ALCHEMY_WS_RPC);
+      ws.onopen = () => {
+        ws.send(JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "signatureSubscribe",
+          params: [signature, { commitment: "confirmed" }],
+        }));
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.method === "signatureNotification") {
+          ws.close();
+          addLog(`✅ Transaction confirmed! Tx Hash: ${signature}`, "success");
+        }
+      };
+
+      ws.onerror = (error) => {
+        addLog(`WebSocket error: ${error.message}`, "error");
+        ws.close();
+      };
+
     } catch (error) {
-      addLog("Failed to purchase tickets. Please try again.", "error");
+      addLog(`Transaction failed: ${error.message}`, "error");
     } finally {
       setProgress(false);
     }
@@ -140,10 +172,7 @@ const BuyLogic = () => {
   
           {/* Prize Section */}
           <div className="tree-branch">
-            <h3
-              className={`section-title ${collapsedSections["prize"] ? "collapsed" : ""}`}
-              onClick={() => toggleCollapse("prize")}
-            >
+            <h3 className="section-title" onClick={() => toggleCollapse("prize")}>
               Prize {collapsedSections["prize"] ? "▶" : "▼"}
             </h3>
             {!collapsedSections["prize"] && (
@@ -157,10 +186,7 @@ const BuyLogic = () => {
   
           {/* Ticket Availability Section */}
           <div className="tree-branch">
-            <h3
-              className={`section-title ${collapsedSections["tickets"] ? "collapsed" : ""}`}
-              onClick={() => toggleCollapse("tickets")}
-            >
+            <h3 className="section-title" onClick={() => toggleCollapse("tickets")}>
               Ticket Availability {collapsedSections["tickets"] ? "▶" : "▼"}
             </h3>
             {!collapsedSections["tickets"] && (
@@ -173,24 +199,17 @@ const BuyLogic = () => {
   
           {/* Ticket Selection Section */}
           <div className="tree-branch">
-            <h3
-              className={`section-title ${collapsedSections["selection"] ? "collapsed" : ""}`}
-              onClick={() => toggleCollapse("selection")}
-            >
+            <h3 className="section-title" onClick={() => toggleCollapse("selection")}>
               Select Tickets {collapsedSections["selection"] ? "▶" : "▼"}
             </h3>
             {!collapsedSections["selection"] && (
               <div className="ticket-buttons">
-                {[...Array(10)].map((_, i) => (
-                  <button
-                    key={i}
-                    className={`ticket-button ${ticketCount === i + 1 ? "selected" : ""}`}
-                    onClick={() => handleTicketCountChange(i + 1)}
-                  >
+                {[...Array(Math.min(10, remainingTickets))].map((_, i) => (
+                  <button key={i} className={`ticket-button ${ticketCount === i + 1 ? "selected" : ""}`} onClick={() => handleTicketCountChange(i + 1)}>
                     {i + 1}
                   </button>
                 ))}
-                <button className="bulk-button" onClick={() => handleTicketCountChange(maxTickets)}>
+                <button className="bulk-button" onClick={() => handleTicketCountChange(remainingTickets)}>
                   Max
                 </button>
               </div>
@@ -198,12 +217,9 @@ const BuyLogic = () => {
           </div>
   
           {/* Question Section */}
-          {question.text && (
+          {isQuestionRequired && (
             <div className="tree-branch">
-              <h3
-                className={`section-title ${collapsedSections["question"] ? "collapsed" : ""}`}
-                onClick={() => toggleCollapse("question")}
-              >
+              <h3 className="section-title" onClick={() => toggleCollapse("question")}>
                 Question {collapsedSections["question"] ? "▶" : "▼"}
               </h3>
               {!collapsedSections["question"] && (
@@ -230,12 +246,9 @@ const BuyLogic = () => {
           )}
   
           {/* Shipping Section */}
-          {prizeDetails.requiresShipping && (
+          {isShippingRequired && (
             <div className="tree-branch">
-              <h3
-                className={`section-title ${collapsedSections["shipping"] ? "collapsed" : ""}`}
-                onClick={() => toggleCollapse("shipping")}
-              >
+              <h3 className="section-title" onClick={() => toggleCollapse("shipping")}>
                 Shipping Information {collapsedSections["shipping"] ? "▶" : "▼"}
               </h3>
               {!collapsedSections["shipping"] && (
@@ -247,16 +260,15 @@ const BuyLogic = () => {
           {/* Buy Button */}
           <button
             onClick={handleBuyTicket}
-            disabled={progress || (chainType === "offChain" && !isShippingProvided)}
+            disabled={progress || (isQuestionRequired && !selectedAnswer) || (isShippingRequired && !isShippingProvided)}
             className="tree-toggle"
           >
-            {progress ? "Processing..." : "Buy Tickets"}
+            {progress ? "Processing..." : `Buy ${ticketCount} Ticket(s)`}
           </button>
         </>
       )}
     </div>
   );
-    
-};
+  };
 
 export default BuyLogic;

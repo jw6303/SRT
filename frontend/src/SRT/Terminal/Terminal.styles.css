@@ -1296,3 +1296,48 @@ body {
 .countdown.expired {
   color: #ff5555;
 }
+
+
+
+/* 🏆 Global Prize Title Styling */
+.prize-title {
+  font-weight: bold;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+/* 🌟 Prize-Specific Colors */
+.prize-sol {
+  color: #ffd700; /* Gold */
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid #ffd700;
+}
+
+
+/* 🎯 Status-Specific Colors */
+[data-title*="active"] { color: green; }
+[data-title*="pending"] { color: orange; }
+[data-title*="closed"] { color: red; }
+
+
+
+/* 🌟 General Prize Title Styling */
+.prize-title {
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+
+/* 📦 Physical Prizes (Off-Chain) */
+.prize-physical {
+  color: rgb(235, 135, 235);
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid #d748e4;
+}
+
+/* ❓ Unknown Prize Type */
+.prize-unknown {
+  color: #ffd700; /* Gold */
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid #ffd700;
+}
