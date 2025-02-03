@@ -5,6 +5,7 @@ import CLIShippingForm from "../../../components/CLIShippingForm";
 import "../../Terminal.styles.css";
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Connection, PublicKey, Transaction, SystemProgram } from '@solana/web3.js';
+import { FaExclamationTriangle, FaCheck, FaShippingFast, FaCheckCircle } from "react-icons/fa"; // ✅ Imported Icons
 
 const COOLDOWN_TIME = 10 * 1000;
 const OWNERSHIP_CAP_PERCENTAGE = 0.1;
@@ -76,9 +77,24 @@ const BuyLogic = () => {
   };
 
   const handleShippingSubmit = (info) => {
+    if (!info || Object.keys(info).length === 0) {
+      addLog(
+        <>
+          <FaExclamationTriangle /> Shipping details are required to proceed.
+        </>,
+        "warning"
+      );
+      return;
+    }
+
     setShippingInfo(info);
     setIsShippingProvided(true);
-    addLog("Shipping details provided successfully.", "success");
+    addLog(
+      <>
+        <FaCheck /> Shipping details confirmed successfully.
+      </>,
+      "success"
+    );
   };
 
   let ws;
@@ -127,8 +143,15 @@ const BuyLogic = () => {
       const rawTransaction = signedTransaction.serialize();
       const signature = await connection.sendRawTransaction(rawTransaction);
 
-      addLog(`Transaction submitted! Tx Hash: ${signature}`, "info");
-
+      addLog(
+        <>
+          <span className="transaction-submitted">Transaction Submitted!</span>{" "}
+          <span className="tx-hash-title">Tx Hash:</span>{" "}
+          <span className="tx-hash">{signature}</span>
+        </>,
+        "info"
+      );
+            
       // Close any previous WebSocket connection
       if (ws) ws.close();
 
@@ -216,46 +239,56 @@ const BuyLogic = () => {
             )}
           </div>
   
-          {/* Question Section */}
-          {isQuestionRequired && (
-            <div className="tree-branch">
-              <h3 className="section-title" onClick={() => toggleCollapse("question")}>
-                Question {collapsedSections["question"] ? "▶" : "▼"}
-              </h3>
-              {!collapsedSections["question"] && (
-                <ul className="tree-sublist">
-                  <li><span className="tree-key">Question:</span> {question.text}</li>
-                  {question.options?.map((option, index) => (
-                    <label key={index} className="answer-option">
-                      <input
-                        type="radio"
-                        name="question"
-                        value={option}
-                        checked={selectedAnswer === option}
-                        onChange={() => {
-                          setSelectedAnswer(option);
-                          addLog(`Answer selected: ${option}`, "info");
-                        }}
-                      />
-                      {option}
-                    </label>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
+{/* Question Section */}
+{isQuestionRequired && (
+  <div className="tree-branch">
+    <h3 className="section-title" onClick={() => toggleCollapse("question")}>
+      Question {collapsedSections["question"] ? "▶" : "▼"}
+      <span className="required-indicator"> * Required</span>
+    </h3>
+    {!collapsedSections["question"] && (
+      <ul className="tree-sublist">
+        <li><span className="tree-key">Question:</span> {question.text}</li>
+        {question.options?.map((option, index) => (
+          <label key={index} className="answer-option">
+            <input
+              type="radio"
+              name="question"
+              value={option}
+              checked={selectedAnswer === option}
+              onChange={() => {
+                setSelectedAnswer(option);
+                addLog(<><FaCheckCircle /> Answer selected: {option}</>, "info");
+              }}
+            />
+            {option}
+          </label>
+        ))}
+      </ul>
+    )}
+  </div>
+)}
+
+
   
-          {/* Shipping Section */}
-          {isShippingRequired && (
-            <div className="tree-branch">
-              <h3 className="section-title" onClick={() => toggleCollapse("shipping")}>
-                Shipping Information {collapsedSections["shipping"] ? "▶" : "▼"}
-              </h3>
-              {!collapsedSections["shipping"] && (
-                <CLIShippingForm onSubmit={handleShippingSubmit} />
-              )}
-            </div>
-          )}
+{/* Shipping Section */}
+{isShippingRequired && (
+  <div className="tree-branch">
+    <h3 className="section-title" onClick={() => toggleCollapse("shipping")}>
+      Shipping Information {collapsedSections["shipping"] ? "▶" : "▼"}
+      <span className="required-indicator"> * Required</span>
+    </h3>
+    
+    {/* Ensure the form is always displayed when required */}
+    <div className="shipping-form-container">
+    <p className="shipping-message">
+    <FaShippingFast /> Please enter your shipping details before purchasing.</p>
+      <CLIShippingForm onSubmit={handleShippingSubmit} />
+    </div>
+  </div>
+)}
+
+
   
           {/* Buy Button */}
           <button

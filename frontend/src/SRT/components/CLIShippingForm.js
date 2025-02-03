@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./CLIShippingForm.css";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
-
-const GOOGLE_PLACES_API_KEY = process.env.REACT_APP_GOOGLE_PLACES_API_KEY;
+import { FaCheck, FaExclamationTriangle } from "react-icons/fa"; // ✅ Icons instead of emojis
 
 const CLIShippingForm = ({ onSubmit }) => {
   const fields = [
@@ -16,16 +15,16 @@ const CLIShippingForm = ({ onSubmit }) => {
     { key: "country", label: "Country", autoComplete: "country" },
   ];
 
-  const [currentFieldIndex, setCurrentFieldIndex] = useState(0);
   const [shippingInfo, setShippingInfo] = useState({});
-  const [emailSuggestions, setEmailSuggestions] = useState([]);
   const [isComplete, setIsComplete] = useState(false);
-  const inputRef = useRef();
+  const [isConfirmed, setIsConfirmed] = useState(false);
+  const inputRefs = useRef({});
 
   useEffect(() => {
     autoFillFromBrowser();
   }, []);
 
+  // ✅ Autofill browser saved data
   const autoFillFromBrowser = async () => {
     if (navigator.credentials) {
       try {
@@ -42,40 +41,23 @@ const CLIShippingForm = ({ onSubmit }) => {
     }
   };
 
-  const handleInput = async (e) => {
-    const input = e.target.value.trim();
-    const currentField = fields[currentFieldIndex];
-
-    if (currentField?.isEmail) {
-      handleEmailSuggestions(input);
-    }
-
-    if (e.key === "Enter") {
-      if (!input) return;
-
-      setShippingInfo((prev) => ({ ...prev, [currentField.key]: input }));
-
-      if (currentFieldIndex < fields.length - 1) {
-        setCurrentFieldIndex((prev) => prev + 1);
-        e.target.value = "";
-      } else {
-        setIsComplete(true);
-        onSubmit(shippingInfo);
-      }
-    }
+  // ✅ Handle Input Change (Store data immediately)
+  const handleInputChange = (field, value) => {
+    setShippingInfo((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
-  const handleEmailSuggestions = (input) => {
-    const emailParts = input.split("@");
-    if (emailParts.length === 1) {
-      setEmailSuggestions([
-        `${emailParts[0]}@gmail.com`,
-        `${emailParts[0]}@yahoo.com`,
-        `${emailParts[0]}@outlook.com`,
-      ]);
-    } else {
-      setEmailSuggestions([]);
+  // ✅ Handle Confirmation (Send data to BuyLogic)
+  const handleConfirm = () => {
+    if (Object.keys(shippingInfo).length < fields.length) {
+      alert("⚠️ Please complete all fields before confirming.");
+      return;
     }
+    setIsConfirmed(true);
+    setIsComplete(true);
+    onSubmit(shippingInfo);
   };
 
   return (
@@ -87,34 +69,36 @@ const CLIShippingForm = ({ onSubmit }) => {
         </p>
         <p className="cli-section-title">{`> Capturing Shipping Details:`}</p>
 
-        {fields.map((field, index) => (
+        {/* Input Fields */}
+        {fields.map((field) => (
           <p key={field.key} className="cli-field">
             <span className="cli-label">{`> ${field.label}: `}</span>
             <input
-              ref={inputRef}
+              ref={(el) => (inputRefs.current[field.key] = el)}
               type="text"
               autoComplete={field.autoComplete}
-              onFocus={(e) => document.execCommand("paste")}
-              onKeyDown={handleInput}
-              placeholder="_"
-              className="cli-input-box"
               defaultValue={shippingInfo[field.key] || ""}
-              style={{ width: "15ch" }}
+              onChange={(e) => handleInputChange(field.key, e.target.value)}
+              className="cli-input-box"
+              style={{ width: "18ch" }}
             />
           </p>
         ))}
-
-        {/* Email Suggestions */}
-        {emailSuggestions.length > 0 && fields[currentFieldIndex]?.isEmail && (
-          <div className="email-suggestions">
-            {emailSuggestions.map((suggestion, index) => (
-              <p key={index} onClick={() => setShippingInfo((prev) => ({ ...prev, email: suggestion }))}>
-                {suggestion}
-              </p>
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* Confirm Button */}
+      {!isConfirmed && (
+        <button className="cli-confirm-btn" onClick={handleConfirm}>
+          <FaCheck /> Confirm Shipping Details
+        </button>
+      )}
+
+      {/* Confirmation Message */}
+      {isConfirmed && (
+        <p className="cli-success-message">
+          <FaCheck /> Shipping Details Confirmed. Ready for purchase.
+        </p>
+      )}
     </div>
   );
 };

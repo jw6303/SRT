@@ -394,6 +394,34 @@ body {
 }
 
 
+/* 🌟 Transaction Submitted (Gold) */
+.transaction-submitted {
+  color: #ffd700; /* Gold */
+  background: rgba(255, 215, 0, 0.1); /* Light Gold Transparent */
+  border: 1px solid #ffd700; /* Gold Border */
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+/* 🔹 Tx Hash Label */
+.tx-hash-title {
+  color: #b0b0b0; /* Soft Grey */
+  font-weight: bold;
+}
+
+/* 🔥 Tx Hash (Bold & Readable) */
+.tx-hash {
+  color: #00ff00; /* Neon Green */
+  font-family: monospace;
+  word-break: break-word; /* Ensure long hashes wrap */
+  background: rgba(0, 255, 0, 0.1); /* Light green transparent */
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
 
 /****************************************
   🌳 TREE VIEW STYLE (For Raffle List)
@@ -718,6 +746,16 @@ body {
 .error-highlight {
   border-color: red;
   box-shadow: 0px 0px 5px rgba(255, 0, 0, 0.5);
+}
+
+
+
+
+.required-indicator {
+  color: red;
+  font-size: 0.9em;
+  margin-left: 100px;
+  font-weight: bold;
 }
 
 
@@ -1341,3 +1379,8 @@ body {
   background: rgba(255, 215, 0, 0.1);
   border: 1px solid #ffd700;
 }
+
+
+
+
+
